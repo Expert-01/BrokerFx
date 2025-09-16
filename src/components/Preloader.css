@@ -1,0 +1,82 @@
+:root {
+    --primary: #00ffff;
+    --primary-light: #00e6e6;
+    --secondary: #0000ff;
+    --accent: #00ccff;
+    --success: #00ff99;
+    --warning: #ffcc00;
+    --danger: #ff3366;
+    --dark-bg: #121212;
+    --card-bg: #1a1a1a;
+    --text-color: #e0e0e0;
+    --text-secondary: #a0a0a0;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+.preloader-bg {
+  position: fixed;
+  z-index: 9999;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: var(--dark-bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.5s;
+}
+
+.preloader-orb {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: orb-spin 1.2s cubic-bezier(0.77,0,0.175,1) infinite;
+}
+
+.preloader-glow {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffcc00 0%, #1e293b 80%);
+  filter: blur(12px);
+  opacity: 0.7;
+}
+
+.preloader-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ffbf00 0%, #1e293b 100%);
+  box-shadow: 0 0 24px #4f3d02, 0 0 8px #1e293b;
+  position: relative;
+  z-index: 2;
+  animation: dot-bounce 0.8s cubic-bezier(0.77,0,0.175,1) infinite alternate;
+}
+
+.preloader-text {
+  margin-top: 2.5rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.1em;
+  text-shadow: 0 2px 12px #ffdd00, 0 1px 2px #1e293b;
+  font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
+  animation: text-fade 1.6s ease-in-out infinite alternate;
+}
+
+@keyframes orb-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes dot-bounce {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-18px) scale(1.1); }
+}
+
+@keyframes text-fade {
+  0% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
