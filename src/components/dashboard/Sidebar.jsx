@@ -45,7 +45,7 @@ const Sidebar = () => {
   const active = "Dashboard";
   return (
     <aside
-      className="fixed left-0 top-0 h-screen bg-gradient-to-b from-black via-[#181a20] to-[#23272f] text-[#bfa233] flex flex-col rounded-2xl shadow-xl transition-all duration-300
+      className="fixed left-0 top-0 h-screen bg-gradient-to-b from-black via-[#181a20] to-[#23272f] text-[#bfa233] flex flex-col shadow-xl transition-all duration-300
         w-16 hover:w-64 md:w-64 md:hover:w-64 z-50 group"
     >
       {/* User Profile Card */}

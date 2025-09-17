@@ -57,11 +57,11 @@ export default function Dashboard() {
       <aside className="justify-between fixed left-0 top-0 h-full">
         <Sidebar />
       </aside>
-      <main className="flex-1 md:p-[15%]overflow-y-auto">
+      <main className="flex-1 md:p-[5%] overflow-y-auto">
 
 
         <AccountOverview />
-        <div className="mx- my-8">
+        <div className="mx-64 my-8">
           <AccountsTable />
           <DownloadSection />
           <Promotions />
@@ -70,7 +70,7 @@ export default function Dashboard() {
           <Notifications />
           <Support />
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-1 gap-8 mb-8">
           <TradesByStrategies data={tradesData} />
           <ProfitLossCumulative data={profitLossData} />
           <Watchlist data={watchlist} />

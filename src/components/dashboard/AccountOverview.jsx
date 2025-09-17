@@ -1,7 +1,7 @@
 import React from "react";
 
 const AccountOverview = () => (
-  <section className="bg-gradient-to-r from-black to-[#23272f] text-white p-8 rounded-2xl shadow-2xl mb-8 w-full max-w-4xl mx-auto ">
+  <section className="border border-[#181a20] text-white p-8 rounded-2xl shadow-2xl mb-8 w-full max-w-4xl mx-auto ">
     <div className="flex items-center justify-between mb-8">
       <h2 className="text-2xl font-bold text-yellow-400 tracking-wide">
         Account Overview
