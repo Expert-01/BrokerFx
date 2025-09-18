@@ -11,21 +11,21 @@ const AccountOverview = () => (
       </span>
     </div>
     <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
-      <div className="flex flex-col items-center bg-black rounded-xl p-4 shadow-lg">
-        <span className="text-xs text-gray-400 mb-1">Platform</span>
+      <div className="flex flex-col items-center bg-black border border-[#181a20] rounded-xl p-4 shadow-lg">
+        <span className="text-xs text-gray-400 mb-1 ">Platform</span>
         <span className="text-lg font-bold text-yellow-400">
           MetaTrader 5
         </span>
       </div>
-      <div className="flex flex-col items-center bg-black rounded-xl p-4 shadow-lg">
+      <div className="flex flex-col items-center bg-black border border-[#181a20] fmrounded-xl p-4 shadow-lg">
         <span className="text-xs text-gray-400 mb-1">Account #</span>
         <span className="text-lg font-bold">123456</span>
       </div>
-      <div className="flex flex-col items-center bg-black rounded-xl p-4 shadow-lg">
-        <span className="text-xs text-gray-400 mb-1">Nickname</span>
+      <div className="flex flex-col items-center bg-black border border-[#181a20] rounded-xl p-4 shadow-lg">
+        <span className="text-xs text-gray-400 mb-1 ">Nickname</span>
         <span className="text-lg font-bold">account1</span>
       </div>
-      <div className="flex flex-col items-center bg-black rounded-xl p-4 shadow-lg">
+      <div className="flex flex-col items-center bg-black border border-[#181a20] rounded-xl p-4 shadow-lg">
         <span className="text-xs text-gray-400 mb-1">Balance</span>
         <span className="text-lg font-bold text-yellow-400">$0.00 USD</span>
       </div>
@@ -49,7 +49,7 @@ const AccountOverview = () => (
       </div>
     </div>
     <div className="flex gap-4 justify-end">
-      <button className="bg-yellow-400 text-black px-6 py-2 rounded-lg font-semibold shadow hover:bg-yellow-500 transition">
+      <button className="bg-yellow-400 border border-[#181a20]  text-black px-6 py-2 rounded-lg fancy-btn font-semibold shadow hover:bg-yellow-500 transition">
         Deposit
       </button>
       <button className="bg-[#181a20] text-yellow-400 px-6 py-2 rounded-lg font-semibold shadow border border-yellow-400 hover:bg-yellow-400 hover:text-black transition">
