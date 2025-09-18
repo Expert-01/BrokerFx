@@ -1,6 +1,5 @@
 import React, {useEffect} from "react";
 import Navbar from "../components/Navbar";
-import Hamburger from "../components/UI/Hamburger";
 import Hero from "@/components/Hero";
 import Features from "../components/Features";
 import Plans from "../components/Plans";
@@ -14,7 +13,6 @@ import QuickStart from "../components/QuickStart";
 import bitcoin from '../assets/bitcoin.png';
 import ethereum from '../assets/ethereum.png';
 import wallet from '../assets/wallet.png';
-import HamburgerCopy from "../components/UI/HamburgerCopy";
 import TradingViewSection from "../components/TradingViewSection";
 
 export default function Home() {

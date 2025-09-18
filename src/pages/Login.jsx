@@ -3,7 +3,7 @@
 
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Button } from "@/components/UI/button";
+import Button from "@/components/UI/Button.jsx";
 import axios from "axios";
 import logo from "@/assets/logo.png"; // Place your logo in src/assets/logo.png
 import loginBg from "@/assets/login-bg.png"; // Place your background image in src/assets/login-bg.png

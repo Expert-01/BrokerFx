@@ -1,4 +1,4 @@
-import { Button } from "@/components/UI/button";
+import Button from "@/components/UI/Button.jsx";
 
 export default function Plans() {
   const plans = [

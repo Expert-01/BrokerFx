@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import Button from "@/components/UI/Button.jsx";
 import axios from "axios";
 import logo from "@/assets/logo.png";
 import registerBg from "@/assets/login-bg.png";

@@ -1,6 +1,6 @@
 import React,{ useState, useEffect } from "react";
 import { PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
-import { Button } from "@/components/ui/button";
+import Button from "@/components/UI/Button.jsx";
 import Investment from "../pages/Investment";
 
 export default function HomePage({ user }) {

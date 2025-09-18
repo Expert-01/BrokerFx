@@ -57,7 +57,7 @@ export default function Dashboard() {
       <aside className="justify-between fixed left-0 top-0 h-full">
         <Sidebar />
       </aside>
-      <main className="flex-1 md:p-[5%] overflow-y-auto">
+      <main className="flex-1 md:p-[5%] overflow-y-auto ">
 
 
         <AccountOverview />

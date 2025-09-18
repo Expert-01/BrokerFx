@@ -1,7 +1,7 @@
 
 
 import { useState, useRef, useEffect } from "react";
-import { Button } from "@/components/ui/button";
+import Button from "@/components/UI/Button.jsx";
 import { Link, useLocation } from "react-router-dom";
 
 const Navbar = () => {

@@ -2,7 +2,7 @@ import React from "react";
 import btc from "../assets/coin.png";
 import eth from "../assets/ethereum.png";
 import chart from "../assets/chart.png";
-import { Button } from "@/components/UI/button";
+import Button from "@/components/UI/Button.jsx";
 import { Link } from "react-router-dom";
 import BlurText from "./BlurText";
 

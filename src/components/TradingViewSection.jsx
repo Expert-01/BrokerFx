@@ -1,6 +1,6 @@
 import React from "react";
 import tradingviewBg from "../assets/tradingview-section.png"; // Place your image in src/assets and update the path if needed
-import { Button } from "@/components/ui/button";
+import Button from "@/components/UI/Button.jsx";
 const TradingViewSection = () => {
   return (
     <section
