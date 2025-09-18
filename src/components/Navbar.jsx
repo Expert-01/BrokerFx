@@ -28,7 +28,7 @@ const Navbar = () => {
 
   return (
     <nav className="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-9 py-9 mb-0">
-      <h1 className="text-2xl font-bold text-[#d4af37]">EliteFx</h1>
+      <h1 className="text-2xl font-bold text-[#d4af37]">NexaExchange</h1>
       <div className="hidden md:block relative w-[30%] ">
   <ul className="flex md:flex space-x-2 text-gray-300 border border-[2px] border-[#fff]/10 bg-[#000]/30 backdrop-blur-md p-3 w-[105%] justify-center rounded-full relative">
           {/* Slider */}

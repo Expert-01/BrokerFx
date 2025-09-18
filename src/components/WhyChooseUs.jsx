@@ -56,7 +56,7 @@ export default function WhyChooseUs() {
       <h2 className="text-4xl md:text-5xl font-bold mb-2 tracking-wide font-orbitron">
         WHY TRADERS <span className="text-[#ffce1ebe]">CHOOSE US</span>
       </h2>
-      <p className="mb-12 text-lg text-gray-300">We built EliteFx for the next generation of traders.</p>
+      <p className="mb-12 text-lg text-gray-300">We built NexaExchange for the next generation of traders.</p>
       <div className="flex flex-col md:flex-row justify-center items-start gap-12 mb-10 px-[20%] md:px-0">
         {features.map((f, i) => (
           <div key={i} className="flex-1 flex flex-col items-center">

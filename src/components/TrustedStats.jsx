@@ -48,7 +48,7 @@ export default function TrustedStats() {
         <span className="text-[#ffce1ebe]">TRADED DAILY.</span>
       </h2>
       <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mb-8">
-        When it comes to trading, trust isn’t claimed — it’s earned. EliteFx
+        When it comes to trading, trust isn’t claimed — it’s earned. NexaExchange
         supports hundreds of thousands of traders and partners around the world
         with real infrastructure, real payouts, and execution built for
         performance. The numbers speak for themselves.

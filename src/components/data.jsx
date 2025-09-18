@@ -93,7 +93,7 @@ export default function HomePage({ user }) {
   <div className="flex gap-2 items-center font-orbitron">
           <input
             type="text"
-            value={`https://EliteFx.com/register?ref=${user?.referralCode || 'yourcode'}`}
+            value={`https://NexaExchange.com/register?ref=${user?.referralCode || 'yourcode'}`}
             readOnly
             className="bg-gray-100 text-yellow-400 px-2 py-1 rounded w-full font-orbitron"
           />
