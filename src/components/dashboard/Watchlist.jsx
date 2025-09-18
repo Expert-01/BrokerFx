@@ -42,7 +42,7 @@ const Watchlist = () => {
     }, []);
 
   return (
-    <div className=" bg-gradient-to-b from-black via-[#181a20] to-[#23272f] rounded-2xl shadow-xl p-6 mb-6 w-full max-w-md mx-auto">
+    <div className=" bg-[#181a20]/30 backdrop-blur-md rounded-2xl shadow-xl p-6 mb-6 w-full max-w-md mx-auto">
       <div className="flex justify-between items-center mb-2">
         <span className="text-white font-bold text-lg">Watchlist</span>
         <button className="border border-yellow-400 text-yellow-400 px-3 py-1 rounded-full text-xs font-semibold" onClick={() => window.location.reload()}>Refresh</button>

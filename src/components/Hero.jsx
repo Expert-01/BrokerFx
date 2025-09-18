@@ -28,7 +28,7 @@ export default function Hero() {
             animateBy="words"
             direction="top"
             onAnimationComplete={handleAnimationComplete}
-            className="text-3xl md:text-[47.6px] font-semibold mb-9 text-center w-full md:ml-[60px] ml-[0%] drop-shadow-[0_0_10px_rgba(212,175,55,0.5)] font-orbitron"
+            className="md:text-[40px] font-semibold mb-9 justify-center text-center w-full md:ml-[6px] ml-[0%] drop-shadow-[0_0_10px_rgba(212,175,55,0.5)] font-azonix w-full"
           />
           
           <p className="text-gray-400 mb-6 md:ml-[10%] text-center w-[80%] font-azonix">
@@ -37,14 +37,14 @@ export default function Hero() {
           </p>
           <div className="flex flex-col md:flex-row gap-4 md:space-x-6 w-full md:ml-[30%] items-center md:items-start font-orbitron">
             <Link to="/register"> 
-              <Button className="bg-[#d4af37] text-black rounded-full px-9 py-4 fancy-btn relative overflow-hidden font-orbitron">
+              <Button className="bg-[#d4af37] text-black rounded-full px-9 py-4 glass-radial-btn relative overflow-hidden font-orbitron">
                 <span className="relative z-10 font-orbitron">Get Started</span>
                 <span className="shimmer absolute inset-0 font-orbitron"></span>
               </Button>
             </Link>
             <Button
               variant="outline"
-              className="border-[#d4af37] text-[#d4af37] rounded-full px-9 py-4 border fancy-btn font-orbitron"
+              className="border-[#d4af37] text-[#d4af37] rounded-full px-9 py-4 border glass-radial-btn-hover font-orbitron"
             >
               Learn More
             </Button>
@@ -87,44 +87,32 @@ export default function Hero() {
   <div className="absolute top-[80px] left-1/2 translate-x-1/2 w-full h-[300px] rounded-full z-0 font-orbitron"></div>
 
         {/* Headline */}
-  <div className="w-full flex flex-col items-center justify-center px-6 translate-x-[10%] mb-4 w-full font-orbitron ">
+  <div className="w-full flex flex-col items-center justify-center px-0 translate-x-[0%] mb-4 ">
           <BlurText
-            text="Invest Smartly in"
+            text="Invest Smartly in Digital Assets With Us"
             delay={150}
             animateBy="words"
             direction="top"
             onAnimationComplete={handleAnimationComplete}
-            className="text-3xl mb-1 w-full max-w-md px-7 text-center drop-shadow-[0_0_10px_rgba(212,175,55,0.6)] relative z-10 font-orbitron"
+            className="text-3xl mb-1 w-full max-w-md px-7 justify-center text-center drop-shadow-[0_0_10px_rgba(212,175,55,0.6)] relative z-10 font-azonix"
           />
-          <BlurText
-            text="Digital Assets"
-            delay={350}
-            animateBy="words"
-            direction="top"
-            onAnimationComplete={handleAnimationComplete}
-            className="text-3xl mb-3 w-full max-w-md text-center drop-shadow-[0_0_10px_rgba(212,175,55,0.6)] relative z-10 font-orbitron"
-          />
+   {/* Subtitle */}
+
         </div>
  
-        {/* Subtitle */}
-  <p className="text-gray-400 mb-6 text-center text-sm leading-relaxed max-w-md relative z-10 font-orbitron">
+        <p className="text-gray-400 mb-6 text-sm text-center leading-relaxed max-w-md relative z-10 font-orbitron">
           Secure your future with safe transactions, multiple payment options, and guaranteed ROI growth.
         </p>
 
         {/* Buttons Row */}
   <div className="flex items-center justify-center mb-6 w-full gap-3 relative z-10 font-orbitron">
           <Link to="/register" className="w-auto font-orbitron">
-            <Button className="bg-[#d4af37] text-black rounded-full px-6 py-3 fancy-btn relative overflow-hidden text-sm font-semibold shadow-lg font-orbitron">
+            <Button className="bg-[#d4af37] text-black rounded-full px-6 py-3 glass-radial-btn relative overflow-hidden text-sm font-semibold shadow-lg font-orbitron">
               <span className="relative z-10 font-orbitron">Get Started</span>
               <span className="shimmer absolute inset-0 font-orbitron"></span>
             </Button>
           </Link>
-          <Button
-            variant="outline"
-            className="border-[#d4af37] text-[#d4af37] rounded-full px-6 py-3 text-sm font-semibold border"
-          >
-            Learn More
-          </Button>
+
         </div>
 
         {/* Digital Assets Icons Row

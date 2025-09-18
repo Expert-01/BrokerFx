@@ -59,7 +59,7 @@ export default function Login() {
             <span className="font-normal text-white">It takes less than a minute</span>
           </h2>
           <Link to="/register" className="block w-full">
-            <button className="mt-2 px-6 md:px-12 py-3 md:py-4 border-2 border-[#d4af37] rounded-full text-[#d4af37] text-base md:text-lg font-semibold hover:bg-[#d4af37] hover:text-black transition-all w-full md:w-auto">
+            <button className="mt-2 px-6 md:px-12 py-3 md:py-4 border-2 border-[#d4af37]/30 rounded-full text-[#d4af37] text-base md:text-lg font-semibold hover:bg-[#d4af37] hover:text-black transition-all w-full md:w-auto">
               REGISTER NOW
             </button>
           </Link>
@@ -70,7 +70,7 @@ export default function Login() {
 
         {/* Right: Login Card (mobile above, desktop right) */}
         <div className="flex-1 flex items-center justify-center w-full">
-          <div className="w-full max-w-xs md:max-w-md bg-gradient-to-br from-black via-[#100503]/40 to-black rounded-3xl shadow-2xl p-6 md:p-10 backdrop-blur-md border border-[#d4af37]">
+          <div className="w-full max-w-xs md:max-w-md bg-gradient-to-br from-black via-[#100503]/40 to-black rounded-3xl shadow-2xl p-6 md:p-10 backdrop-blur-md border border-[#d4af37]/30">
             <h3 className="text-xl md:text-2xl font-bold text-[#d4af37] text-center mb-6 md:mb-8">Login</h3>
             <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
               <div>

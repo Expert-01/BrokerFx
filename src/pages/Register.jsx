@@ -52,7 +52,7 @@ export default function Signup() {
         </div>
         {/* Right: Register Card (mobile above, desktop right) */}
         <div className="flex-1 flex items-center justify-center w-full">
-          <div className="w-full max-w-xs md:max-w-md bg-gradient-to-br from-black/40 via-[#100503]/80 to-black rounded-3xl shadow-2xl p-6 md:p-10 backdrop-blur-md border border-[#d4af37]">
+          <div className="w-full max-w-xs md:max-w-md bg-gradient-to-br from-black/40 via-[#100503]/80 to-black rounded-3xl shadow-2xl p-6 md:p-10 backdrop-blur-md border  border-[#d4af37]/30">
             <h3 className="text-xl md:text-2xl font-bold text-[#d4af37] text-center mb-6 md:mb-8">Sign Up</h3>
             <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
               <div>

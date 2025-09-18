@@ -8,3 +8,25 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Liquid glass radial button style */
+.glass-radial-btn {
+  background: radial-gradient(circle at center, #cba82b9a 40%, #ffce1ebe 90%);
+  border: 2px solid #cead38be;
+  color: white;
+  box-shadow: 0 2px 16px 0 rgba(255,206,30,0.2);
+  backdrop-filter: blur(8px);
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.glass-radial-btn:hover {
+  box-shadow: 0 4px 24px 0 rgba(255,206,30,0.4);
+  background: radial-gradient(circle at center, #ffce1ebe 40%, #ffce1ebe 90%);
+  transform: scale(1.04);
+  border: 2px solid #ffce1ebe;
+
+}
+/* In your CSS file */
+.gold-gradient {
+  background: linear-gradient(90deg, #d4af37 0%, #ffd700 100%);
+  color: white;
+}

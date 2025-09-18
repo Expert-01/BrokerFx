@@ -46,14 +46,14 @@ const Trading = () => {
       <main className="flex-1 py-1 px-1 mx-64">
   <TradingViewWidget symbol={symbol ? symbol.toUpperCase() + 'USD' : 'BTCUSD'} />
   <OpenPositions positions={positions} />
-        <div className="bg-[#23272f] border border-yellow-400 rounded-2xl p-6 shadow-xl mb-8 max-w-2xl mx-auto">
+        <div className="bg-[#23272f] backdrop-blur-md rounded-2xl p-6 shadow-xl mb-8 max-w-2xl mx-auto">
           <h2 className="text-yellow-400 font-bold text-lg mb-4">Trade Digital Commodities</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-yellow-400 text-sm mb-1">Symbol</label>
               <input
                 type="text"
-                className="w-full rounded px-3 py-2 bg-black text-white border border-yellow-400 focus:outline-none"
+                className="w-full rounded px-3 py-2 bg-black text-white focus:outline-none"
                 placeholder="e.g. BTC, ETH, GOLD"
                 value={symbol}
                 onChange={e => setSymbol(e.target.value)}
@@ -64,7 +64,7 @@ const Trading = () => {
               <label className="block text-yellow-400 text-sm mb-1">Amount</label>
               <input
                 type="number"
-                className="w-full rounded px-3 py-2 bg-black text-white border border-yellow-400 focus:outline-none"
+                className="w-full rounded px-3 py-2 bg-black text-white focus:outline-none"
                 placeholder="Amount"
                 value={amount}
                 onChange={e => setAmount(e.target.value)}
@@ -77,7 +77,7 @@ const Trading = () => {
               <label className="block text-yellow-400 text-sm mb-1">Take Profit (optional)</label>
               <input
                 type="number"
-                className="w-full rounded px-3 py-2 bg-black text-white border border-yellow-400 focus:outline-none"
+                className="w-full rounded px-3 py-2 bg-black text-white focus:outline-none"
                 placeholder="e.g. 50000"
                 value={takeProfit}
                 onChange={e => setTakeProfit(e.target.value)}
@@ -89,7 +89,7 @@ const Trading = () => {
               <label className="block text-yellow-400 text-sm mb-1">Stop Loss (optional)</label>
               <input
                 type="number"
-                className="w-full rounded px-3 py-2 bg-black text-white border border-yellow-400 focus:outline-none"
+                className="w-full rounded px-3 py-2 bg-black text-white focus:outline-none"
                 placeholder="e.g. 20000"
                 value={stopLoss}
                 onChange={e => setStopLoss(e.target.value)}

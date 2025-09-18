@@ -42,17 +42,7 @@ export default function Home() {
               <line x1="720" y1="110" x2="720" y2="790" />
             </g>
             {/* Faint candlestick chart */}
-            <g opacity="0.08" className="translate-x-[10%]">
-              <rect x="600" y="600" width="8" height="40" fill="#00ff99" />
-              <rect x="610" y="620" width="8" height="20" fill="#ff4444" />
-              <rect x="620" y="610" width="8" height="30" fill="#00ff99" />
-              <rect x="630" y="630" width="8" height="10" fill="#ff4444" />
-              <rect x="640" y="600" width="8" height="40" fill="#00ff99" />
-              <rect x="650" y="620" width="8" height="20" fill="#ff4444" />
-              <rect x="660" y="610" width="8" height="30" fill="#00ff99" />
-              <rect x="670" y="630" width="8" height="10" fill="#ff4444" />
-    
-            </g>
+
             </svg>
           </div>
           {/* Floating icons */}

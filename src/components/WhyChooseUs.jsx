@@ -52,7 +52,7 @@ const features = [
 
 export default function WhyChooseUs() {
   return (
-    <section className="py-16 bg-black text-white text-center">
+    <section className="py-16 bg-[#000]/40 text-white text-center">
       <h2 className="text-4xl md:text-5xl font-bold mb-2 tracking-wide font-orbitron">
         WHY TRADERS <span className="text-[#ffce1ebe]">CHOOSE US</span>
       </h2>
@@ -67,7 +67,7 @@ export default function WhyChooseUs() {
           </div>
         ))}
       </div>
-      <Button className="bg-[#ffce1ebe] fancy-btn text-white px-8 py-3 rounded-full font-semibold shadow-lg transition">
+      <Button className="bg-[#ffce1ebe] glass-radial-btn text-white px-8 py-3 rounded-full font-semibold shadow-lg transition">
         START TRADING &rarr;
       </Button>
     </section>

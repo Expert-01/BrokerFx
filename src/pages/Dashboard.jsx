@@ -54,13 +54,23 @@ export default function Dashboard() {
 
   return (
     <div className="flex min-h-screen bg-black">
-      <aside className="justify-between fixed left-0 top-0 h-full">
+      <aside className="fixed left-0 top-0 h-full z-10">
         <Sidebar />
       </aside>
       <main className="flex-1 md:p-[5%] overflow-y-auto ">
-
-
-        <AccountOverview />
+        <div className="flex flex-col md:flex-row gap-8 mb-8">
+          <div className="flex flex-row gap-8 w-full">
+            <div className="w-[200px] hidden md:block"></div> {/* Spacer for sidebar width */}
+            <div className="flex-1">
+              <AccountOverview />
+            </div>
+            <div className="flex-1 max-w-md p-2">
+              <TradesByStrategies data={tradesData} />
+              <ProfitLossCumulative data={profitLossData} />
+              <Watchlist data={watchlist} />
+            </div>
+          </div>
+        </div>
         <div className="mx-64 my-8">
           <AccountsTable />
           <DownloadSection />
@@ -69,11 +79,6 @@ export default function Dashboard() {
           <Documents />
           <Notifications />
           <Support />
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-1 gap-8 mb-8">
-          <TradesByStrategies data={tradesData} />
-          <ProfitLossCumulative data={profitLossData} />
-          <Watchlist data={watchlist} />
         </div>
       </main>
     </div>

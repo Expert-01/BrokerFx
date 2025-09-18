@@ -23,8 +23,9 @@ const TradingViewSection = () => {
         <p className="text-lg text-gray-300 mb-8">
           With access to 100+ fully customizable indicators, intuitive drawing tools, and multi-timeframe support, TradeLocker gives you the precision tools professional traders rely on—right at your fingertips.
         </p>
-        <Button className="bg-yellow-600 hover:bg-yellow-700 text-white px-0 py-3 rounded-full font-semibold w-[50%] fancy-btn text-lg shadow-lg transition-all">
-          START TRADING →
+        <Button className="gold-gradient text-black font-bold px-0 py-3 rounded-full shadow-lg transition-all duration-300 hover:scale-105 hover:brightness-110 w-[50%] fancy-btn text-lg border-none relative overflow-hidden">
+          <span className="relative z-10">START TRADING &rarr;</span>
+          <span className="absolute inset-0 bg-white opacity-10 rounded-full pointer-events-none"></span>
         </Button>
       </div>
     </section>

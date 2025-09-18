@@ -1,7 +1,7 @@
 import React from "react";
 
 const TradesByStrategies = ({ data = [4,2,6,1,3] }) => (
-  <div className="bg-gradient-to-b from-black via-[#181a20] to-[#23272f] rounded-2xl shadow-xl p-6 mb-6 w-full max-w-md mx-auto">
+  <div className="bg-transparent border border-[#181a20] rounded-2xl shadow-xl p-6 mb-6 w-full max-w-md mx-auto">
     <div className="flex justify-between items-center mb-2">
       <span className="text-white font-bold text-lg">Trades By Strategies</span>
       <button className="border border-yellow-400 text-yellow-400 px-3 py-1 rounded-full text-xs font-semibold">Show</button>
