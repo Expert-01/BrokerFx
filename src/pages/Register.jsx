@@ -4,6 +4,7 @@ import Button from "@/components/UI/Button.jsx";
 import axios from "axios";
 import logo from "@/assets/logo.png";
 import registerBg from "@/assets/login-bg.png";
+import Navbar from "../components/Navbar";
 
 export default function Signup() {
   const [form, setForm] = useState({ name: "", email: "", password: "" });
@@ -26,13 +27,9 @@ export default function Signup() {
 
   return (
     <div className="relative min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-black via-[#0A0F1F] to-black overflow-hidden">
+      <Navbar />
+
       {/* Sharp background image */}
-      <img 
-        src={registerBg} 
-        alt="Register Background" 
-        className="absolute inset-0 w-full h-full object-cover z-0 blur-xl" 
-        style={{objectPosition: 'center', objectFit: 'cover'}} 
-      />
       {/* Logo and EN */}
       <div className="absolute top-8 left-1/2 -translate-x-1/2 flex items-center justify-between w-[200px] z-20">
         <img src={logo} alt="Logo" className="w-14 h-14" />
@@ -62,7 +59,7 @@ export default function Signup() {
                   placeholder="Full Name"
                   value={form.name}
                   onChange={handleChange}
-                  className="w-full px-3 md:px-4 py-2 md:py-3 rounded-lg bg-transparent text-[#d4af37] border border-[#d4af37] focus:outline-none focus:border-[#d4af37] placeholder-gray-400 text-base md:text-lg"
+                  className="w-full px-3 md:px-4 py-2 md:py-3 rounded-lg bg-transparent text-[#d4af37] border border-[#d4af37]/30 focus:outline-none focus:border-[#d4af37] placeholder-gray-400 text-base md:text-lg"
                 />
               </div>
               <div>
@@ -72,7 +69,7 @@ export default function Signup() {
                   placeholder="Email"
                   value={form.email}
                   onChange={handleChange}
-                  className="w-full px-3 md:px-4 py-2 md:py-3 rounded-lg bg-transparent text-[#d4af37] border border-[#d4af37] focus:outline-none focus:border-[#d4af37] placeholder-gray-400 text-base md:text-lg"
+                  className="w-full px-3 md:px-4 py-2 md:py-3 rounded-lg bg-transparent text-[#d4af37] border border-[#d4af37]/30 focus:outline-none focus:border-[#d4af37] placeholder-gray-400 text-base md:text-lg"
                 />
               </div>
               <div className="relative">
@@ -82,7 +79,7 @@ export default function Signup() {
                   placeholder="Password"
                   value={form.password}
                   onChange={handleChange}
-                                className="w-full px-3 md:px-4 py-2 md:py-3 rounded-lg bg-transparent text-[#d4af37] border border-[#d4af37] focus:outline-none focus:border-[#d4af37] placeholder-gray-400 text-base md:text-lg"
+                                className="w-full px-3 md:px-4 py-2 md:py-3 rounded-lg bg-transparent text-[#d4af37] border border-[#d4af37]/30 focus:outline-none focus:border-[#d4af37] placeholder-gray-400 text-base md:text-lg"
                 />
                 {/* Eye icon for show/hide password can be added here */}
               </div>

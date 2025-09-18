@@ -28,7 +28,7 @@ export default function Hero() {
             animateBy="words"
             direction="top"
             onAnimationComplete={handleAnimationComplete}
-            className="md:text-[40px] font-semibold mb-9 justify-center text-center w-full md:ml-[6px] ml-[0%] drop-shadow-[0_0_10px_rgba(212,175,55,0.5)] font-azonix w-full"
+            className="text-3xl md:text-[47.6px] font-semibold mb-9 text-center w-full md:ml-[60px] ml-[0%] drop-shadow-[0_0_10px_rgba(212,175,55,0.5)] font-orbitron"
           />
           
           <p className="text-gray-400 mb-6 md:ml-[10%] text-center w-[80%] font-azonix">
@@ -89,12 +89,12 @@ export default function Hero() {
         {/* Headline */}
   <div className="w-full flex flex-col items-center justify-center px-0 translate-x-[0%] mb-4 ">
           <BlurText
-            text="Invest Smartly in Digital Assets With Us"
+            text="Invest Smartly in Digital Assets"
             delay={150}
             animateBy="words"
             direction="top"
             onAnimationComplete={handleAnimationComplete}
-            className="text-3xl mb-1 w-full max-w-md px-7 justify-center text-center drop-shadow-[0_0_10px_rgba(212,175,55,0.6)] relative z-10 font-azonix"
+            className="text-2xl mb-1 w-full max-w-md px-7 justify-center text-center drop-shadow-[0_0_10px_rgba(212,175,55,0.6)] z-10 font-azonix"
           />
    {/* Subtitle */}
 

@@ -27,8 +27,8 @@ const Navbar = () => {
   }, [location.pathname]);
 
   return (
-    <nav className="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-9 py-9 mb-0">
-      <img src={Logo} className="w-32 h-16 md:w-40 md:h-24 object-contain" />
+    <nav className="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-3 md:px-9 py-6 md:py-9 mb-0">
+      <img src={Logo} className="w-28 h-12 md:w-40 md:h-24 object-contain ml-0 md:ml-0" />
       {/* Desktop Nav */}
       <div className="hidden md:block relative w-[30%] ">
         <ul className="flex md:flex space-x-2 text-gray-300 backdrop-blur-md border border-[1px] border-[#fff]/10 bg-[#fff]/10 backdrop-blur-md p-3 w-[105%] justify-center rounded-full relative">
@@ -61,7 +61,7 @@ const Navbar = () => {
       </div>
       {/* Hamburger Icon for Mobile */}
         <button
-          className="md:hidden shadow-lg relative z-50"
+          className="md:hidden shadow-lg relative z-50 ml-4"
           onClick={() => setMenuOpen((open) => !open)}
           aria-label="Open menu"
         >
