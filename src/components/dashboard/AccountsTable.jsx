@@ -21,7 +21,7 @@ const AccountsTable = () => (
           <td>account1</td>
           <td>$0.00 USD</td>
           <td>
-            <button className="bg-yellow-400 text-black px-2 py-1 rounded mr-2">Deposit</button>
+            <button className="bg-gradient-to-r from-yellow-500 to-yellow-700 text-black px-2 py-1 rounded mr-2">Deposit</button>
             <button className="bg-gray-700 text-white px-2 py-1 rounded">Log In</button>
           </td>
         </tr>

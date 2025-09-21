@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Home, Grid, Mail, Monitor, PieChart, Table, Layout, Boxes, Map, LogOut, User, DollarSign, CreditCard, Info, Sliders, Bell, FileText, Users, UserCheck } from "lucide-react";
 import { jwtDecode } from "jwt-decode";
 import { Link } from "react-router-dom";
+import Logo from "@/assets/logo.png";
 
 
 const menu = [
@@ -19,7 +20,7 @@ const menu = [
   { name: "Copy Trading", icon: <Users size={20} />, link: "/copy-trading" },
   { name: "Trading", icon: <Table size={20} />, link: "/trading" },
   { name: "Partner Area", icon: <UserCheck size={20} />, link: "/partner-area" },
-  { name: "Sign Out", icon: <LogOut size={20} />, link: "/sign-out" },
+  { name: "Sign Out", icon: <LogOut size={20} />, link: "/logout" },
     ],
   },
 ];
@@ -46,34 +47,32 @@ const Sidebar = () => {
   return (
     <aside
       tabIndex={0}
-        className={`fixed left-0 top-0 h-screen bg-gradient-to-b from-black via-[#181a20] to-[#23272f] text-white flex flex-col shadow-xl transition-all duration-300 z-10
-          ${expanded ? "w-56" : "w-[60px]"} hidden md:flex focus:outline-none`}
+        className={`fixed left-6 p-4  top-9 h-screen/2 rounded-lg bg-gradient-to-t from-black via-[#181a20] to-[#23272f] text-white flex flex-col shadow-xl transition-all duration-300 z-10 md:block hidden
+          ${expanded ? "w-56" : "w-[65px]"} hidden md:flex focus:outline-none`}
       onClick={() => setExpanded((prev) => !prev)}
       onFocus={() => setExpanded(true)}
       onBlur={() => setExpanded(false)}
-  style={{ overflowY: "hidden" }}
+  style={{ overflowY: "hidden", overflowX: "hidden" }}
     >
       {/* User Profile Card */}
       <div
-        className="flex items-center gap-3 bg-[#181a20] rounded-lg p-4 mb-6 shadow border border-[#23272f] transition-all duration-300
-          opacity-0 group-hover:opacity-100 group-hover:flex
-          md:opacity-100 md:flex"
+        className={`flex items-center gap-3 bg-[#181a20] rounded-lg ${expanded ? 'p-4' : 'p-1'} mb-6 shadow border border-[#23272f] transition-all duration-300`}
       >
-        <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-[#23272f] to-[#181a20] flex items-center justify-center">
-          <span className="text-white font-bold text-lg">
-            {/* Show initials only when collapsed, full avatar when expanded */}
-            {expanded ? (
-              <img
-                src={`https://ui-avatars.com/api/?name=${user?.name || "User"}&background=222&color=bfa233`}
-                alt="avatar"
-                className="w-10 h-10 rounded-full"
-              />
-            ) : (
-              <span className="text-[#bfa233] font-bold text-lg">
-                {user?.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase() : 'U'}
-              </span>
-            )}
-          </span>
+  <div className="w-12 h-12 rounded-full flex items-center justify-center">
+          {/* Show logo when collapsed, full avatar when expanded */}
+          {expanded ? (
+            <img
+              src={`https://ui-avatars.com/api/?name=${user?.name || "User"}&background=222&color=bfa233`}
+              alt="avatar"
+              className="w-10 h-10 rounded-full"
+            />
+          ) : (
+            <img
+              src={Logo}
+              alt="Logo"
+              className="w-8 h-8 object-contain"
+            />
+          )}
         </div>
         {/* Show username only when expanded */}
         {expanded && (

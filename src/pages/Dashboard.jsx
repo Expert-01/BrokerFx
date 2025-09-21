@@ -14,6 +14,7 @@ import Watchlist from "../components/dashboard/Watchlist";
 import { Link } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import TradesByStrategies from "../components/dashboard/TradesByStrategies";
+import DashboardHome from "./DashboardHome.";
 
 export default function Dashboard() {
   // Example: Fetch real data for charts and watchlist
@@ -53,7 +54,8 @@ export default function Dashboard() {
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-black">
+    <>
+    <div className="flex min-h-screen bg-black hidden md:block">
       <aside className="fixed left-0 top-0 h-full z-10">
         <Sidebar />
       </aside>
@@ -82,6 +84,11 @@ export default function Dashboard() {
         </div>
       </main>
     </div>
+
+    <div className="md:hidden">
+      <DashboardHome />
+    </div>
+    </>
   );
 }
 

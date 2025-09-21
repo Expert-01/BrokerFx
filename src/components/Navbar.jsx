@@ -27,8 +27,8 @@ const Navbar = () => {
   }, [location.pathname]);
 
   return (
-    <nav className="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-3 md:px-9 py-6 md:py-9 mb-0">
-      <img src={Logo} className="w-28 h-12 md:w-40 md:h-24 object-contain ml-0 md:ml-0" />
+    <nav className="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-3 md:px-9 py-6 md:py-9 md:mb-">
+      <img src={Logo} className="w-16 h-16 md:w-64 md:h-24 object-contain ml-0 md:ml-0" />
       {/* Desktop Nav */}
       <div className="hidden md:block relative w-[30%] ">
         <ul className="flex md:flex space-x-2 text-gray-300 backdrop-blur-md border border-[1px] border-[#fff]/10 bg-[#fff]/10 backdrop-blur-md p-3 w-[105%] justify-center rounded-full relative">
@@ -65,9 +65,9 @@ const Navbar = () => {
           onClick={() => setMenuOpen((open) => !open)}
           aria-label="Open menu"
         >
-          <span className={`block w-7 h-1 rounded bg-[#d4af37] transition-all duration-300 ${menuOpen ? "rotate-45 translate-y-2" : ""}`}></span>
-          <span className={`block w-7 h-1 rounded bg-[#d4af37] my-1 transition-all duration-300 ${menuOpen ? "opacity-0" : ""}`}></span>
-          <span className={`block w-7 h-1 rounded bg-[#d4af37] transition-all duration-300 ${menuOpen ? "-rotate-45 -translate-y-2" : ""}`}></span>
+          <span className={`block w-7 h-1 rounded bg-[#ffffff] transition-all duration-300 ${menuOpen ? "rotate-45 translate-y-2" : ""}`}></span>
+          <span className={`block w-7 h-1 rounded bg-[#ffffff] my-1 transition-all duration-300 ${menuOpen ? "opacity-0" : ""}`}></span>
+          <span className={`block w-7 h-1 rounded bg-[#ffffff] transition-all duration-300 ${menuOpen ? "-rotate-45 -translate-y-2" : ""}`}></span>
         </button>
       {/* Mobile Menu Overlay */}
       {menuOpen && (

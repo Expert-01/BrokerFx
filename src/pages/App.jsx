@@ -11,6 +11,10 @@ import AdminDashboard from "./AdminDashboard";
 
 import Trading from "../components/dashboard/Trading";
 
+import TestEnv from "./TestConnection";
+//Simport LivePrice from "./LivePrice";
+import TradePanel from "./TradePanel";
+
 export default function App() {
   return (
     <div className="bg-[#0A0F1F] text-white min-h-screen">
@@ -25,8 +29,9 @@ export default function App() {
         <Route path="/logout" element={<Home />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="*" element={<div className="flex items-center justify-center h-screen text-3xl">404 - Page Not Found</div>} />
-  <Route path="/trading" element={<Trading />} />
-
+  <Route path="/trading" element={<TradePanel />} />
+      <Route path="/test-env" element={<TestEnv />} />
+      <Route path="trade-panel" element={<TradePanel />} />
       </Routes>
       </Router>
       </Suspense>

@@ -30,8 +30,8 @@ export default function Features() {
           <div key={i} className="p-6 rounded-2xl bg-[#292003]/30 hover:scale-105 transition">
             <span className="flex justify-center items-center w-full mb-6">{f.icon}</span>
 
-            <h3 className="text-xl font-bold text-[#d4af37] mb-3 text-center font-orbitron">{f.title}</h3>
-            <p className="text-gray-400 text-center ">{f.desc}</p>
+            <h3 className="text-xl font-bold text-[#d4af37] mb-3 font-orbitron">{f.title}</h3>
+            <p className="text-gray-400 ">{f.desc}</p>
           </div>
         ))}
       </div>
