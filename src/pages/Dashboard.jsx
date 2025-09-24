@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { LogOut } from "lucide-react";
+import RightPanel from "../components/dashboard/RightPanel";
 import Sidebar from "../components/dashboard/Sidebar";
 import AccountOverview from "../components/dashboard/AccountOverview";
 import AccountsTable from "../components/dashboard/AccountsTable";
@@ -15,12 +16,31 @@ import { Link } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import TradesByStrategies from "../components/dashboard/TradesByStrategies";
 import DashboardHome from "./DashboardHome.";
+import MobileTopBar from "../components/dashboard/MobileTopBar";
+import MobileBalanceCard from "../components/dashboard/MobileBalanceCard";
+import MobileActionButtons from "../components/dashboard/MobileActionButtons";
+import MobileHoldingsCard from "../components/dashboard/MobileHoldingsCard";
+import MobileHotCoins from "../components/dashboard/MobileHotCoins";
 
 export default function Dashboard() {
   // Example: Fetch real data for charts and watchlist
   const [tradesData, setTradesData] = useState([]);
   const [profitLossData, setProfitLossData] = useState([]);
   const [watchlist, setWatchlist] = useState([]);
+  const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    // Get userId from JWT (localStorage)
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        setUserId(decoded.id || decoded.userId);
+      } catch (e) {
+        setUserId(null);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     // Fetch trades by strategies
@@ -55,39 +75,39 @@ export default function Dashboard() {
 
   return (
     <>
-    <div className="flex min-h-screen bg-black hidden md:block">
-      <aside className="fixed left-0 top-0 h-full z-10">
-        <Sidebar />
-      </aside>
-      <main className="flex-1 md:p-[5%] overflow-y-auto ">
-        <div className="flex flex-col md:flex-row gap-8 mb-8">
-          <div className="flex flex-row gap-8 w-full">
-            <div className="w-[200px] hidden md:block"></div> {/* Spacer for sidebar width */}
-            <div className="flex-1">
-              <AccountOverview />
-            </div>
-            <div className="flex-1 max-w-md p-2">
-              <TradesByStrategies data={tradesData} />
-              <ProfitLossCumulative data={profitLossData} />
-              <Watchlist data={watchlist} />
-            </div>
+      {/* Desktop Dashboard */}
+      <div className="hidden md:grid min-h-screen bg-black grid-cols-[220px_1fr_340px] gap-0">
+        {/* Sidebar */}
+        <aside className="p">
+          <Sidebar />
+        </aside>
+        {/* Main Content */}
+        <main className="flex flex-col px-8 py-8 gap-8 bg-[#000000a0] overflow-y-auto">
+          {/* Top: Balance Card and Chart */}
+          <div className="w-full max-w-3xl mx-auto">
+            {/* Replace with your desktop balance card/chart component if needed */}
+            <MobileBalanceCard userId={userId} />
           </div>
-        </div>
-        <div className="mx-64 my-8">
-          <AccountsTable />
-          <DownloadSection />
-          <Promotions />
-          <CopyTrading />
-          <Documents />
-          <Notifications />
-          <Support />
-        </div>
-      </main>
-    </div>
-
-    <div className="md:hidden">
-      <DashboardHome />
-    </div>
+          {/* Holdings Section */}
+          <div className="w-full max-w-3xl mx-auto">
+            <MobileHoldingsCard />
+          </div>
+          {/* Hot Coins or Activity Section */}
+          <div className="w-full max-w-3xl mx-auto">
+            <MobileHotCoins />
+          </div>
+        </main>
+        {/* Right Panel (actions, trading, etc.) */}
+        <RightPanel />
+      </div>
+      {/* Mobile Dashboard */}
+      <div className="md:hidden bg-[#000000a0] min-h-screen w-full p-5 flex flex-col gap-4">
+        <MobileTopBar />
+        <MobileBalanceCard userId={userId} />
+        <MobileActionButtons />
+        <MobileHoldingsCard />
+        <MobileHotCoins />
+      </div>
     </>
   );
 }

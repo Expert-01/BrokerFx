@@ -9,7 +9,7 @@ const OpenPositions = ({ positions }) => {
     );
   }
   return (
-    <div className="bg-[#23272f] border border-yellow-400 rounded-2xl p-6 shadow-xl mb-8 overflow-x-auto">
+    <div className="border border-[#181a20]  rounded-2xl p-6 shadow-xl mb-8 overflow-x-auto">
       <h3 className="text-yellow-400 font-bold text-lg mb-4">Open Positions</h3>
       <table className="w-full text-sm text-left">
         <thead>

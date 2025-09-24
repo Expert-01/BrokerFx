@@ -8,7 +8,7 @@ export default function Preloader() {
         <div className="preloader-glow"></div>
         <div className="preloader-dot"></div>
       </div>
-      <div className="preloader-text">Digital Assets Invest</div>
+      <div className="preloader-text">NevaExchange</div>
     </div>
   );
 }

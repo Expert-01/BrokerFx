@@ -14,11 +14,70 @@ import bitcoin from '../assets/bitcoin.png';
 import ethereum from '../assets/ethereum.png';
 import wallet from '../assets/wallet.png';
 import TradingViewSection from "../components/TradingViewSection";
+import InfiniteMenu from "./InfiniteMenu";
+import FlowingMenu from './FlowingMenu'
+
+
+
+import img32 from '../assets/testimonials/32.jpg';
+import img44 from '../assets/testimonials/44.jpg';
+import img65 from '../assets/testimonials/65.jpg';
+import img68 from '../assets/testimonials/68.jpg';
+import img23 from '../assets/testimonials/23.jpg';
+import img12 from '../assets/testimonials/12.jpg';
 
 export default function Home() {
   useEffect(() => {
     AOS.init({ duration: 1000, once: true });
   }, []);
+
+
+const items = [
+  {
+    image: img32,
+    link: '#',
+    title: 'John Carter',
+    description: 'BrokerX made investing so easy and transparent. I feel confident about my financial future!'
+  },
+  {
+    image: img44,
+    link: '#',
+    title: 'Emily Stone',
+    description: 'The platform is intuitive and the support team is always there to help. Highly recommended!'
+  },
+  {
+    image: img65,
+    link: '#',
+    title: 'Michael Lee',
+    description: 'I love the real-time stats and the security features. My portfolio has never looked better.'
+  },
+  {
+    image: img68,
+    link: '#',
+    title: 'Sophia Turner',
+    description: 'Joining BrokerX was the best decision for my investments. The returns are fantastic!'
+  },
+  {
+    image: img23,
+    link: '#',
+    title: 'David Kim',
+    description: 'I appreciate the transparency and the easy-to-use dashboard. Great experience overall.'
+  },
+  {
+    image: img12,
+    link: '#',
+    title: 'Linda Perez',
+    description: 'The educational resources helped me get started. Now I feel like a pro trader!'
+  }
+];
+
+
+  const demoItems = [
+  { link: '#', text: 'Trusted', image: 'https://picsum.photos/600/400?random=1' },
+  { link: '#', text: 'Secure', image: 'https://picsum.photos/600/400?random=2' },
+  { link: '#', text: 'Profitable', image: 'https://picsum.photos/600/400?random=3' },
+  { link: '#', text: 'Accountable', image: 'https://picsum.photos/600/400?random=4' }
+];
   return (
   <div className="relative text-white min-h-screen overflow-hidden bg-black " >
       <Parallax strength={300} bgClassName="z-0">
@@ -55,9 +114,15 @@ export default function Home() {
          <Parallax strength={200}>
           <Hero data-aos="fade-up" />
 
-
+         
+<div style={{ height: '600px', position: 'relative' }}>
+  <FlowingMenu items={demoItems} />
+</div>
         </Parallax>
         <Parallax strength={100}>
+
+
+
           <Features data-aos="fade-right" />
           <WhyChooseUs />
         </Parallax>
@@ -68,6 +133,12 @@ export default function Home() {
   {/* TradingView Integration Section */}
   <TradingViewSection />
         <TrustedStats />
+      <div style={{ height: '900px', position: 'relative' }} className="mb-20">
+        <InfiniteMenu items={items}/>
+      </div>
+
+
+
 
         <Footer />
       </div>

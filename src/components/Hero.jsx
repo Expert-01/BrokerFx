@@ -15,10 +15,8 @@ export default function Hero() {
     <>
       {/* Desktop Only */}
       <section
-  className="hidden md:flex flex-col md:flex-row items-center justify-center px-4 md:px-0 py-8 text-center md:text-left translate-x-[20%] min-h-[800px] font-orbitron"
-        style={{
-
-        }}
+        className="hidden md:flex flex-col md:flex-row items-center justify-center px-4 md:px-0 py-8 text-center md:text-left min-h-[800px] translate-x-[20%] font-orbitron"
+        style={{}}
       >
         {/* Left Side */}
   <div className="w-full md:w-full hidden md:flex flex-col items-center md:mr-[90px] md:items-start md:text-center font-orbitron">

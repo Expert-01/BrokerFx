@@ -37,6 +37,12 @@ export default function DashboardHome() {
 
   return (
     <main className="min-h-screen flex-1 md:ml-4 px-0 py-6 bg-black text-white overflow-x-hidden">
+      {/* Hamburger menu for mobile */}
+      <div className="md:hidden absolute top-4 left-4 z-50">
+        {/* Import and use Hamburger menu */}
+        {/* If you want to use HamburgerIcon instead, replace below */}
+        {React.createElement(require('../components/UI/Hamburger').default)}
+      </div>
       {/* User Info Row */}
       <div className="flex items-center gap-4 mb-8">
         <img

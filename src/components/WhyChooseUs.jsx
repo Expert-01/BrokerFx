@@ -1,5 +1,6 @@
 import React from "react";
 import Button from '@/components/UI/Button.jsx';
+import { Link } from 'react-router-dom';
 
 const features = [
   {
@@ -67,9 +68,12 @@ export default function WhyChooseUs() {
           </div>
         ))}
       </div>
+      
+      <Link to='/register'>
       <Button className="bg-[#ffce1ebe] glass-radial-btn text-white px-8 py-3 rounded-full font-semibold shadow-lg transition">
         START TRADING &rarr;
       </Button>
+      </Link>
     </section>
   );
 }

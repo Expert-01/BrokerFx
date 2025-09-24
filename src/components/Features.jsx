@@ -22,6 +22,8 @@ export default function Features() {
     }
   ];
 
+
+
   return (
   <section className="px-10 py-64 ">
   <h2 className="md:text-6xl text-xl font-semibold text-center mb-10 font-orbitron">Features</h2>
@@ -35,6 +37,8 @@ export default function Features() {
           </div>
         ))}
       </div>
+
+
     </section>
   );
 }

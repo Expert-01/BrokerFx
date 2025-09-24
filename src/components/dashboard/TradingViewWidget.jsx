@@ -16,7 +16,7 @@ const TradingViewWidget = ({ symbol = "BTCUSD" }) => {
         theme: "dark",
         style: "1",
         locale: "en",
-        toolbar_bg: "#23272f",
+        toolbar_bg: "#232f23ff",
         enable_publishing: false,
         allow_symbol_change: true,
         container_id: container.current.id,
@@ -55,7 +55,7 @@ const TradingViewWidget = ({ symbol = "BTCUSD" }) => {
 
     <div className="w-full h-[400px] bg-[#181a20] rounded-xl shadow mb-6">
       <div ref={container} id="tradingview_chart" className="w-full h-full min-w-0" />
-    </div>
+    </div>  
   );
 };
 

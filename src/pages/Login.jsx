@@ -25,14 +25,14 @@ export default function Login() {
       console.log("Login successful:", res.data);
 
       localStorage.setItem("token", res.data.token);
-
       localStorage.setItem("userId", res.data.user.id);
 
-
-      console.log('API URL:', import.meta.env.VITE_API_URL); // for Vit
-
-      console.log("Login successful:", res.data);
-      navigate('/dashboard');
+      // Redirect based on admin status
+      if (res.data.user.is_admin) {
+        navigate('/admin');
+      } else {
+        navigate('/dashboard');
+      }
     }
     catch(err) {
       console.error(err.response?.data || err.message);
