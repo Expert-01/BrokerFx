@@ -1,14 +1,20 @@
 
 
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Button from "@/components/UI/Button.jsx";
 import axios from "axios";
 // import logo from "@/assets/logo.png"; // Place your logo in src/assets/logo.png
 import loginBg from "@/assets/login-bg.png"; // Place your background image in src/assets/login-bg.png
 import Navbar from "@/components/Navbar.jsx";
+import AOS from "aos";
+import "aos/dist/aos.css";
 export default function Login() {
+  // Animate On Scroll (AOS) initialization
+  React.useEffect(() => {
+    AOS.init({ duration: 1000, once: true });
+  }, []);
   const [form, setForm] = useState({ email: "", password: "" });
 
   const navigate = useNavigate();
@@ -45,8 +51,8 @@ export default function Login() {
 
   return (
     <>
-      <Navbar />
-  <div className="relative min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-[#000]/40 via-[#0A0F1F]/80 to-black overflow-hidden ">
+    <Navbar data-aos="fade-down" />
+  <div className="relative min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-[#000]/40 via-[#0A0F1F]/80 to-black overflow-hidden " data-aos="fade-up">
         {/* Sharp background image */}
         <img 
           src={loginBg} 
@@ -55,9 +61,9 @@ export default function Login() {
           style={{objectPosition: 'center', objectFit: 'cover'}} 
         />
         {/* Main split layout */}
-        <div className="flex flex-col-reverse md:flex-row w-full max-w-6xl mx-auto items-center justify-between gap-8 relative z-10 md:mt-20 mt-[50%]">
+  <div className="flex flex-col-reverse md:flex-row w-full max-w-6xl mx-auto items-center justify-between gap-8 relative z-10 md:mt-20 mt-[50%]" data-aos="zoom-in">
           {/* Left: Register Section (mobile below, desktop left) */}
-          <div className="flex-1 flex flex-col justify-center items-start pl-4 md:pl-12 w-full">
+          <div className="flex-1 flex flex-col justify-center items-start pl-4 md:pl-12 w-full" data-aos="fade-right">
             <h2 className="text-3xl md:text-5xl font-orbitron font-bold text-[#d4af37] mb-4 md:mb-6 leading-tight">
               Not registered yet?<br />
               <span className="font-normal text-white">It takes less than a minute</span>
@@ -72,8 +78,8 @@ export default function Login() {
             </p>
           </div>
           {/* Right: Login Card (mobile above, desktop right) */}
-          <div className="flex-1 flex items-center justify-center w-full">
-            <div className="w-full max-w-xs md:max-w-md bg-gradient-to-br from-black via-[#100503]/40 to-black rounded-3xl shadow-2xl p-6 md:p-10 backdrop-blur-md border border-[#d4af37]/30">
+          <div className="flex-1 flex items-center justify-center w-full" data-aos="fade-left">
+            <div className="w-full max-w-xs md:max-w-md bg-gradient-to-br from-black via-[#100503]/40 to-black rounded-3xl shadow-2xl p-6 md:p-10 backdrop-blur-md border border-[#d4af37]/30" data-aos="flip-up">
               <h3 className="text-xl md:text-2xl font-bold text-[#d4af37] text-center mb-6 md:mb-8">Login</h3>
               <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
                 <div>

@@ -1,125 +1,41 @@
 import React from "react";
+import AOS from "aos";
+import "aos/dist/aos.css";
 import btc from "../assets/coin.png";
 import eth from "../assets/ethereum.png";
 import chart from "../assets/chart.png";
 import Button from "@/components/UI/Button.jsx";
 import { Link } from "react-router-dom";
-import BlurText from "./BlurText";
 
 export default function Hero() {
-  const handleAnimationComplete = () => {
-    console.log("Animation completed!");
-  };
-
+  React.useEffect(() => {
+    AOS.init({ duration: 1000, once: true });
+  }, []);
   return (
     <>
-      {/* Desktop Only */}
-      <section
-        className="hidden md:flex flex-col md:flex-row items-center justify-center px-4 md:px-0 py-8 text-center md:text-left min-h-[800px] translate-x-[20%] font-orbitron"
-        style={{}}
-      >
-        {/* Left Side */}
-  <div className="w-full md:w-full hidden md:flex flex-col items-center md:mr-[90px] md:items-start md:text-center font-orbitron">
-          <BlurText
-            text="Invest Smartly in Digital Assets"
-            delay={150}
-            animateBy="words"
-            direction="top"
-            onAnimationComplete={handleAnimationComplete}
-            className="text-3xl md:text-[47.6px] font-semibold mb-9 text-center w-full md:ml-[60px] ml-[0%] drop-shadow-[0_0_10px_rgba(212,175,55,0.5)] font-orbitron"
-          />
-          
-          <p className="text-gray-400 mb-6 md:ml-[10%] text-center w-[80%] font-azonix">
-            Secure your future with safe transactions, multiple payment options, 
-            and guaranteed ROI growth.
-          </p>
-          <div className="flex flex-col md:flex-row gap-4 md:space-x-6 w-full md:ml-[30%] items-center md:items-start font-orbitron">
-            <Link to="/register"> 
-              <Button className="bg-[#d4af37] text-black rounded-full px-9 py-4 glass-radial-btn relative overflow-hidden font-orbitron">
-                <span className="relative z-10 font-orbitron">Get Started</span>
-                <span className="shimmer absolute inset-0 font-orbitron"></span>
-              </Button>
+      {/* Desktop & Mobile Hero Section */}
+      <section className="relative flex flex-col items-center justify-center min-h-[600px] md:min-h-[800px] px-0 py-0 w-full overflow-hidden text-center " style={{width: '100vw'}} data-aos="fade-up">
+        {/* Sunset-like background */}
+        {/* Gradient background removed for clean look */}
+
+        {/* Headline & Subtitle */}
+        <div className="relative z-10 flex flex-col items-center justify-center w-full max-w-3xl mx-auto" data-aos="zoom-in">
+          <h1 className="text-3xl md:text-5xl font-bold mb-6 text-white drop-shadow-[0_0_10px_rgba(212,175,55,0.7)] font-azonix" data-aos="bounce">Accelerate Your Investments With AI</h1>
+          <p className="text-lg md:text-0.5xl text-gray-300 mb-8 font-azonix" data-aos="fade-up">AI-driven asset management & insights. Empower your portfolio, make smarter trades, and maximize ROI effortlessly.</p>
+          <div className="flex flex-col md:flex-row gap-4 justify-center items-center mb-8" data-aos="flip-up">
+            <Link to="/register">
+              <Button className="bg-[#d4af37] text-black rounded-full px-8 py-4 font-bold shadow-lg hover:scale-105 transition-transform glass-radial-btn">Get started for free</Button>
             </Link>
-            <Button
-              variant="outline"
-              className="border-[#d4af37] text-[#d4af37] rounded-full px-9 py-4 border glass-radial-btn-hover font-orbitron"
-            >
-              Learn More
-            </Button>
+            <Button variant="outline" className="border-[#d4af37] text-[#d4af37] rounded-full px-8 py-4 border font-bold hover:bg-[#d4af37]/10 transition-colors">Learn More</Button>
           </div>
         </div>
 
-        {/* Fancy Button CSS */}
-        <style>{`
-          .fancy-btn {
-            transition: box-shadow 0.3s, transform 0.3s;
-          }
-          .fancy-btn:hover {
-            box-shadow: 0 8px 24px 0 rgba(212,175,55,0.4), 0 1.5px 0 #fff inset;
-            transform: translateY(-2px) scale(1.04);
-          }
-          .fancy-btn .shimmer {
-            pointer-events: none;
-            background: linear-gradient(
-              120deg,
-              rgba(255,255,255,0) 40%,
-              rgba(255,255,255,0.5) 50%,
-              rgba(255,255,255,0) 60%
-            );
-            opacity: 0.7;
-            transform: translateX(-100%);
-            transition: transform 0.6s cubic-bezier(.4,2,.3,.7);
-          }
-          .fancy-btn:hover .shimmer {
-            transform: translateX(100%);
-          }
-        `}</style>
-
-        {/* Right Side */}
-  <div className="w-full md:w-1/2 flex justify-center items-center mt-8 md:mt-0 font-orbitron"></div>
-      </section>
-
-      {/* Mobile View - Improved Layout */}
-  <section className="md:hidden flex flex-col items-center justify-start px-4 pt-6 pb-10 w-full relative overflow-hidden translate-y-[30%] min-h-[500px] font-orbitron" >
-        {/* Circular Gradient Background */}
-  <div className="absolute top-[80px] left-1/2 translate-x-1/2 w-full h-[300px] rounded-full z-0 font-orbitron"></div>
-
-        {/* Headline */}
-  <div className="w-full flex flex-col items-center justify-center px-0 translate-x-[0%] mb-4 ">
-          <BlurText
-            text="Invest Smartly in Digital Assets"
-            delay={150}
-            animateBy="words"
-            direction="top"
-            onAnimationComplete={handleAnimationComplete}
-            className="text-2xl mb-1 w-full max-w-md px-7 justify-center text-center drop-shadow-[0_0_10px_rgba(212,175,55,0.6)] z-10 font-azonix"
-          />
-   {/* Subtitle */}
-
+        {/* Trusted by logos row (optional) */}
+        <div className="relative z-10 flex flex-row flex-wrap justify-center items-center gap-6 mt-2 opacity-80" data-aos="fade-left">
+          <span className="text-xs text-gray-400 mr-2">Trusted by 200+ investors</span>
+          <img src="/assets/logo.png" alt="Logo" className="h-6 opacity-60" />
+          {/* Add more logos as needed */}
         </div>
- 
-        <p className="text-gray-400 mb-6 text-sm text-center leading-relaxed max-w-md relative z-10 font-orbitron">
-          Secure your future with safe transactions, multiple payment options, and guaranteed ROI growth.
-        </p>
-
-        {/* Buttons Row */}
-  <div className="flex items-center justify-center mb-6 w-full gap-3 relative z-10 font-orbitron">
-          <Link to="/register" className="w-auto font-orbitron">
-            <Button className="bg-[#d4af37] text-black rounded-full px-6 py-3 glass-radial-btn relative overflow-hidden text-sm font-semibold shadow-lg font-orbitron">
-              <span className="relative z-10 font-orbitron">Get Started</span>
-              <span className="shimmer absolute inset-0 font-orbitron"></span>
-            </Button>
-          </Link>
-
-        </div>
-
-        {/* Digital Assets Icons Row
-                <div className="flex justify-center items-center w-full mt-4 gap-6 relative z-10">
-          <img src={btc} alt="btc" className="w-10 h-10" />
-          <img src={eth} alt="eth" className="w-10 h-10" />
-          <img src={chart} alt="chart" className="w-10 h-10" />
-        </div> */}
-
       </section>
     </>
   );

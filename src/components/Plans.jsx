@@ -9,7 +9,7 @@ export default function Plans() {
 
   return (
     <section className="px-10 py-16 backdrop-blur" id="plans">
-  <h2 className="text-3xl font-bold text-center mb-10 font-orbitron">Our Plans</h2>
+  <h2 className="text-3xl font-bold text-center mb-10 font-azonix">Our Plans</h2>
   <div className="grid md:grid-cols-3 gap-8 font-orbitron">
         {plans.map((p, i) => (
           <div key={i} className="p-8 bg-[#292003]/40 rounded-2xl shadow-md text-center hover:scale-105 transition font-orbitron">

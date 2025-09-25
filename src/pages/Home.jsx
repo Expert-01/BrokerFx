@@ -4,7 +4,7 @@ import Hero from "@/components/Hero";
 import Features from "../components/Features";
 import Plans from "../components/Plans";
 import Footer from "../components/Footer";
-import { Parallax } from 'react-parallax';
+// Parallax removed
 import AOS from "aos";
 import "aos/dist/aos.css";
 import WhyChooseUs from "../components/WhyChooseUs";
@@ -16,9 +16,7 @@ import wallet from '../assets/wallet.png';
 import TradingViewSection from "../components/TradingViewSection";
 import InfiniteMenu from "./InfiniteMenu";
 import FlowingMenu from './FlowingMenu'
-
-
-
+import DashboardScreenshot from '../components/DashboardScreenshot';
 import img32 from '../assets/testimonials/32.jpg';
 import img44 from '../assets/testimonials/44.jpg';
 import img65 from '../assets/testimonials/65.jpg';
@@ -80,66 +78,23 @@ const items = [
 ];
   return (
   <div className="relative text-white min-h-screen overflow-hidden bg-black " >
-      <Parallax strength={300} bgClassName="z-0">
-        {/* Abstract Globe/Network SVG Background */}
-        <div className="fixed inset-0 w-full h-full pointer-events-none  " style={{minHeight: '100vh'}}>
-          <div className="globe-spin" style={{width: '100vw', height: '100vh', position: 'absolute', top: 0, left: 0}}>
-            <svg width="100vw" height="100vh" viewBox="0 0 1440 900" fill="none" xmlns="http://www.w3.org/2000/svg" style={{width: '100vw', height: '100vh'}}>
-            <defs>
-              <radialGradient id="globeGradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%" gradientTransform="rotate(45)">
-                <stop offset="0%" stopColor="#d4af37" stopOpacity="0.15" />
-                <stop offset="100%" stopColor="#0A0F1F" stopOpacity="0" />
-              </radialGradient>
-            </defs>
-            <circle cx="720" cy="450" r="340" fill="url(#globeGradient)" />
-            {/* Network lines */}
-            <g stroke="#d4af37" strokeOpacity="0.12">
-              <ellipse cx="720" cy="450" rx="320" ry="120" />
-              <ellipse cx="720" cy="450" rx="220" ry="80" />
-              <ellipse cx="720" cy="450" rx="120" ry="40" />
-              <line x1="400" y1="450" x2="1040" y2="450" />
-              <line x1="720" y1="110" x2="720" y2="790" />
-            </g>
-            {/* Faint candlestick chart */}
-
-            </svg>
-          </div>
-          {/* Floating icons */}
-           </div>
-      </Parallax>
+      {/* Gradient SVG background removed for clean look */}
 
       {/* Main Content */}
       <div className="relative z-10" style={{position: 'relative'}}>
         <Navbar data-aos="fade-down" />
-         <Parallax strength={200}>
-          <Hero data-aos="fade-up" />
-
-         
-<div style={{ height: '600px', position: 'relative' }}>
-  <FlowingMenu items={demoItems} />
-</div>
-        </Parallax>
-        <Parallax strength={100}>
-
-
-
-          <Features data-aos="fade-right" />
-          <WhyChooseUs />
-        </Parallax>
+        <Hero data-aos="fade-up" />
+        <DashboardScreenshot />
+        <Features data-aos="fade-right" />
+        <WhyChooseUs />
         <Plans data-aos="fade-left" />
         <QuickStart />
-
-        
-  {/* TradingView Integration Section */}
-  <TradingViewSection />
+        {/* TradingView Integration Section */}
+        <TradingViewSection />
         <TrustedStats />
-      <div style={{ height: '900px', position: 'relative' }} className="mb-20">
-        <InfiniteMenu items={items}/>
-      </div>
-
-
-
-
+        <div style={{ height: '900px', position: 'relative' }} className="mb-20">
+          <InfiniteMenu items={items}/>
+        </div>
         <Footer />
       </div>
 

@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import AOS from "aos";
+import "aos/dist/aos.css";
 import { LogOut } from "lucide-react";
 import RightPanel from "../components/dashboard/RightPanel";
 import Sidebar from "../components/dashboard/Sidebar";
@@ -23,6 +25,9 @@ import MobileHoldingsCard from "../components/dashboard/MobileHoldingsCard";
 import MobileHotCoins from "../components/dashboard/MobileHotCoins";
 
 export default function Dashboard() {
+  useEffect(() => {
+    AOS.init({ duration: 1000, once: true });
+  }, []);
   // Example: Fetch real data for charts and watchlist
   const [tradesData, setTradesData] = useState([]);
   const [profitLossData, setProfitLossData] = useState([]);
@@ -76,13 +81,13 @@ export default function Dashboard() {
   return (
     <>
       {/* Desktop Dashboard */}
-      <div className="hidden md:grid min-h-screen bg-black grid-cols-[220px_1fr_340px] gap-0">
+  <div className="hidden md:grid min-h-screen bg-black grid-cols-[220px_1fr_340px] gap-0" data-aos="fade-up">
         {/* Sidebar */}
-        <aside className="p">
+        <aside className="p" data-aos="fade-right">
           <Sidebar />
         </aside>
         {/* Main Content */}
-        <main className="flex flex-col px-8 py-8 gap-8 bg-[#000000a0] overflow-y-auto">
+  <main className="flex flex-col px-8 py-8 gap-8 bg-[#000000a0] overflow-y-auto" data-aos="zoom-in">
           {/* Top: Balance Card and Chart */}
           <div className="w-full max-w-3xl mx-auto">
             {/* Replace with your desktop balance card/chart component if needed */}
@@ -98,10 +103,10 @@ export default function Dashboard() {
           </div>
         </main>
         {/* Right Panel (actions, trading, etc.) */}
-        <RightPanel />
+  <RightPanel data-aos="fade-left" />
       </div>
       {/* Mobile Dashboard */}
-      <div className="md:hidden bg-[#000000a0] min-h-screen w-full p-5 flex flex-col gap-4">
+  <div className="md:hidden bg-[#000000a0] min-h-screen w-full p-5 flex flex-col gap-4" data-aos="fade-up">
         <MobileTopBar />
         <MobileBalanceCard userId={userId} />
         <MobileActionButtons />

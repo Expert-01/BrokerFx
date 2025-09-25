@@ -18,7 +18,7 @@ const TradingViewSection = () => {
           EXPERIENCE
         </h2>
         <p className="text-lg text-gray-300 mb-4 font-azonix ">
-          Harness the full power of TradingView’s advanced charting—seamlessly integrated inside TradeLocker. Analyze with clarity, trade with confidence.
+          Harness the full power of TradingView’s advanced charting—seamlessly integrated inside Artificial Intelligence. Analyze with clarity, trade with confidence.
         </p>
         <p className="text-lg text-gray-300 mb-8">
           With access to 100+ fully customizable indicators, intuitive drawing tools, and multi-timeframe support, TradeLocker gives you the precision tools professional traders rely on—right at your fingertips.

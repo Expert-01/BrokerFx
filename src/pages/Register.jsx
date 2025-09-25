@@ -1,11 +1,17 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import Navbar from "@/components/Navbar.jsx";
 import { Link } from "react-router-dom";
 import Button from "@/components/UI/Button.jsx";
 import axios from "axios";
 import registerBg from "@/assets/login-bg.png";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 export default function Signup() {
+  // Animate On Scroll (AOS) initialization
+  React.useEffect(() => {
+    AOS.init({ duration: 1000, once: true });
+  }, []);
   const [form, setForm] = useState({ name: "", email: "", password: "" });
   const [message, setMessage] = useState(""); 
   const handleChange = (e) => {
@@ -25,16 +31,16 @@ export default function Signup() {
 
   return (
     <>
-      <Navbar />
-  <div className="relative min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-black via-[#0A0F1F] to-black overflow-hidden">
+    <Navbar data-aos="fade-down" />
+  <div className="relative min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-black via-[#0A0F1F] to-black overflow-hidden" data-aos="fade-up">
         <img 
           src={registerBg} 
           alt="Register Background" 
           className="absolute inset-0 w-full h-full object-cover z-0 blur-xl" 
           style={{objectPosition: 'center', objectFit: 'cover'}} 
         />
-        <div className="flex flex-col-reverse md:flex-row w-full max-w-6xl mx-auto items-center justify-between gap-8 relative z-10 mt-[90px]">
-          <div className="flex-1 flex flex-col justify-center items-start pl-4 md:pl-12 w-full">
+  <div className="flex flex-col-reverse md:flex-row w-full max-w-6xl mx-auto items-center justify-between gap-8 relative z-10 mt-[90px]" data-aos="zoom-in">
+          <div className="flex-1 flex flex-col justify-center items-start pl-4 md:pl-12 w-full" data-aos="fade-right">
             <h2 className="text-3xl md:text-5xl font-orbitron font-bold text-[#d4af37] mb-4 md:mb-6 leading-tight">
               Create your account<br />
               <span className="font-normal text-white">and start trading in less than a minute</span>
@@ -43,8 +49,8 @@ export default function Signup() {
               Risk Warning : Trading FX instruments and CFDs can incur a high level of risk and may result in a loss of all your invested Capital. <b className='text-[#d4af37]'>Restricted Countries:</b> GatesFX LTD does not provide services for residents of certain countries, including Israel, New Zealand, Iran, and North Korea (Democratic Peoples's Republic of Korea), or any country where such distribution or use would be contrary of local law or regulation. Please check with your local jurisdiction to determine if you are permitted to open an account with GatesFX LTD.
             </p>
           </div>
-          <div className="flex-1 flex items-center justify-center w-full">
-            <div className="w-full max-w-xs md:max-w-md bg-gradient-to-br from-black/40 via-[#100503]/80 to-black rounded-3xl shadow-2xl p-6 md:p-10 backdrop-blur-md border  border-[#d4af37]/30">
+          <div className="flex-1 flex items-center justify-center w-full" data-aos="fade-left">
+            <div className="w-full max-w-xs md:max-w-md bg-gradient-to-br from-black/40 via-[#100503]/80 to-black rounded-3xl shadow-2xl p-6 md:p-10 backdrop-blur-md border  border-[#d4af37]/30" data-aos="flip-up">
               <h3 className="text-xl md:text-2xl font-bold text-[#d4af37] text-center mb-6 md:mb-8">Sign Up</h3>
               <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
                 <div>
