@@ -8,13 +8,13 @@ export default function Footer() {
         {/* Left: Company Info */}
         <div className="flex flex-col gap-4">
           <div className="flex items-center gap-2 mb-2">
-            <img src="/assets/logo.png" alt="GatesFX Logo" className="h-10 w-10" />
-            <span className="text-xl font-bold text-white">GATESFX</span>
+            <img src="/assets/logo.png" alt="NexaExchange Logo" className="h-10 w-10" />
+            <span className="text-xl font-bold text-white">NexaExchange</span>
           </div>
           <p className="text-sm leading-relaxed">
-            GatesFX is an international broker regulated by the International Financial Centre of St. Lucia, ensuring transparency and compliance with international standards of the company's services.<br /><br />
+            NexaExchange is an international broker regulated by the International Financial Centre of St. Lucia, ensuring transparency and compliance with international standards of the company's services.<br /><br />
             Registration number: 00396 IBC 2024<br />
-            Copyright 2025. GatesFX LTD. All rights reserved.
+            Copyright 2025. NexaExchange LTD. All rights reserved.
           </p>
           <div className="mt-4">
             <div className="font-bold text-white mb-1">Registration Number</div>
@@ -39,7 +39,7 @@ export default function Footer() {
             <span className="text-2xl font-orbitron text-white tracking-widest">COMPANY</span>
             <ul className="mt-2 space-y-1 text-left">
               <li><a href="#" className="text-white font-bold hover:text-[#d4af37]">Partners</a></li>
-              <li><a href="#" className="text-white font-bold hover:text-[#d4af37]">About GatesFX</a></li>
+              <li><a href="#" className="text-white font-bold hover:text-[#d4af37]">About NexaExchange</a></li>
               <li><a href="#" className="text-white font-bold hover:text-[#d4af37]">Legal Disclaimers</a></li>
               <li><a href="#" className="text-white font-bold hover:text-[#d4af37]">Contact Us</a></li>
             </ul>
@@ -62,10 +62,10 @@ export default function Footer() {
           <b>Risk Warning:</b> Trading Forex and CFDs carries a high level of risk to your capital and you should only trade with funds you can afford to lose. Trading Forex and CFDs may not be suitable for all investors, so please ensure that you fully understand the risks involved and seek independent advice if necessary. Please read and ensure you fully understand our Risk Disclosure.
         </div>
         <div>
-          <b>Restricted Countries:</b> GatesFX LTD does not provide services for residents of certain countries, including Israel, New Zealand, Iran, and North Korea (Democratic Peoples's Republic of Korea), or any country where such distribution or use would be contrary of local law or regulation. Furthermore, GatesFX LTD does not solicit citizens of the United States of America. Please check with your local jurisdiction to determine if you are permitted to open an account with GatesFX LTD.
+          <b>Restricted Countries:</b> NexaExchange LTD does not provide services for residents of certain countries, including Israel, New Zealand, Iran, and North Korea (Democratic Peoples's Republic of Korea), or any country where such distribution or use would be contrary of local law or regulation. Furthermore, NexaExchange LTD does not solicit citizens of the United States of America. Please check with your local jurisdiction to determine if you are permitted to open an account with NexaExchange LTD.
         </div>
         <div>
-          <b>Disclaimer:</b> The information provided herein reflects personal opinions and ideas and does not constitute a recommendation to purchase financial services or guarantee the performance or outcomes of future transactions. This material is not intended to be interpreted as financial advice. While every effort has been made to ensure the accuracy, validity and completeness of the information, no guarantees are provided and no liability is accepted for any losses incurred as a result of investments made based on this material. Nothing contained on this site should be considered or construed as professional advice from GatesFX LTD, its affiliates, directors, officer, or employees.
+          <b>Disclaimer:</b> The information provided herein reflects personal opinions and ideas and does not constitute a recommendation to purchase financial services or guarantee the performance or outcomes of future transactions. This material is not intended to be interpreted as financial advice. While every effort has been made to ensure the accuracy, validity and completeness of the information, no guarantees are provided and no liability is accepted for any losses incurred as a result of investments made based on this material. Nothing contained on this site should be considered or construed as professional advice from NexaExchange LTD, its affiliates, directors, officer, or employees.
         </div>
       </div>
     </footer>

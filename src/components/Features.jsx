@@ -26,7 +26,7 @@ export default function Features() {
 
   return (
   <section className="px-10 py-64 ">
-  <h2 className="md:text-6xl text-xl font-semibold text-center mb-10 font-orbitron">Features</h2>
+  <h2 className="md:text-4xl text-xl font-semibold text-center mb-10 font-azonix">Powerful Features</h2>
   <div className="grid md:grid-cols-3 gap-8">
         {features.map((f, i) => ( 
           <div key={i} className="p-6 rounded-2xl bg-[#292003]/30 hover:scale-105 transition">

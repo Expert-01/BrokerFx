@@ -74,7 +74,7 @@ export default function Login() {
               </button>
             </Link>
             <p className="text-xs text-gray-300 mt-6 md:mt-8 max-w-lg">
-              Risk Warning : Trading FX instruments and CFDs can incur a high level of risk and may result in a loss of all your invested Capital. <b className='text-[#d4af37]'>Restricted Countries:</b> GatesFX LTD does not provide services for residents of certain countries, including Israel, New Zealand, Iran, and North Korea (Democratic Peoples's Republic of Korea), or any country where such distribution or use would be contrary of local law or regulation. Please check with your local jurisdiction to determine if you are permitted to open an account with GatesFX LTD.
+              Risk Warning : Trading FX instruments and CFDs can incur a high level of risk and may result in a loss of all your invested Capital. <b className='text-[#d4af37]'>Restricted Countries:</b> NexaExchange LTD does not provide services for residents of certain countries, including Israel, New Zealand, Iran, and North Korea (Democratic Peoples's Republic of Korea), or any country where such distribution or use would be contrary of local law or regulation. Please check with your local jurisdiction to determine if you are permitted to open an account with NexaExchange LTD.
             </p>
           </div>
           {/* Right: Login Card (mobile above, desktop right) */}

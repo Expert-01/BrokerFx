@@ -15,6 +15,21 @@ export default function Hero() {
     <>
       {/* Desktop & Mobile Hero Section */}
       <section className="relative flex flex-col items-center justify-center min-h-[600px] md:min-h-[800px] px-0 py-0 w-full overflow-hidden text-center " style={{width: '100vw'}} data-aos="fade-up">
+        {/* Spinning Gold Ring Gradient Background */}
+        <div className="absolute inset-0 w-full h-full flex items-center justify-center pointer-events-none z-0">
+          <svg width="100%" height="100%" viewBox="0 0 1600 800" fill="none" xmlns="http://www.w3.org/2000/svg" style={{position: 'absolute', left: 0, top: 0, width: '100%', height: '100%', zIndex: 0}} className="animate-spin-slow">
+            <ellipse cx="800" cy="400" rx="350" ry="120" fill="url(#goldRainbow)" opacity="0.7" />
+            <defs>
+              <radialGradient id="goldRainbow" cx="0.5" cy="0.5" r="0.5" gradientTransform="matrix(350 0 0 120 625 280)" gradientUnits="userSpaceOnUse">
+                <stop stopColor="#d4af37" />
+                <stop offset="0.3" stopColor="#bfa233" />
+                <stop offset="0.6" stopColor="#ffd700" />
+                <stop offset="0.8" stopColor="#ffecb3" />
+                <stop offset="1" stopColor="#d4af37" stopOpacity="0" />
+              </radialGradient>
+            </defs>
+          </svg>
+        </div>
         {/* Sunset-like background */}
         {/* Gradient background removed for clean look */}
 
@@ -36,6 +51,16 @@ export default function Hero() {
           <img src="/assets/logo.png" alt="Logo" className="h-6 opacity-60" />
           {/* Add more logos as needed */}
         </div>
+      {/* Spinning animation CSS */}
+      <style>{`
+        .animate-spin-slow {
+          animation: spin 12s linear infinite;
+        }
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
       </section>
     </>
   );
