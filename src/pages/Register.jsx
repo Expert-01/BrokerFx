@@ -32,6 +32,28 @@ export default function Signup() {
     console.log("Signup form submitted:", form);
   };
 
+  // 🔹 Temporary test function
+  const handleTestSignup = async () => {
+    try {
+      const API_URL = import.meta.env.VITE_API_URL;
+      const res = await fetch(`${API_URL}/api/auth/signup`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: "TestUser",
+          email: `test${Date.now()}@mail.com`,
+          password: "test1234",
+        }),
+      });
+      const data = await res.json();
+      console.log("Signup test response:", data);
+      alert(JSON.stringify(data)); // show result in popup
+    } catch (err) {
+      console.error("Signup test error:", err);
+      alert("Error: " + err.message);
+    }
+  };
+
   return (
     <>
       <Navbar data-aos="fade-down" />
@@ -122,6 +144,15 @@ export default function Signup() {
                   Sign Up
                 </Button>
               </form>
+
+              {/* 🔹 TEMP TEST BUTTON */}
+              <button
+                onClick={handleTestSignup}
+                className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold rounded-full py-2 md:py-3 text-base md:text-lg shadow-md transition-all mt-4"
+              >
+                Test Signup
+              </button>
+
               <p className="text-gray-400 text-sm text-center mt-4">
                 Already have an account?{" "}
                 <Link to="/login" className="text-[#d4af37] hover:underline">
@@ -137,4 +168,4 @@ export default function Signup() {
       </div>
     </>
   );
-}
+      }
