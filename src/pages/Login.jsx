@@ -26,7 +26,7 @@ export default function Login() {
     e.preventDefault();
 
     try{
-      const res = await axios.post(`${import.meta.env.VITE_LOCAL_URL}/auth/login`, form);
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/auth/login`, form);
 
       console.log("Login successful:", res.data);
 
