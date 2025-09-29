@@ -21,17 +21,17 @@ export default function Signup() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const API_URL = import.meta.env.VITE_API_URL; // ✅ dynamic API URL
-      const res = await axios.post(`${API_URL}/api/auth/signup`, form);
-      setMessage(res.data.message);
-    } catch (error) {
-      setMessage(error.response?.data?.message || "Something went wrong");
-    }
-    console.log("Signup form submitted:", form);
-  };
-
+  e.preventDefault();
+  try {
+    const res = await axios.post(
+      `${import.meta.env.VITE_API_URL}/auth/signup`, // 🔹 same base as login
+      form
+    );
+    setMessage(res.data.message);
+  } catch (error) {
+    setMessage(error.response?.data?.message || "Something went wrong");
+  }
+};
   // 🔹 Temporary test function
   const handleTestSignup = async () => {
     try {
