@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Sidebar from "../components/dashboard/Sidebar";
-import { jwtDecode } from "jwt-decode";
+import jwtDecode from "jwt-decode";
 
 const paymentMethods = [
   { key: "crypto", label: "Crypto", icon: "🪙" },
@@ -24,15 +24,15 @@ function Deposit() {
 
   // Decode token for userId
   let userId = null;
-  let token = null;
-  try {
-    token = localStorage.getItem("token");
-    if (token) {
+  let token = localStorage.getItem("token");
+
+  if (token) {
+    try {
       const decoded = jwtDecode(token);
-      userId = decoded.id || decoded.userId;
+      userId = decoded.id || decoded.userId || null;
+    } catch {
+      userId = null;
     }
-  } catch (err) {
-    userId = null;
   }
 
   const handleSubmit = async (e) => {
@@ -50,8 +50,9 @@ function Deposit() {
     }
 
     setLoading(true);
-    let plan = "basic";
-    if (method === "crypto") plan = asset;
+
+    // plan field
+    const plan = method === "crypto" ? asset : "basic";
 
     try {
       const res = await fetch(
@@ -62,13 +63,19 @@ function Deposit() {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ plan, amount: Number(amount), method }),
+          body: JSON.stringify({
+            plan,
+            amount: Number(amount),
+            method,
+          }),
         }
       );
+
       if (!res.ok) {
         const data = await res.json();
         throw new Error(data.message || "Deposit failed");
       }
+
       setSuccess("Deposit request submitted!");
       setAmount("");
     } catch (err) {
@@ -125,6 +132,7 @@ function Deposit() {
               </div>
             )}
 
+            {/* CRYPTO */}
             {method === "crypto" && (
               <>
                 <label className="block mb-2 text-sm font-semibold text-gray-300">
@@ -142,6 +150,7 @@ function Deposit() {
                     </option>
                   ))}
                 </select>
+
                 <label className="block mb-2 text-sm font-semibold text-gray-300">
                   Amount
                 </label>
@@ -158,9 +167,10 @@ function Deposit() {
                   step="any"
                   required
                 />
+
                 <button
                   type="submit"
-                  className="w-full py-3 rounded-lg bg-[#bfa233] text-black font-bold text-lg hover:bg-[#bfa233]/70 transition disabled:opacity-60"
+                  className="w-full py-3 rounded-lg bg-[#bfa233] text-black font-bold text-lg hover:bg-[#bfa233]/80 transition disabled:opacity-60"
                   disabled={loading}
                 >
                   {loading ? "Processing..." : "Continue"}
@@ -168,15 +178,16 @@ function Deposit() {
               </>
             )}
 
+            {/* CARD */}
             {method === "card" && (
               <>
                 <h3 className="text-xl font-bold mb-2 text-[#bfa233]">
                   Credit/Debit Card
                 </h3>
                 <p className="mb-4 text-gray-400 text-sm">
-                  Your deposit will be credited to your trading account within
-                  1-2 hours.
+                  Your deposit will be credited to your account within 1–2 hours.
                 </p>
+
                 <label className="block mb-2 text-sm font-semibold text-gray-300">
                   Amount
                 </label>
@@ -191,9 +202,10 @@ function Deposit() {
                   step="any"
                   required
                 />
+
                 <button
                   type="submit"
-                  className="w-full py-3 rounded-lg bg-[#bfa233] text-black font-bold text-lg hover:bg-[#14e3c7] transition disabled:opacity-60"
+                  className="w-full py-3 rounded-lg bg-[#bfa233] text-black font-bold text-lg hover:bg-[#bfa233]/80 transition disabled:opacity-60"
                   disabled={loading}
                 >
                   {loading ? "Processing..." : "Submit"}
@@ -201,15 +213,16 @@ function Deposit() {
               </>
             )}
 
+            {/* MYFATOORAH */}
             {method === "fatoorah" && (
               <>
                 <h3 className="text-xl font-bold mb-2 text-[#bfa233]">
                   myFatoorah
                 </h3>
                 <p className="mb-4 text-gray-400 text-sm">
-                  Your deposit will be credited to your trading account within
-                  1-2 hours.
+                  Your deposit will be credited to your account within 1–2 hours.
                 </p>
+
                 <label className="block mb-2 text-sm font-semibold text-gray-300">
                   Amount
                 </label>
@@ -224,9 +237,10 @@ function Deposit() {
                   step="any"
                   required
                 />
+
                 <button
                   type="submit"
-                  className="w-full py-3 rounded-lg bg-[#bfa233] text-black font-bold text-lg hover:bg-[#14e3c7] transition disabled:opacity-60"
+                  className="w-full py-3 rounded-lg bg-[#bfa233] text-black font-bold text-lg hover:bg-[#bfa233]/80 transition disabled:opacity-60"
                   disabled={loading}
                 >
                   {loading ? "Processing..." : "Submit"}
