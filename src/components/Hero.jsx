@@ -13,12 +13,12 @@ export default function Hero() {
     <>  
       {/* Hero Section with Subtle Gradient Background */}  
       <section  
-        className="relative flex flex-col items-center justify-center min-h-[600px] md:min-h-[800px] w-full overflow-hidden text-center px-4 bg-gradient-to-b from-[#2a1b0a] via-[#3b2a15] to-black"  
+        className="relative flex flex-col items-center justify-center min-h-[600px] md:min-h-[800px] w-full overflow-hidden text-center pt-20 px-4 bg-gradient-to-b from-[#2a1b0a] via-[#3b2a15] to-black"  
         data-aos="fade-up"  
       >  
         {/* Headline & Subtitle */}  
         <div  
-          className="relative z-10 flex flex-col items-center justify-center w-full max-w-3xl mx-auto mt-10"  
+          className="relative z-10 flex flex-col items-center justify-center w-full max-w-3xl mx-auto"  
           data-aos="zoom-in"  
         >  
           <h1  
