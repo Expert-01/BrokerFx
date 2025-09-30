@@ -46,7 +46,7 @@ export default function Hero() {
             </Link>  
             <Button  
               variant="outline"  
-              className="hidden border-[#d4af37] text-[#d4af37] rounded-full px-8 py-4 border font-bold hover:bg-[#d4af37]/10 transition-colors"  
+              className="hidden md: inline-flex border-[#d4af37] text-[#d4af37] rounded-full px-8 py-4 border font-bold hover:bg-[#d4af37]/10 transition-colors"  
             >  
               Learn More  
             </Button>  
