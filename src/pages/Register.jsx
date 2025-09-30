@@ -13,7 +13,7 @@ export default function Signup() {
     AOS.init({ duration: 1000, once: true });
   }, []);
 
-  const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const [form, setForm] = useState({ name: "", email: "", password: "", confirmPassword: "" });
   const [message, setMessage] = useState("");
 
   const handleChange = (e) => {
@@ -21,36 +21,26 @@ export default function Signup() {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  try {
-    const res = await axios.post(
-      `${import.meta.env.VITE_API_URL}/auth/signup`, // 🔹 same base as login
-      form
-    );
-    setMessage(res.data.message);
-  } catch (error) {
-    setMessage(error.response?.data?.message || "Something went wrong");
-  }
-};
-  // 🔹 Temporary test function
-  const handleTestSignup = async () => {
+    e.preventDefault();
+
+    // 🔹 Confirm password validation
+    if (form.password !== form.confirmPassword) {
+      setMessage("Passwords do not match!");
+      return;
+    }
+
     try {
-      const API_URL = import.meta.env.VITE_API_URL;
-      const res = await fetch(`${API_URL}/api/auth/signup`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: "TestUser",
-          email: `test${Date.now()}@mail.com`,
-          password: "test1234",
-        }),
-      });
-      const data = await res.json();
-      console.log("Signup test response:", data);
-      alert(JSON.stringify(data)); // show result in popup
-    } catch (err) {
-      console.error("Signup test error:", err);
-      alert("Error: " + err.message);
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/auth/signup`,
+        {
+          name: form.name,
+          email: form.email,
+          password: form.password,
+        }
+      );
+      setMessage(res.data.message || "Signup successful!");
+    } catch (error) {
+      setMessage(error.response?.data?.message || "Something went wrong");
     }
   };
 
@@ -95,12 +85,14 @@ export default function Signup() {
               if you are permitted to open an account with NexaExchange LTD.
             </p>
           </div>
+
+          {/* Signup Form */}
           <div
             className="flex-1 flex items-center justify-center w-full"
             data-aos="fade-left"
           >
             <div
-              className="w-full max-w-xs md:max-w-md bg-gradient-to-br from-black/40 via-[#100503]/80 to-black rounded-3xl shadow-2xl p-6 md:p-10 backdrop-blur-md border  border-[#d4af37]/30"
+              className="w-full max-w-xs md:max-w-md bg-gradient-to-br from-black/40 via-[#100503]/80 to-black rounded-3xl shadow-2xl p-6 md:p-10 backdrop-blur-md border border-[#d4af37]/30"
               data-aos="flip-up"
             >
               <h3 className="text-xl md:text-2xl font-bold text-[#d4af37] text-center mb-6 md:mb-8">
@@ -111,6 +103,71 @@ export default function Signup() {
                   <input
                     type="text"
                     name="name"
+                    placeholder="Full Name"
+                    value={form.name}
+                    onChange={handleChange}
+                    className="w-full px-3 md:px-4 py-2 md:py-3 rounded-lg bg-transparent text-[#d4af37] border border-[#d4af37]/30 focus:outline-none focus:border-[#d4af37] placeholder-gray-400 text-base md:text-lg"
+                    required
+                  />
+                </div>
+                <div>
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="Email"
+                    value={form.email}
+                    onChange={handleChange}
+                    className="w-full px-3 md:px-4 py-2 md:py-3 rounded-lg bg-transparent text-[#d4af37] border border-[#d4af37]/30 focus:outline-none focus:border-[#d4af37] placeholder-gray-400 text-base md:text-lg"
+                    required
+                  />
+                </div>
+                <div>
+                  <input
+                    type="password"
+                    name="password"
+                    placeholder="Password"
+                    value={form.password}
+                    onChange={handleChange}
+                    className="w-full px-3 md:px-4 py-2 md:py-3 rounded-lg bg-transparent text-[#d4af37] border border-[#d4af37]/30 focus:outline-none focus:border-[#d4af37] placeholder-gray-400 text-base md:text-lg"
+                    required
+                  />
+                </div>
+                <div>
+                  <input
+                    type="password"
+                    name="confirmPassword"
+                    placeholder="Confirm Password"
+                    value={form.confirmPassword}
+                    onChange={handleChange}
+                    className="w-full px-3 md:px-4 py-2 md:py-3 rounded-lg bg-transparent text-[#d4af37] border border-[#d4af37]/30 focus:outline-none focus:border-[#d4af37] placeholder-gray-400 text-base md:text-lg"
+                    required
+                  />
+                </div>
+                <Button
+                  type="submit"
+                  className="w-full bg-[#d4af37] hover:bg-[#bfa233] text-black font-semibold rounded-full py-2 md:py-3 text-base md:text-lg shadow-md transition-all"
+                >
+                  Sign Up
+                </Button>
+              </form>
+
+              <p className="text-gray-400 text-sm text-center mt-4">
+                Already have an account?{" "}
+                <Link to="/login" className="text-[#d4af37] hover:underline">
+                  Login
+                </Link>
+              </p>
+
+              {message && (
+                <p className="text-center text-[#d4af37] mt-2">{message}</p>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+                  }                    name="name"
                     placeholder="Full Name"
                     value={form.name}
                     onChange={handleChange}
