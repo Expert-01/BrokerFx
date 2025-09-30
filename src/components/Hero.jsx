@@ -28,7 +28,7 @@ export default function Hero() {
             Accelerate Your Investments With AI  
           </h1>  
           <p  
-            className="text-xl md:text-xl text-gray-300 mb-8 font-azonix"  
+            className="text-xl md:text-xl text-gray-300 mb-8"  
             data-aos="fade-up"  
           >  
             AI-driven asset management & insights. Empower your portfolio, make  
