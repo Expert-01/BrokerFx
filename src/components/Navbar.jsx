@@ -33,7 +33,7 @@ const Navbar = () => {
   }, [active, location.pathname]);
 
   return (
-    <nav className="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-3 md:px-9 py-6 md:py-9 md:mb-">
+    <nav className="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-3 md:px-9 py-6 md:py-9 mb-10 md:mb-10">
       <img src={Logo} className="w-16 h-16 md:w-64 md:h-24 object-contain ml-0 md:ml-0" />
       {/* Desktop Nav */}
       <div className="hidden md:block relative w-[30%] ">
