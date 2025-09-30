@@ -23,22 +23,18 @@ export default function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // 🔹 Confirm password validation
+    // Password match validation
     if (form.password !== form.confirmPassword) {
-      setMessage("Passwords do not match!");
+      setMessage("Passwords do not match");
       return;
     }
 
     try {
       const res = await axios.post(
         `${import.meta.env.VITE_API_URL}/auth/signup`,
-        {
-          name: form.name,
-          email: form.email,
-          password: form.password,
-        }
+        { name: form.name, email: form.email, password: form.password }
       );
-      setMessage(res.data.message || "Signup successful!");
+      setMessage(res.data.message);
     } catch (error) {
       setMessage(error.response?.data?.message || "Something went wrong");
     }
@@ -61,6 +57,7 @@ export default function Signup() {
           className="flex flex-col-reverse md:flex-row w-full max-w-6xl mx-auto items-center justify-between gap-8 relative z-10 mt-[90px]"
           data-aos="zoom-in"
         >
+          {/* Left Section */}
           <div
             className="flex-1 flex flex-col justify-center items-start pl-4 md:pl-12 w-full"
             data-aos="fade-right"
@@ -73,20 +70,18 @@ export default function Signup() {
               </span>
             </h2>
             <p className="text-xs text-gray-300 mt-6 md:mt-8 max-w-lg">
-              Risk Warning : Trading FX instruments and CFDs can incur a high
+              Risk Warning: Trading FX instruments and CFDs can incur a high
               level of risk and may result in a loss of all your invested
-              Capital.{" "}
+              capital.{" "}
               <b className="text-[#d4af37]">Restricted Countries:</b>{" "}
               NexaExchange LTD does not provide services for residents of
               certain countries, including Israel, New Zealand, Iran, and North
-              Korea (Democratic Peoples's Republic of Korea), or any country
-              where such distribution or use would be contrary of local law or
-              regulation. Please check with your local jurisdiction to determine
-              if you are permitted to open an account with NexaExchange LTD.
+              Korea, or any country where such distribution or use would be
+              contrary to local law or regulation.
             </p>
           </div>
 
-          {/* Signup Form */}
+          {/* Right Section - Signup Form */}
           <div
             className="flex-1 flex items-center justify-center w-full"
             data-aos="fade-left"
@@ -107,7 +102,6 @@ export default function Signup() {
                     value={form.name}
                     onChange={handleChange}
                     className="w-full px-3 md:px-4 py-2 md:py-3 rounded-lg bg-transparent text-[#d4af37] border border-[#d4af37]/30 focus:outline-none focus:border-[#d4af37] placeholder-gray-400 text-base md:text-lg"
-                    required
                   />
                 </div>
                 <div>
@@ -118,7 +112,6 @@ export default function Signup() {
                     value={form.email}
                     onChange={handleChange}
                     className="w-full px-3 md:px-4 py-2 md:py-3 rounded-lg bg-transparent text-[#d4af37] border border-[#d4af37]/30 focus:outline-none focus:border-[#d4af37] placeholder-gray-400 text-base md:text-lg"
-                    required
                   />
                 </div>
                 <div>
@@ -129,7 +122,6 @@ export default function Signup() {
                     value={form.password}
                     onChange={handleChange}
                     className="w-full px-3 md:px-4 py-2 md:py-3 rounded-lg bg-transparent text-[#d4af37] border border-[#d4af37]/30 focus:outline-none focus:border-[#d4af37] placeholder-gray-400 text-base md:text-lg"
-                    required
                   />
                 </div>
                 <div>
@@ -140,7 +132,6 @@ export default function Signup() {
                     value={form.confirmPassword}
                     onChange={handleChange}
                     className="w-full px-3 md:px-4 py-2 md:py-3 rounded-lg bg-transparent text-[#d4af37] border border-[#d4af37]/30 focus:outline-none focus:border-[#d4af37] placeholder-gray-400 text-base md:text-lg"
-                    required
                   />
                 </div>
                 <Button
@@ -167,4 +158,4 @@ export default function Signup() {
       </div>
     </>
   );
-                  }
+    }
