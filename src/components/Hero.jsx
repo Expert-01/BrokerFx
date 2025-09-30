@@ -18,7 +18,7 @@ export default function Hero() {
       >  
         {/* Headline & Subtitle */}  
         <div  
-          className="relative z-10 flex flex-col items-center justify-center w-full max-w-3xl mx-auto"  
+          className="relative z-10 flex flex-col items-center justify-center w-full max-w-3xl mx-auto mt-20"  
           data-aos="zoom-in"  
         >  
           <h1  
