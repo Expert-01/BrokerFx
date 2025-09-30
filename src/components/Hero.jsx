@@ -13,7 +13,7 @@ export default function Hero() {
     <>  
       {/* Desktop & Mobile Hero Section */}  
       <section  
-        className="relative flex flex-col items-center justify-center min-h-[600px] md:min-h-[800px] w-full overflow-hidden text-center pt-20 px-4"  
+        className="relative flex flex-col items-center justify-center min-h-[600px] md:min-h-[800px] w-full overflow-hidden text-center pt-20 px-4 bg-gradient-to-b from-[#031531] via-[#3b1d42] to-[#d35400]"  
         data-aos="fade-up"  
       >  
         {/* Headline & Subtitle */}  
@@ -66,4 +66,4 @@ export default function Hero() {
       </section>  
     </>  
   );  
-}
+          }
