@@ -83,7 +83,7 @@ const items = [
       {/* Main Content */}
       <div className="relative z-10" style={{position: 'relative'}}>
         <Navbar data-aos="fade-down" />
-        <Hero data-aos="fade-up" />
+        <Hero data-aos="" />
         <DashboardScreenshot />
         <Features data-aos="fade-right" />
         <WhyChooseUs />
