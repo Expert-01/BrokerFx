@@ -28,7 +28,7 @@ export default function Hero() {
             Accelerate Your Investments With AI  
           </h1>  
           <p  
-            className="text-lg md:text-xl text-gray-300 mb-8 font-azonix"  
+            className="text-xl md:text-xl text-gray-300 mb-8 font-azonix"  
             data-aos="fade-up"  
           >  
             AI-driven asset management & insights. Empower your portfolio, make  
@@ -46,7 +46,7 @@ export default function Hero() {
             </Link>  
             <Button  
               variant="outline"  
-              className="border-[#d4af37] text-[#d4af37] rounded-full px-8 py-4 border font-bold hover:bg-[#d4af37]/10 transition-colors"  
+              className="hidden md:block border-[#d4af37] text-[#d4af37] rounded-full px-8 py-4 border font-bold hover:bg-[#d4af37]/10 transition-colors"  
             >  
               Learn More  
             </Button>  
