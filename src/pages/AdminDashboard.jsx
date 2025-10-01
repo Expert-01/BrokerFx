@@ -9,7 +9,7 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchDeposits = async () => {
       try {
-        const response = await fetch(`${API_URL}/api/admin/deposits`, {
+        const response = await fetch(`${API_URL}/admin/deposits`, {
           headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${localStorage.getItem("token")}`,
