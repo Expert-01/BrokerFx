@@ -84,7 +84,7 @@ const items = [
       <div className="relative z-10" style={{position: 'relative'}}>
         <Navbar data-aos="fade-down" />
         <Hero data-aos="" />
-        <DashboardScreenshot />
+        <DashboardScreenshot data-aos="fade-up"/>
         <Features data-aos="fade-right" />
         <WhyChooseUs />
         <Plans data-aos="fade-left" />
