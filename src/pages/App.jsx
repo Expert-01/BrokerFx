@@ -30,7 +30,7 @@ import PartnerArea from "./PartnerArea";
 import Logout from "./Logout";
 export default function App() {
   return (
-    <div className="text-white min-h-screen">
+    <div className="bg-stone-900 text-white min-h-screen">
       <Suspense fallback={<Preloader />}>
       <Router>
 
