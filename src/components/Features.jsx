@@ -46,13 +46,4 @@ export default function Features() {
       </div>
     </section>
   );
-}          </div>
-        ))}
-      </div>
-
-
-    </section>
-  );
 }
-
-
