@@ -36,7 +36,7 @@ export default function Features() {
   ];
 
   return (
-    <section className="bg-black text-white py-16 px-4 sm:px-10 lg:px-20">
+    <section className="bg-black text-white py-16 px-6 sm:px-10 lg:px-20">
       {/* Section Heading */}
       <div className="max-w-6xl mx-auto text-center mb-12">
         <h2 className="text-3xl sm:text-4xl font-bold text-yellow-400 mb-4 font-orbitron">
@@ -48,7 +48,7 @@ export default function Features() {
       </div>
 
       {/* Features Grid */}
-      <div className="flex flex-col items-center gap-8">
+      <div className="flex flex-col items-center gap-10">
         {features.map((f, i) => (
           <motion.div
             key={i}
@@ -56,15 +56,16 @@ export default function Features() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: i * 0.1 }}
             viewport={{ once: true }}
-            className="bg-[#292003]/30 backdrop-blur-md border border-[#1f2d4d]
-                       rounded-2xl p-10 shadow-lg hover:shadow-2xl hover:scale-[1.03]
-                       transition-all w-full sm:w-[90%] md:w-[80%] lg:w-[70%]
-                       flex flex-col items-center justify-center text-center 
-                       min-h-[280px]"
+            className="relative bg-[#0a0a0a]/60 backdrop-blur-md border border-yellow-500/20 
+                       rounded-2xl p-10 sm:p-12 shadow-lg hover:shadow-[0_0_25px_rgba(255,215,0,0.25)]
+                       hover:border-yellow-400/50 hover:scale-[1.03]
+                       transition-all duration-300 w-full sm:w-[90%] md:w-[80%] lg:w-[70%]
+                       flex flex-col items-center justify-center text-center min-h-[280px]"
           >
-            <div className="flex justify-center mb-4">{f.icon}</div>
-            <h3 className="text-xl font-bold text-yellow-400 mb-2">{f.title}</h3>
-            <p className="text-gray-300 text-base leading-relaxed max-w-md">
+            <div className="absolute inset-0 rounded-2xl border border-yellow-400/10 blur-md"></div>
+            <div className="flex justify-center mb-4 relative z-10">{f.icon}</div>
+            <h3 className="text-xl font-bold text-yellow-400 mb-2 relative z-10">{f.title}</h3>
+            <p className="text-gray-300 text-base leading-relaxed max-w-md relative z-10">
               {f.desc}
             </p>
           </motion.div>
