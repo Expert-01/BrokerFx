@@ -52,20 +52,23 @@ export default function Features() {
         {features.map((f, i) => (
           <motion.div
             key={i}
-            initial={{ opacity: 0, y: 50 }}
+            initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: i * 0.15 }}
+            transition={{ duration: 0.5, delay: i * 0.1 }}
             viewport={{ once: true }}
-            className="bg-[#292003]/30 border border-[#1f2d4d] backdrop-blur-md 
-                       rounded-2xl p-10 shadow-xl hover:shadow-2xl hover:scale-105 
-                       transition-all w-full text-center"
+            className="bg-[#292003]/30 backdrop-blur-md 
+                       rounded-2xl p-8 sm:p-10 shadow-lg hover:shadow-2xl hover:scale-105 
+                       transition-all w-full flex flex-col items-center justify-center text-center 
+                       min-h-[280px] sm:min-h-[300px]"
           >
-            <div className="flex justify-center mb-6">{f.icon}</div>
-            <h3 className="text-xl font-bold text-yellow-400 mb-3">{f.title}</h3>
-            <p className="text-gray-300">{f.desc}</p>
+            <div className="flex justify-center mb-4">{f.icon}</div>
+            <h3 className="text-lg sm:text-xl font-bold text-yellow-400 mb-2">{f.title}</h3>
+            <p className="text-gray-300 text-sm sm:text-base leading-relaxed max-w-xs">
+              {f.desc}
+            </p>
           </motion.div>
         ))}
       </div>
     </section>
   );
-    }
+}
