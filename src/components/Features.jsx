@@ -1,4 +1,5 @@
 import { Shield, Wallet, TrendingUp, Lock, Cpu, Layers } from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function Features() {
   const features = [
@@ -35,7 +36,8 @@ export default function Features() {
   ];
 
   return (
-    <section className="bg-[#031531] text-white py-16 px-6 sm:px-12 lg:px-20">
+    <section className="bg-black text-white py-16 px-6 sm:px-12 lg:px-20">
+      {/* Heading */}
       <div className="max-w-6xl mx-auto text-center mb-12">
         <h2 className="text-3xl sm:text-4xl font-bold text-yellow-400 mb-4 font-orbitron">
           Powerful Features
@@ -48,16 +50,22 @@ export default function Features() {
       {/* Features Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {features.map((f, i) => (
-          <div
+          <motion.div
             key={i}
-            className="bg-[#0a1d3a] border border-[#1f2d4d] rounded-2xl p-8 shadow-xl hover:shadow-2xl hover:scale-105 transition w-full text-center"
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: i * 0.15 }}
+            viewport={{ once: true }}
+            className="bg-[#292003]/30 border border-[#1f2d4d] backdrop-blur-md 
+                       rounded-2xl p-10 shadow-xl hover:shadow-2xl hover:scale-105 
+                       transition-all w-full text-center"
           >
             <div className="flex justify-center mb-6">{f.icon}</div>
             <h3 className="text-xl font-bold text-yellow-400 mb-3">{f.title}</h3>
             <p className="text-gray-300">{f.desc}</p>
-          </div>
+          </motion.div>
         ))}
       </div>
     </section>
   );
-      }
+    }
