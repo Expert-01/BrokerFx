@@ -56,7 +56,7 @@ export default function Features() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: i * 0.1 }}
             viewport={{ once: true }}
-            className="relative bg-[#0a0a0a]/60 backdrop-blur-md border border-yellow-500/20 
+            className="relative bg-[#292003]/30 backdrop-blur-md 
                        rounded-2xl p-10 sm:p-12 shadow-lg hover:shadow-[0_0_25px_rgba(255,215,0,0.25)]
                        hover:border-yellow-400/50 hover:scale-[1.03]
                        transition-all duration-300 w-full sm:w-[90%] md:w-[80%] lg:w-[70%]
