@@ -36,8 +36,8 @@ export default function Features() {
   ];
 
   return (
-    <section className="bg-black text-white py-16 px-6 sm:px-12 lg:px-20">
-      {/* Heading */}
+    <section className="bg-black text-white py-16 px-4 sm:px-10 lg:px-20">
+      {/* Section Heading */}
       <div className="max-w-6xl mx-auto text-center mb-12">
         <h2 className="text-3xl sm:text-4xl font-bold text-yellow-400 mb-4 font-orbitron">
           Powerful Features
@@ -48,7 +48,7 @@ export default function Features() {
       </div>
 
       {/* Features Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="flex flex-col items-center gap-8">
         {features.map((f, i) => (
           <motion.div
             key={i}
@@ -56,14 +56,15 @@ export default function Features() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: i * 0.1 }}
             viewport={{ once: true }}
-            className="bg-[#292003]/30 backdrop-blur-md 
-                       rounded-2xl p-8 sm:p-10 shadow-lg hover:shadow-2xl hover:scale-105 
-                       transition-all w-full flex flex-col items-center justify-center text-center 
-                       min-h-[280px] sm:min-h-[300px]"
+            className="bg-[#292003]/30 backdrop-blur-md border border-[#1f2d4d]
+                       rounded-2xl p-10 shadow-lg hover:shadow-2xl hover:scale-[1.03]
+                       transition-all w-full sm:w-[90%] md:w-[80%] lg:w-[70%]
+                       flex flex-col items-center justify-center text-center 
+                       min-h-[280px]"
           >
             <div className="flex justify-center mb-4">{f.icon}</div>
-            <h3 className="text-lg sm:text-xl font-bold text-yellow-400 mb-2">{f.title}</h3>
-            <p className="text-gray-300 text-sm sm:text-base leading-relaxed max-w-xs">
+            <h3 className="text-xl font-bold text-yellow-400 mb-2">{f.title}</h3>
+            <p className="text-gray-300 text-base leading-relaxed max-w-md">
               {f.desc}
             </p>
           </motion.div>
