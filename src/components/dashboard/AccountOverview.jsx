@@ -1,112 +1,48 @@
-import React, { useState, useEffect } from "react";
-import { fetchUserBalance } from "../../api/user";
-import DepositModal from "./DepositModal";
+import React from "react";
 
-const AccountOverview = ({ userId }) => {
-  const [depositOpen, setDepositOpen] = useState(false);
-  const [balance, setBalance] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  const handleDepositSuccess = () => getBalance();
-
-  const getBalance = async () => {
-    setLoading(true);
-    try {
-      const data = await fetchUserBalance(userId);
-      setBalance(data?.balance ?? 0);
-    } catch {
-      setBalance(0);
-    }
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    if (userId) getBalance();
-  }, [userId]);
+export default function AccountOverview() {
+  const stats = [
+    { label: "Platform", value: "MT5" },
+    { label: "Account #", value: "123456" },
+    { label: "Nickname", value: "account" },
+    { label: "Balance", value: "$500.00 USD" },
+    { label: "Free Balance", value: "$0.00 USD" },
+    { label: "Equity", value: "$0.00 USD" },
+    { label: "Open P/L", value: "$0.00 USD" },
+    { label: "Net Credit", value: "$0.00 USD" },
+  ];
 
   return (
-    <section className="border border-[#181a20] text-white p-5 sm:p-10 rounded-2xl shadow-2xl mb-10 w-[98%] sm:w-[90%] mx-auto bg-black/70 backdrop-blur-md">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
-        <h2 className="text-2xl sm:text-3xl font-bold text-[#d4af37] tracking-wide">
-          Account Overview
-        </h2>
-        <span className="border border-[#d4af37]/40 text-yellow-400 px-4 py-1 rounded-full text-xs font-semibold">
-          Active
-        </span>
-      </div>
+    <section className="bg-black text-white min-h-screen py-10 px-3 sm:px-6">
+      <div className="max-w-5xl mx-auto">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-3xl font-bold text-yellow-400">Account Overview</h2>
+          <span className="px-4 py-1 border border-yellow-500 text-yellow-400 rounded-full text-sm">
+            Active
+          </span>
+        </div>
 
-      {/* Account Info Grid 1 */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-10">
-        {[
-          { label: "Platform", value: "MT5", color: "text-yellow-400" },
-          { label: "Account #", value: "123456" },
-          { label: "Nickname", value: "account1" },
-          {
-            label: "Balance",
-            value: loading ? "Loading..." : `$${Number(balance).toFixed(2)} USD`,
-            color: "text-yellow-400",
-          },
-        ].map((item, i) => (
-          <div
-            key={i}
-            className="flex flex-col items-center justify-center bg-[#0d0d0d]/80 border border-[#2a2a2a] rounded-xl p-6 w-full shadow-lg hover:border-yellow-500/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.2)] transition-all duration-300"
-          >
-            <span className="text-sm text-gray-400 mb-1">{item.label}</span>
-            <span className={`text-lg sm:text-xl font-bold ${item.color || ""}`}>
-              {item.value}
-            </span>
-          </div>
-        ))}
+        {/* Stats Grid */}
+        <div
+          className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 gap-4 w-full
+                     justify-center items-stretch"
+        >
+          {stats.map((item, i) => (
+            <div
+              key={i}
+              className="bg-[#0c0c0c] border border-yellow-500/30 rounded-2xl p-4 text-center 
+                         shadow-[0_0_12px_rgba(255,215,0,0.2)] hover:shadow-[0_0_25px_rgba(255,215,0,0.35)]
+                         transition-all duration-300 flex flex-col justify-center items-center"
+            >
+              <span className="text-xs text-gray-400 mb-1">{item.label}</span>
+              <span className="text-sm sm:text-base font-semibold text-yellow-400">
+                {item.value}
+              </span>
+            </div>
+          ))}
+        </div>
       </div>
-
-      {/* Account Info Grid 2 */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-10">
-        {[
-          { label: "Free Balance", value: "$0.00 USD" },
-          { label: "Equity", value: "$0.00 USD" },
-          { label: "Open P/L", value: "$0.00 USD" },
-          { label: "Net Credit", value: "$0.00 USD" },
-        ].map((item, i) => (
-          <div
-            key={i}
-            className="flex flex-col items-center justify-center bg-[#181a20]/90 border border-[#2a2a2a] rounded-xl p-6 w-full shadow-lg hover:border-yellow-500/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.2)] transition-all duration-300"
-          >
-            <span className="text-sm text-gray-400 mb-1">{item.label}</span>
-            <span className="text-lg sm:text-xl font-bold">{item.value}</span>
-          </div>
-        ))}
-      </div>
-
-      {/* Buttons */}
-      <div className="flex flex-col sm:flex-row gap-4 justify-center sm:justify-end w-full">
-        {[
-          { label: "Deposit", action: () => setDepositOpen(true) },
-          { label: "Log In" },
-          { label: "Add Demo Account" },
-        ].map((btn, i) => (
-          <button
-            key={i}
-            onClick={btn.action}
-            className="relative overflow-hidden px-8 py-3 rounded-xl font-bold text-white bg-gradient-to-r from-[#d4af37]/25 to-[#d4af37]/15 border border-yellow-500/30 shadow-md hover:shadow-[0_0_25px_rgba(212,175,55,0.25)] transition-all duration-300 w-full sm:w-auto"
-          >
-            <span className="relative z-10">{btn.label}</span>
-            <span className="absolute inset-0 bg-yellow-400/10 rounded-xl blur-md"></span>
-          </button>
-        ))}
-      </div>
-
-      {/* Deposit Modal */}
-      {depositOpen && (
-        <DepositModal
-          open={depositOpen}
-          onClose={() => setDepositOpen(false)}
-          userId={userId}
-          onSuccess={handleDepositSuccess}
-        />
-      )}
     </section>
   );
-};
-
-export default AccountOverview;
+}
