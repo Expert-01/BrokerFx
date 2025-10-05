@@ -25,7 +25,7 @@ const AccountOverview = ({ userId }) => {
   }, [userId]);
 
   return (
-    <section className="border border-[#181a20] text-white p-6 sm:p-8 rounded-2xl shadow-2xl mb-8 w-full max-w-9xl mx-auto">
+    <section className="border border-[#181a20] text-white p-6 sm:p-8 rounded-2xl shadow-2xl mb-8 w-full max-w-4xl mx-auto">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-2 sm:gap-0">
         <h2 className="text-xl sm:text-2xl font-bold text-[#d4af37] tracking-wide">
