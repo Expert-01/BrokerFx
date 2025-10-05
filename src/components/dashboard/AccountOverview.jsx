@@ -17,7 +17,7 @@ export default function AccountOverview() {
       {/* Parent Container with border */}
       <div
         className="w-[100%] sm:w-[90%] mx-auto border border-white/10 rounded-2xl 
-                   p-6 sm:p-10 backdrop-blur-md shadow-[0_0_15px_rgba(255,255,255,0.05)]"
+                   p-9 sm:p-10 backdrop-blur-md shadow-[0_0_15px_rgba(255,255,255,0.05)]"
       >
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
