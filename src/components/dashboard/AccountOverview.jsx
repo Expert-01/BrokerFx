@@ -25,9 +25,9 @@ const AccountOverview = ({ userId }) => {
   }, [userId]);
 
   return (
-    <section className="border border-[#181a20] text-white p-6 sm:p-10 rounded-2xl shadow-2xl mb-10 w-[95%] sm:w-[90%] md:w-[85%] lg:w-[80%] mx-auto bg-black/60 backdrop-blur-lg">
+    <section className="border border-[#181a20] text-white p-5 sm:p-10 rounded-2xl shadow-2xl mb-10 w-[98%] sm:w-[90%] mx-auto bg-black/70 backdrop-blur-md">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-3">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
         <h2 className="text-2xl sm:text-3xl font-bold text-[#d4af37] tracking-wide">
           Account Overview
         </h2>
@@ -37,7 +37,7 @@ const AccountOverview = ({ userId }) => {
       </div>
 
       {/* Account Info Grid 1 */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 mb-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-10">
         {[
           { label: "Platform", value: "MT5", color: "text-yellow-400" },
           { label: "Account #", value: "123456" },
@@ -50,10 +50,10 @@ const AccountOverview = ({ userId }) => {
         ].map((item, i) => (
           <div
             key={i}
-            className="flex flex-col items-center bg-[#0d0d0d]/70 border border-[#2a2a2a] rounded-xl p-6 sm:p-8 w-full shadow-lg hover:border-yellow-500/40 hover:shadow-[0_0_20px_rgba(212,175,55,0.15)] transition-all duration-300"
+            className="flex flex-col items-center justify-center bg-[#0d0d0d]/80 border border-[#2a2a2a] rounded-xl p-6 w-full shadow-lg hover:border-yellow-500/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.2)] transition-all duration-300"
           >
             <span className="text-sm text-gray-400 mb-1">{item.label}</span>
-            <span className={`text-lg font-bold ${item.color || ""}`}>
+            <span className={`text-lg sm:text-xl font-bold ${item.color || ""}`}>
               {item.value}
             </span>
           </div>
@@ -61,7 +61,7 @@ const AccountOverview = ({ userId }) => {
       </div>
 
       {/* Account Info Grid 2 */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 mb-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-10">
         {[
           { label: "Free Balance", value: "$0.00 USD" },
           { label: "Equity", value: "$0.00 USD" },
@@ -70,10 +70,10 @@ const AccountOverview = ({ userId }) => {
         ].map((item, i) => (
           <div
             key={i}
-            className="flex flex-col items-center bg-[#181a20] border border-[#2a2a2a] rounded-xl p-6 sm:p-8 w-full shadow-lg hover:border-yellow-500/40 hover:shadow-[0_0_20px_rgba(212,175,55,0.15)] transition-all duration-300"
+            className="flex flex-col items-center justify-center bg-[#181a20]/90 border border-[#2a2a2a] rounded-xl p-6 w-full shadow-lg hover:border-yellow-500/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.2)] transition-all duration-300"
           >
             <span className="text-sm text-gray-400 mb-1">{item.label}</span>
-            <span className="text-lg font-bold">{item.value}</span>
+            <span className="text-lg sm:text-xl font-bold">{item.value}</span>
           </div>
         ))}
       </div>
@@ -88,7 +88,7 @@ const AccountOverview = ({ userId }) => {
           <button
             key={i}
             onClick={btn.action}
-            className="relative overflow-hidden px-8 py-3 rounded-xl font-bold text-white bg-gradient-to-r from-[#d4af37]/20 to-[#d4af37]/10 border border-yellow-500/30 shadow-md hover:shadow-[0_0_20px_rgba(212,175,55,0.25)] transition-all duration-300"
+            className="relative overflow-hidden px-8 py-3 rounded-xl font-bold text-white bg-gradient-to-r from-[#d4af37]/25 to-[#d4af37]/15 border border-yellow-500/30 shadow-md hover:shadow-[0_0_25px_rgba(212,175,55,0.25)] transition-all duration-300 w-full sm:w-auto"
           >
             <span className="relative z-10">{btn.label}</span>
             <span className="absolute inset-0 bg-yellow-400/10 rounded-xl blur-md"></span>
