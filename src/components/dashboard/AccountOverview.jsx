@@ -16,7 +16,7 @@ export default function AccountOverview() {
     <section className="bg-black text-white min-h-screen py-10 px-3 sm:px-6">
       {/* Parent Container with border */}
       <div
-        className="w-[95%] sm:w-[90%] mx-auto border border-white/10 rounded-2xl 
+        className="w-[100%] sm:w-[90%] mx-auto border border-white/10 rounded-2xl 
                    p-6 sm:p-10 backdrop-blur-md shadow-[0_0_15px_rgba(255,255,255,0.05)]"
       >
         {/* Header */}
