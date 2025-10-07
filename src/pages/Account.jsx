@@ -35,7 +35,7 @@ const Account = () => {
 	return (
 		<div className="min-h-screen flex flex-col p-4 md:flex md:flex-row bg-black w-full" style={{overflowX:" hidden"}}>
 			<Sidebar />
-        <MobileTopBar />
+    
             
 			<main className="flex-1 flex flex-col items-center px-2 md:px-8 py-6 md:ml-56 w-[200px]">
 				<div className="w-full max-w-7xl flex flex-col gap-6">
