@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 export default function MobileHoldingsCard() {
-  const [coins, setCoins] = useState([]);
+  const [coins, setCoins] = useState({});
   const [loading, setLoading] = useState(true);
 
   const holdings = [
@@ -30,6 +30,46 @@ export default function MobileHoldingsCard() {
     return () => clearInterval(interval);
   }, []);
 
+  const renderIcon = (id) => {
+    switch (id) {
+      case "bitcoin":
+        return (
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="12" fill="#bfa233" />
+            <text
+              x="12"
+              y="16"
+              textAnchor="middle"
+              fontSize="14"
+              fill="#111216"
+              fontWeight="bold"
+            >
+              ₿
+            </text>
+          </svg>
+        );
+      case "ethereum":
+        return (
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="12" fill="#bfa233" />
+            <polygon points="12,5 19,12 12,19 5,12" fill="#111216" />
+          </svg>
+        );
+      case "solana":
+        return (
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="12" fill="#bfa233" />
+            <rect x="6" y="8" width="12" height="2" rx="1" fill="#111216" />
+            <rect x="6" y="14" width="12" height="2" rx="1" fill="#d7263d" />
+          </svg>
+        );
+      default:
+        return (
+          <span className="text-[#bfa233] text-lg font-bold">?</span>
+        );
+    }
+  };
+
   return (
     <div className="p-4">
       <div className="text-base font-semibold text-white mb-4">Your Holdings</div>
@@ -43,13 +83,10 @@ export default function MobileHoldingsCard() {
           return (
             <div
               key={coin.id}
-              className="flex items-center bg-[#111216] rounded-xl px-4 py-4"
+              className="flex items-center bg-[#111216] rounded-xl px-4 py-4 hover:scale-[1.02] transition-transform duration-300"
             >
               <div className="w-10 h-10 flex items-center justify-center rounded-full bg-[#bfa233]/20 mr-4">
-                {/* Coin icon fallback */}
-                <span className="text-[#bfa233] text-lg font-bold">
-                  {coin.symbol[0]}
-                </span>
+                {renderIcon(coin.id)}
               </div>
 
               <div className="flex-1">
@@ -85,4 +122,4 @@ export default function MobileHoldingsCard() {
       </div>
     </div>
   );
-        }
+    }
