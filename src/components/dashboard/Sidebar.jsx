@@ -59,28 +59,27 @@ const Sidebar = () => {
 
   return (
     <>
-      {/* 🟡 Floating 3-Line Hamburger Icon (no background) */}
+{/* 🟡 Floating 3-Line Hamburger Icon (cleaner style) */}
 <button
   onClick={() => setMobileOpen(!mobileOpen)}
-  className="fixed top-4 left-4 z-[9999] md:hidden flex flex-col justify-between h-6 w-8 focus:outline-none"
+  className="fixed top-4 left-4 z-[9999] md:hidden flex flex-col justify-center items-center focus:outline-none"
 >
   <span
-    className={`block h-[3.5px] w-full rounded-full bg-white transition-all duration-300 ${
-      mobileOpen ? "rotate-45 translate-y-[6px]" : ""
+    className={`block w-7 h-1 rounded bg-[#fff] transition-all duration-300 ${
+      mobileOpen ? "rotate-45 translate-y-2" : ""
     }`}
   ></span>
   <span
-    className={`block h-[3.5px] w-full rounded-full bg-white transition-all duration-300 ${
+    className={`block w-7 h-1 rounded bg-[#fff] my-1 transition-all duration-300 ${
       mobileOpen ? "opacity-0" : ""
     }`}
   ></span>
   <span
-    className={`block h-[3.5px] w-full rounded-full bg-white transition-all duration-300 ${
-      mobileOpen ? "-rotate-45 -translate-y-[6px]" : ""
+    className={`block w-7 h-1 rounded bg-[#fff] transition-all duration-300 ${
+      mobileOpen ? "-rotate-45 -translate-y-2" : ""
     }`}
   ></span>
 </button>
-
       
       {/* 🟡 Sidebar */}
       <aside
