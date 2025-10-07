@@ -70,12 +70,12 @@ const Sidebar = () => {
           }`}
         ></span>
         <span
-          className={`block h-[2px] w-full rounded-full bg-white transition-all duration-300 ${
+          className={`block h-[6px] w-full rounded-full bg-white transition-all duration-300 ${
             mobileOpen ? "opacity-0" : ""
           }`}
         ></span>
         <span
-          className={`block h-[2px] w-full rounded-full bg-white transition-all duration-300 ${
+          className={`block h-[6px] w-full rounded-full bg-white transition-all duration-300 ${
             mobileOpen ? "-rotate-45 -translate-y-[6px]" : ""
           }`}
         ></span>
