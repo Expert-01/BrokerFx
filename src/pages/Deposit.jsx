@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../components/dashboard/Sidebar";
 import { jwtDecode } from "jwt-decode";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 function Deposit() {
   const [method, setMethod] = useState("crypto");
@@ -9,8 +11,13 @@ function Deposit() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [paymentMethods, setPaymentMethods] = useState([]); // fetched methods
-  const [selectedDetails, setSelectedDetails] = useState(null); // selected method details
+  const [paymentMethods, setPaymentMethods] = useState([]);
+  const [selectedDetails, setSelectedDetails] = useState(null);
+
+  // Initialize AOS animations
+  useEffect(() => {
+    AOS.init({ duration: 800, once: true });
+  }, []);
 
   // Decode token for userId
   let userId = null;
@@ -25,7 +32,7 @@ function Deposit() {
     userId = null;
   }
 
-  // Fetch payment method details from backend
+  // Fetch payment methods
   useEffect(() => {
     const fetchMethods = async () => {
       try {
@@ -43,7 +50,7 @@ function Deposit() {
     fetchMethods();
   }, []);
 
-  // Update details whenever method changes
+  // Update selected method details
   useEffect(() => {
     const details = paymentMethods.find(
       (m) => m.method.toLowerCase() === method.toLowerCase()
@@ -104,7 +111,10 @@ function Deposit() {
       {/* Main */}
       <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
         {/* Payment methods list */}
-        <div className="flex md:flex-col gap-2 p-2 md:p-6 md:w-64 bg-[#111216] overflow-x-auto md:overflow-y-auto">
+        <div
+          className="flex md:flex-col gap-2 p-2 md:p-6 md:w-64 bg-[#111216] overflow-x-auto md:overflow-y-auto"
+          data-aos="fade-right"
+        >
           {paymentMethods.map((m) => (
             <button
               key={m.method}
@@ -127,25 +137,38 @@ function Deposit() {
           <form
             onSubmit={handleSubmit}
             className="w-full max-w-md bg-[#181a20] rounded-xl shadow-lg p-6 md:p-8"
+            data-aos="fade-up"
           >
-            <h2 className="text-xl md:text-2xl font-bold mb-6 text-[#bfa233]">
+            <h2
+              className="text-xl md:text-2xl font-bold mb-6 text-[#bfa233]"
+              data-aos="fade-down"
+            >
               Deposit
             </h2>
 
             {success && (
-              <div className="mb-4 text-green-400 text-center font-semibold">
+              <div
+                className="mb-4 text-green-400 text-center font-semibold"
+                data-aos="fade-in"
+              >
                 {success}
               </div>
             )}
             {error && (
-              <div className="mb-4 text-red-400 text-center font-semibold">
+              <div
+                className="mb-4 text-red-400 text-center font-semibold"
+                data-aos="fade-in"
+              >
                 {error}
               </div>
             )}
 
-            {/* Display method details */}
+            {/* Payment method details */}
             {selectedDetails && (
-              <div className="mb-6 p-3 rounded-lg bg-[#23272f] text-sm text-gray-300">
+              <div
+                className="mb-6 p-3 rounded-lg bg-[#23272f] text-sm text-gray-300"
+                data-aos="fade-in"
+              >
                 {selectedDetails.method.toLowerCase() === "crypto" ? (
                   <>
                     <p>
@@ -168,12 +191,24 @@ function Deposit() {
               </div>
             )}
 
-            {/* Amount */}
-            <label className="block mb-2 text-sm font-semibold text-gray-300">
+            {/* Instruction before amount */}
+            <p
+              className="text-gray-400 text-sm mb-2"
+              data-aos="fade-in"
+              data-aos-delay="100"
+            >
+              Input the amount you wish to deposit.
+            </p>
+
+            {/* Amount input */}
+            <label
+              className="block mb-2 text-sm font-semibold text-gray-300"
+              data-aos="fade-in"
+            >
               Amount
             </label>
             <input
-              className="w-full mb-6 p-3 rounded-lg bg-[#23272f] text-white border-none focus:ring-2 focus:ring-[#bfa233]"
+              className="w-full mb-3 p-3 rounded-lg bg-[#23272f] text-white border-none focus:ring-2 focus:ring-[#bfa233]"
               placeholder="Enter deposit amount"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
@@ -182,14 +217,39 @@ function Deposit() {
               min="1"
               step="any"
               required
+              data-aos="fade-in"
+              data-aos-delay="150"
             />
+
+            {/* Deposit warning text */}
+            <p
+              className="text-xs text-gray-400 mb-4"
+              data-aos="fade-in"
+              data-aos-delay="200"
+            >
+              Make a deposit of the exact amount to the exact details provided above
+              to prevent loss of funds.
+            </p>
+
+            {/* Deposit confirmation instruction */}
+            <p
+              className="text-xs text-gray-400 mb-6"
+              data-aos="fade-in"
+              data-aos-delay="250"
+            >
+              When you have made your deposit, click{" "}
+              <span className="text-[#bfa233] font-semibold">“I Have Paid”</span> and
+              your deposit will be reviewed and added to your balance.
+            </p>
 
             <button
               type="submit"
               className="w-full py-3 rounded-lg bg-[#bfa233] text-black font-bold text-lg hover:bg-[#bfa233]/70 transition disabled:opacity-60"
               disabled={loading}
+              data-aos="fade-up"
+              data-aos-delay="300"
             >
-              {loading ? "Processing..." : "Submit"}
+              {loading ? "Processing..." : "I Have Paid"}
             </button>
           </form>
         </main>
