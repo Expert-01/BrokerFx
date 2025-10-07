@@ -66,7 +66,7 @@ const Sidebar = () => {
       >
         <span
           className={`block h-[3px] rounded-sm transition-all duration-300 ${
-            mobileOpen ? "rotate-45 translate-y-[6px] bg-[#bfa233]" : "bg-gray-300"
+            mobileOpen ? "rotate-45 translate-y-[6px] bg-[#bfa233]" : "bg-white"
           }`}
         ></span>
         <span
