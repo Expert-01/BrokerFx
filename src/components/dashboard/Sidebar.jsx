@@ -59,28 +59,28 @@ const Sidebar = () => {
 
   return (
     <>
-      {/* 🟡 Animated Hamburger Menu Button */}
+      {/* 🟡 Animated Hamburger Menu */}
       <button
         onClick={() => setMobileOpen(!mobileOpen)}
-        className="fixed top-4 left-4 z-50 md:hidden bg-[#181a20] p-3 rounded-lg border border-[#23272f] shadow-lg flex flex-col justify-between h-7 w-8 transition-all duration-300 hover:border-[#bfa233]"
+        className="fixed top-4 left-4 z-50 md:hidden bg-[#181a20] p-3 rounded-lg border border-[#23272f] shadow-lg flex flex-col justify-between h-6 w-8 transition-all duration-300 hover:border-[#bfa233]"
       >
         <span
-          className={`block h-[3px] rounded-full transition-all duration-300 ${
+          className={`block h-[3px] w-full rounded-full transition-all duration-300 ${
             mobileOpen
-              ? "rotate-45 translate-y-[7px] bg-[#bfa233] w-6"
-              : "bg-[#f1f1f1] w-7"
+              ? "rotate-45 translate-y-[6px] bg-[#bfa233] w-[22px]"
+              : "bg-[#f1f1f1] w-[18px]"
           }`}
         ></span>
         <span
-          className={`block h-[3px] rounded-full transition-all duration-300 ${
-            mobileOpen ? "opacity-0" : "bg-[#f1f1f1] w-7"
+          className={`block h-[3px] w-full rounded-full transition-all duration-300 ${
+            mobileOpen ? "opacity-0" : "bg-[#f1f1f1] w-[22px]"
           }`}
         ></span>
         <span
-          className={`block h-[3px] rounded-full transition-all duration-300 ${
+          className={`block h-[3px] w-full rounded-full transition-all duration-300 ${
             mobileOpen
-              ? "-rotate-45 -translate-y-[7px] bg-[#bfa233] w-6"
-              : "bg-[#f1f1f1] w-7"
+              ? "-rotate-45 -translate-y-[6px] bg-[#bfa233] w-[22px]"
+              : "bg-[#f1f1f1] w-[18px]"
           }`}
         ></span>
       </button>
