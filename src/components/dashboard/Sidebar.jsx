@@ -1,26 +1,18 @@
 import React, { useState, useEffect } from "react";
 import {
-  Home,
-  Grid,
-  Mail,
-  Monitor,
-  PieChart,
-  Table,
-  Layout,
   LayoutDashboardIcon,
-  Map,
-  LogOut,
-  User,
   DollarSign,
   CreditCard,
   Info,
   Sliders,
   Bell,
   FileText,
+  PieChart,
   Users,
+  Table,
   UserCheck,
-  Menu,
-  X
+  LogOut,
+  User,
 } from "lucide-react";
 import { jwtDecode } from "jwt-decode";
 import { Link, useLocation } from "react-router-dom";
@@ -53,7 +45,6 @@ const Sidebar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
 
-  // Decode token
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -68,15 +59,29 @@ const Sidebar = () => {
 
   return (
     <>
-      {/* Mobile Toggle Button */}
+      {/* 🟡 Animated Hamburger Menu Button */}
       <button
-        className="fixed top-4 left-4 z-50 md:hidden bg-[#181a20] p-2 rounded-lg border border-[#23272f] shadow-lg"
         onClick={() => setMobileOpen(!mobileOpen)}
+        className="fixed top-4 left-4 z-50 md:hidden bg-[#181a20] p-3 rounded-lg border border-[#23272f] shadow-lg flex flex-col justify-between h-6 w-7 transition-all duration-300"
       >
-        {mobileOpen ? <X size={22} className="text-gray-300" /> : <Menu size={22} className="text-gray-300" />}
+        <span
+          className={`block h-[3px] rounded-sm transition-all duration-300 ${
+            mobileOpen ? "rotate-45 translate-y-[6px] bg-[#bfa233]" : "bg-gray-300"
+          }`}
+        ></span>
+        <span
+          className={`block h-[3px] rounded-sm transition-all duration-300 ${
+            mobileOpen ? "opacity-0" : "bg-gray-300"
+          }`}
+        ></span>
+        <span
+          className={`block h-[3px] rounded-sm transition-all duration-300 ${
+            mobileOpen ? "-rotate-45 -translate-y-[6px] bg-[#bfa233]" : "bg-gray-300"
+          }`}
+        ></span>
       </button>
 
-      {/* Sidebar */}
+      {/* 🟡 Sidebar */}
       <aside
         tabIndex={0}
         className={`fixed top-0 left-0 h-full bg-gradient-to-t from-[#111216] via-[#181a20] to-[#181a1f]
@@ -86,7 +91,7 @@ const Sidebar = () => {
         onClick={() => setExpanded((prev) => !prev)}
         style={{ overflowY: "hidden", overflowX: "hidden" }}
       >
-        {/* Logo + Username */}
+        {/* 🟡 Logo + Username */}
         <div className={`flex items-center gap-3 ${expanded ? "py-6" : "py-2"} mb-6 px-4`}>
           <div className="flex items-center justify-center">
             <img
@@ -96,15 +101,16 @@ const Sidebar = () => {
             />
           </div>
 
-          {/* Username visible on mobile too */}
           {expanded && (
-            <div className={`${expanded ? "block" : "hidden"} md:block`}>
-              <div className="font-semibold text-gray-400 text-sm">{user?.name || "User"}</div>
+            <div className="md:block">
+              <div className="font-semibold text-gray-400 text-sm">
+                {user?.name || "User"}
+              </div>
             </div>
           )}
         </div>
 
-        {/* Menu */}
+        {/* 🟡 Menu */}
         <nav className="flex-1 px-2">
           {menu.map((section) => (
             <div key={section.section} className="mb-6">
@@ -120,7 +126,7 @@ const Sidebar = () => {
                     <li key={item.name}>
                       <Link
                         to={item.link}
-                        className={`group flex items-center gap-1 rounded-lg px-1 py-1 mb-0.5 shadow border-none transition-all duration-300 cursor-pointer w-full ${
+                        className={`group flex items-center gap-1 rounded-lg px-1 py-1 mb-0.5 transition-all duration-300 cursor-pointer w-full ${
                           isActive
                             ? "bg-gradient-to-r from-yellow-400 via-yellow-300 to-yellow-600 text-black shadow-lg border-yellow-400 border-2"
                             : "hover:bg-[#181a20] text-gray-400"
@@ -139,7 +145,7 @@ const Sidebar = () => {
                             : {}
                         }
                         tabIndex={0}
-                        onClick={() => setMobileOpen(false)} // Close on mobile navigation
+                        onClick={() => setMobileOpen(false)}
                       >
                         <span className="flex justify-center items-center w-8 h-8">
                           {React.cloneElement(item.icon, {
