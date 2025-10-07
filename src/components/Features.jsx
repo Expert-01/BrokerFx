@@ -39,7 +39,7 @@ export default function Features() {
     <section className="bg-black text-white py-16 px-6 sm:px-10 lg:px-20">
       {/* Section Heading */}
       <div className="max-w-6xl mx-auto text-center mb-12">
-        <h2 className="text-3xl sm:text-4xl font-bold text-yellow-400 mb-4 font-orbitron">
+        <h2 className="text-3xl sm:text-4xl font-bold text-[#ffce1ebe] mb-4 font-orbitron">
           Powerful Features
         </h2>
         <p className="text-gray-300 max-w-2xl mx-auto">
@@ -64,7 +64,7 @@ export default function Features() {
           >
             <div className="absolute inset-0 rounded-2xl border border-yellow-400/10 blur-md"></div>
             <div className="flex justify-center mb-4 relative z-10">{f.icon}</div>
-            <h3 className="text-xl font-bold text-yellow-400 mb-2 relative z-10">{f.title}</h3>
+            <h3 className="text-xl font-bold text-[#ffce1ebe] mb-2 relative z-10">{f.title}</h3>
             <p className="text-gray-300 text-base leading-relaxed max-w-md relative z-10">
               {f.desc}
             </p>
