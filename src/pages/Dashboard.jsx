@@ -107,7 +107,7 @@ export default function Dashboard() {
       </div>
       {/* Mobile Dashboard */}
   <div className="md:hidden bg-[#000000a0] min-h-screen w-full p-5 flex flex-col gap-4" data-aos="fade-up">
-        
+        <Sidebar/>
         <MobileBalanceCard userId={userId} />
         <MobileActionButtons />
         <MobileHoldingsCard />
