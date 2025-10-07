@@ -13,7 +13,7 @@ export default function DashboardScreenshot() {
         <img
           src={dashboardImg}
           alt="Dashboard Screenshot"
-          className="w-[80%] md:w-full h-auto object-contain mx-auto"
+          className="w-[95%] md:w-full h-auto object-contain mx-auto"
           style={{ minHeight: 320 }}
         />
       </div>
