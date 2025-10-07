@@ -1,18 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Sidebar from "../components/dashboard/Sidebar";
 import { jwtDecode } from "jwt-decode";
-
-const paymentMethods = [
-  { key: "crypto", label: "Crypto", icon: "🪙" },
-  { key: "card", label: "Credit/Debit Card", icon: "💳" },
-  { key: "fatoorah", label: "myFatoorah", icon: "F" },
-];
-
-const assets = [
-  { key: "btc", label: "Bitcoin" },
-  { key: "eth", label: "Ethereum" },
-  { key: "usdt", label: "USDT" },
-];
 
 function Deposit() {
   const [method, setMethod] = useState("crypto");
@@ -21,6 +9,8 @@ function Deposit() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [paymentMethods, setPaymentMethods] = useState([]); // fetched methods
+  const [selectedDetails, setSelectedDetails] = useState(null); // selected method details
 
   // Decode token for userId
   let userId = null;
@@ -34,6 +24,32 @@ function Deposit() {
   } catch {
     userId = null;
   }
+
+  // Fetch payment method details from backend
+  useEffect(() => {
+    const fetchMethods = async () => {
+      try {
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/payment-methods/public`
+        );
+        if (!res.ok) throw new Error("Failed to load payment methods");
+        const data = await res.json();
+        setPaymentMethods(data);
+      } catch (err) {
+        console.error(err);
+        setError("Unable to fetch payment methods. Please try again later.");
+      }
+    };
+    fetchMethods();
+  }, []);
+
+  // Update details whenever method changes
+  useEffect(() => {
+    const details = paymentMethods.find(
+      (m) => m.method.toLowerCase() === method.toLowerCase()
+    );
+    setSelectedDetails(details || null);
+  }, [method, paymentMethods]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -80,28 +96,28 @@ function Deposit() {
 
   return (
     <div className="w-full h-screen flex flex-row bg-[#111216] text-white overflow-hidden">
-      {/* Sidebar (desktop only) */}
+      {/* Sidebar */}
       <div className="hidden md:block">
         <Sidebar />
       </div>
 
-      {/* Main content */}
+      {/* Main */}
       <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
-        {/* Payment methods (stacked on mobile, sidebar on desktop) */}
+        {/* Payment methods list */}
         <div className="flex md:flex-col gap-2 p-2 md:p-6 md:w-64 bg-[#111216] overflow-x-auto md:overflow-y-auto">
           {paymentMethods.map((m) => (
             <button
-              key={m.key}
+              key={m.method}
               className={`flex items-center gap-2 px-3 py-2 rounded-lg font-semibold text-sm md:text-lg transition-all duration-200 flex-1 md:flex-none justify-center md:justify-start border-2 border-transparent ${
-                method === m.key
+                method === m.method.toLowerCase()
                   ? "bg-[#bfa233] text-black border-[#bfa233] shadow"
                   : "bg-[#181a20] text-[#bfa233] hover:bg-[#23272f]"
               }`}
-              onClick={() => setMethod(m.key)}
+              onClick={() => setMethod(m.method.toLowerCase())}
               disabled={loading}
             >
-              <span className="text-lg md:text-2xl">{m.icon}</span>
-              <span>{m.label}</span>
+              <span>{m.icon || "💰"}</span>
+              <span>{m.method}</span>
             </button>
           ))}
         </div>
@@ -127,117 +143,54 @@ function Deposit() {
               </div>
             )}
 
-            {/* CRYPTO */}
-            {method === "crypto" && (
-              <>
-                <label className="block mb-2 text-sm font-semibold text-gray-300">
-                  Select an asset
-                </label>
-                <select
-                  className="w-full mb-4 p-3 rounded-lg bg-[#23272f] text-white border-none focus:ring-2 focus:ring-[#bfa233]"
-                  value={asset}
-                  onChange={(e) => setAsset(e.target.value)}
-                  disabled={loading}
-                >
-                  {assets.map((a) => (
-                    <option key={a.key} value={a.key}>
-                      {a.label}
-                    </option>
-                  ))}
-                </select>
-                <label className="block mb-2 text-sm font-semibold text-gray-300">
-                  Amount
-                </label>
-                <input
-                  className="w-full mb-6 p-3 rounded-lg bg-[#23272f] text-white border-none focus:ring-2 focus:ring-[#bfa233]"
-                  placeholder={`e.g. 0.05 ${
-                    assets.find((a) => a.key === asset)?.label || ""
-                  }`}
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  disabled={loading}
-                  type="number"
-                  min="0.0001"
-                  step="any"
-                  required
-                />
-                <button
-                  type="submit"
-                  className="w-full py-3 rounded-lg bg-[#bfa233] text-black font-bold text-lg hover:bg-[#bfa233]/70 transition disabled:opacity-60"
-                  disabled={loading}
-                >
-                  {loading ? "Processing..." : "Continue"}
-                </button>
-              </>
+            {/* Display method details */}
+            {selectedDetails && (
+              <div className="mb-6 p-3 rounded-lg bg-[#23272f] text-sm text-gray-300">
+                {selectedDetails.method.toLowerCase() === "crypto" ? (
+                  <>
+                    <p>
+                      <span className="font-semibold text-[#bfa233]">Asset:</span>{" "}
+                      {asset.toUpperCase()}
+                    </p>
+                    <p>
+                      <span className="font-semibold text-[#bfa233]">Wallet:</span>{" "}
+                      {selectedDetails.wallet_address || "Not provided"}
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p>
+                      <span className="font-semibold text-[#bfa233]">Details:</span>{" "}
+                      {selectedDetails.details || "Not provided"}
+                    </p>
+                  </>
+                )}
+              </div>
             )}
 
-            {/* CARD */}
-            {method === "card" && (
-              <>
-                <h3 className="text-lg md:text-xl font-bold mb-2 text-[#bfa233]">
-                  Credit/Debit Card
-                </h3>
-                <p className="mb-4 text-gray-400 text-sm">
-                  Your deposit will be credited to your trading account within
-                  1-2 hours.
-                </p>
-                <label className="block mb-2 text-sm font-semibold text-gray-300">
-                  Amount
-                </label>
-                <input
-                  className="w-full mb-6 p-3 rounded-lg bg-[#23272f] text-white border-none focus:ring-2 focus:ring-[#bfa233]"
-                  placeholder="e.g. 50 USD"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  disabled={loading}
-                  type="number"
-                  min="1"
-                  step="any"
-                  required
-                />
-                <button
-                  type="submit"
-                  className="w-full py-3 rounded-lg bg-[#bfa233] text-black font-bold text-lg hover:bg-[#14e3c7] transition disabled:opacity-60"
-                  disabled={loading}
-                >
-                  {loading ? "Processing..." : "Submit"}
-                </button>
-              </>
-            )}
+            {/* Amount */}
+            <label className="block mb-2 text-sm font-semibold text-gray-300">
+              Amount
+            </label>
+            <input
+              className="w-full mb-6 p-3 rounded-lg bg-[#23272f] text-white border-none focus:ring-2 focus:ring-[#bfa233]"
+              placeholder="Enter deposit amount"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              disabled={loading}
+              type="number"
+              min="1"
+              step="any"
+              required
+            />
 
-            {/* FATOORAH */}
-            {method === "fatoorah" && (
-              <>
-                <h3 className="text-lg md:text-xl font-bold mb-2 text-[#bfa233]">
-                  myFatoorah
-                </h3>
-                <p className="mb-4 text-gray-400 text-sm">
-                  Your deposit will be credited to your trading account within
-                  1-2 hours.
-                </p>
-                <label className="block mb-2 text-sm font-semibold text-gray-300">
-                  Amount
-                </label>
-                <input
-                  className="w-full mb-6 p-3 rounded-lg bg-[#23272f] text-white border-none focus:ring-2 focus:ring-[#bfa233]"
-                  placeholder="e.g. 50 USD"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  disabled={loading}
-                  type="number"
-                  min="1"
-                  step="any"
-                  required
-                />
-                <button
-                  type="submit"
-                  className="w-full py-3 rounded-lg bg-[#bfa233] text-black font-bold text-lg hover:bg-[#14e3c7] transition disabled:opacity-60"
-                  disabled={loading}
-                >
-                  {loading ? "Processing..." : "Submit"}
-                </button>
-              </>
-            )}
+            <button
+              type="submit"
+              className="w-full py-3 rounded-lg bg-[#bfa233] text-black font-bold text-lg hover:bg-[#bfa233]/70 transition disabled:opacity-60"
+              disabled={loading}
+            >
+              {loading ? "Processing..." : "Submit"}
+            </button>
           </form>
         </main>
       </div>
