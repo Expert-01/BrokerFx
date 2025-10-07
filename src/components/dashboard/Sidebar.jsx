@@ -59,52 +59,47 @@ const Sidebar = () => {
 
   return (
     <>
-      {/* 🟡 Animated Hamburger Menu */}
+      {/* 🟡 Hamburger Menu (Always visible on mobile) */}
       <button
         onClick={() => setMobileOpen(!mobileOpen)}
-        className="fixed top-4 left-4 z-50 md:hidden bg-[#181a20] p-3 rounded-lg border border-[#23272f] shadow-lg flex flex-col justify-between h-6 w-8 transition-all duration-300 hover:border-[#bfa233]"
+        className="fixed top-4 left-4 z-[9999] md:hidden p-3 rounded-md bg-[#0e0f13] border border-[#2a2a2a] shadow-lg flex flex-col justify-between h-6 w-8"
       >
         <span
-          className={`block h-[3px] w-full rounded-full transition-all duration-300 ${
+          className={`block h-[2px] rounded-full transition-all duration-300 ${
             mobileOpen
-              ? "rotate-45 translate-y-[6px] bg-[#bfa233] w-[22px]"
-              : "bg-[#f1f1f1] w-[18px]"
+              ? "rotate-45 translate-y-[6px] bg-white"
+              : "bg-white"
           }`}
         ></span>
         <span
-          className={`block h-[3px] w-full rounded-full transition-all duration-300 ${
-            mobileOpen ? "opacity-0" : "bg-[#f1f1f1] w-[22px]"
+          className={`block h-[2px] rounded-full transition-all duration-300 ${
+            mobileOpen ? "opacity-0" : "bg-white"
           }`}
         ></span>
         <span
-          className={`block h-[3px] w-full rounded-full transition-all duration-300 ${
+          className={`block h-[2px] rounded-full transition-all duration-300 ${
             mobileOpen
-              ? "-rotate-45 -translate-y-[6px] bg-[#bfa233] w-[22px]"
-              : "bg-[#f1f1f1] w-[18px]"
+              ? "-rotate-45 -translate-y-[6px] bg-white"
+              : "bg-white"
           }`}
         ></span>
       </button>
 
       {/* 🟡 Sidebar */}
       <aside
-        tabIndex={0}
         className={`fixed top-0 left-0 h-full bg-gradient-to-t from-[#111216] via-[#181a20] to-[#181a1f]
-          border-r border-[#23272f] flex flex-col shadow-xl transition-all duration-300 z-40
+          border-r border-[#23272f] flex flex-col shadow-xl transition-all duration-300 z-[9998]
           ${expanded ? "w-56" : "w-[65px]"}
           ${mobileOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}
-        onClick={() => setExpanded((prev) => !prev)}
-        style={{ overflowY: "hidden", overflowX: "hidden" }}
+        style={{ overflowY: "hidden" }}
       >
-        {/* 🟡 Logo + Username */}
-        <div className={`flex items-center gap-3 ${expanded ? "py-6" : "py-2"} mb-6 px-4`}>
-          <div className="flex items-center justify-center">
-            <img
-              src={Logo}
-              alt="Logo"
-              className={`${expanded ? "w-20 h-20" : "w-12 h-12"} object-contain transition-all duration-300`}
-            />
-          </div>
-
+        {/* Logo + Username */}
+        <div className={`flex items-center gap-3 ${expanded ? "py-6" : "py-3"} mb-6 px-4`}>
+          <img
+            src={Logo}
+            alt="Logo"
+            className={`${expanded ? "w-20 h-20" : "w-12 h-12"} object-contain transition-all duration-300`}
+          />
           {expanded && (
             <div className="md:block">
               <div className="font-semibold text-gray-400 text-sm">
@@ -114,7 +109,7 @@ const Sidebar = () => {
           )}
         </div>
 
-        {/* 🟡 Menu */}
+        {/* Menu */}
         <nav className="flex-1 px-2">
           {menu.map((section) => (
             <div key={section.section} className="mb-6">
@@ -148,7 +143,6 @@ const Sidebar = () => {
                               }
                             : {}
                         }
-                        tabIndex={0}
                         onClick={() => setMobileOpen(false)}
                       >
                         <span className="flex justify-center items-center w-8 h-8">
