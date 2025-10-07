@@ -39,7 +39,7 @@ const menu = [
   },
 ];
 
-const Sidebar = () => {
+const MobileSidebar = () => {
   const [user, setUser] = useState(null);
   const [expanded, setExpanded] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -167,4 +167,4 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar;
+export default MobileSidebar;
