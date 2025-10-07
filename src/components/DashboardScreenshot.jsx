@@ -5,7 +5,7 @@ export default function DashboardScreenshot() {
   return (
     <div className="w-full flex justify-center items-center py-12">
       <div
-        className="shadow-2xl overflow-hidden border border-[#222] bg-[#111] max-w-5xl w-full"
+        className="shadow-2xl overflow-hidden max-w-5xl w-full"
         data-aos="fade-up"
         data-aos-duration="1200"
         data-aos-offset="200"
