@@ -65,18 +65,18 @@ const Sidebar = () => {
         className="fixed top-4 left-4 z-[9999] md:hidden flex flex-col justify-between h-6 w-8 focus:outline-none"
       >
         <span
-          className={`block h-[2px] w-full rounded-full bg-white transition-all duration-300 ${
-            mobileOpen ? "rotate-45 translate-y-[6px]" : ""
+          className={`block h-[3.5px] w-full rounded-full bg-white transition-all duration-300 ${
+            mobileOpen ? "rotate-45 translate-y-[7px]" : ""
           }`}
         ></span>
         <span
-          className={`block h-[6px] w-full rounded-full bg-white transition-all duration-300 ${
+          className={`block h-[3.5px] w-full rounded-full bg-white transition-all duration-300 ${
             mobileOpen ? "opacity-0" : ""
           }`}
         ></span>
         <span
-          className={`block h-[6px] w-full rounded-full bg-white transition-all duration-300 ${
-            mobileOpen ? "-rotate-45 -translate-y-[6px]" : ""
+          className={`block h-[3.5px] w-full rounded-full bg-white transition-all duration-300 ${
+            mobileOpen ? "-rotate-45 -translate-y-[7px]" : ""
           }`}
         ></span>
       </button>
