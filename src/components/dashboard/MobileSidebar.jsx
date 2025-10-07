@@ -13,6 +13,7 @@ import {
   UserCheck,
   LogOut,
   User,
+  ChevronLeft,
 } from "lucide-react";
 import { jwtDecode } from "jwt-decode";
 import { Link, useLocation } from "react-router-dom";
@@ -59,38 +60,38 @@ const MobileSidebar = () => {
 
   return (
     <>
-{/* 🟡 Floating 3-Line Hamburger Icon (cleaner style) */}
-<button
-  onClick={() => setMobileOpen(!mobileOpen)}
-  className="fixed top-4 left-4 z-[9999] md:hidden flex flex-col justify-center items-center focus:outline-none"
->
-  <span
-    className={`block w-7 h-1 rounded bg-[#fff] transition-all duration-300 ${
-      mobileOpen ? "rotate-45 translate-y-2" : ""
-    }`}
-  ></span>
-  <span
-    className={`block w-7 h-1 rounded bg-[#fff] my-1 transition-all duration-300 ${
-      mobileOpen ? "opacity-0" : ""
-    }`}
-  ></span>
-  <span
-    className={`block w-7 h-1 rounded bg-[#fff] transition-all duration-300 ${
-      mobileOpen ? "-rotate-45 -translate-y-2" : ""
-    }`}
-  ></span>
-</button>
-      
+      {/* 🟡 Floating 3-Line Hamburger Icon (mobile only) */}
+      <button
+        onClick={() => setMobileOpen(!mobileOpen)}
+        className="fixed top-4 left-4 z-[9999] md:hidden flex flex-col justify-center items-center focus:outline-none"
+      >
+        <span
+          className={`block w-7 h-1 rounded bg-[#fff] transition-all duration-300 ${
+            mobileOpen ? "rotate-45 translate-y-2" : ""
+          }`}
+        ></span>
+        <span
+          className={`block w-7 h-1 rounded bg-[#fff] my-1 transition-all duration-300 ${
+            mobileOpen ? "opacity-0" : ""
+          }`}
+        ></span>
+        <span
+          className={`block w-7 h-1 rounded bg-[#fff] transition-all duration-300 ${
+            mobileOpen ? "-rotate-45 -translate-y-2" : ""
+          }`}
+        ></span>
+      </button>
+
       {/* 🟡 Sidebar */}
       <aside
         className={`fixed top-0 left-0 h-full bg-gradient-to-t from-[#111216] via-[#181a20] to-[#181a1f]
           border-r border-[#23272f] flex flex-col shadow-xl transition-all duration-300 z-[9998]
-          ${expanded ? "w-56" : "w-[65px]"}
+          ${expanded ? "w-56" : "w-[70px]"}
           ${mobileOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}
         style={{ overflowY: "hidden" }}
       >
         {/* Logo + Username */}
-        <div className={`flex items-center gap-3 ${expanded ? "py-6" : "py-3"} mb-6 px-4`}>
+        <div className={`flex items-center gap-3 ${expanded ? "py-6" : "py-4"} mb-6 px-4`}>
           <img
             src={Logo}
             alt="Logo"
@@ -106,7 +107,7 @@ const MobileSidebar = () => {
         </div>
 
         {/* Menu */}
-        <nav className="flex-1 px-2">
+        <nav className="flex-1 px-2 overflow-y-auto">
           {menu.map((section) => (
             <div key={section.section} className="mb-6">
               {expanded && (
@@ -162,6 +163,21 @@ const MobileSidebar = () => {
             </div>
           ))}
         </nav>
+
+        {/* 🟡 Collapse Toggle Button */}
+        <div className="flex justify-center items-center py-4 border-t border-[#23272f]">
+          <button
+            onClick={() => setExpanded(!expanded)}
+            className="flex items-center justify-center w-8 h-8 rounded-full bg-[#23272f] hover:bg-[#2e323a] transition-all duration-300"
+          >
+            <ChevronLeft
+              size={20}
+              className={`text-gray-300 transition-transform duration-300 ${
+                !expanded ? "rotate-180" : ""
+              }`}
+            />
+          </button>
+        </div>
       </aside>
     </>
   );
