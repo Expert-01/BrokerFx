@@ -39,7 +39,7 @@ const menu = [
   },
 ];
 
-const MobileSidebar = () => {
+const Sidebar = () => {
   const [user, setUser] = useState(null);
   const [expanded, setExpanded] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -59,48 +59,43 @@ const MobileSidebar = () => {
 
   return (
     <>
-      {/* 🟡 Animated Hamburger Menu Button */}
-      <button
-        onClick={() => setMobileOpen(!mobileOpen)}
-        className="fixed top-4 left-4 z-50 md:hidden bg-[#181a20] p-3 rounded-lg border border-[#23272f] shadow-lg flex flex-col justify-between h-6 w-7 transition-all duration-300"
-      >
-        <span
-          className={`block h-[3px] rounded-sm transition-all duration-300 ${
-            mobileOpen ? "rotate-45 translate-y-[6px] bg-[#bfa233]" : "bg-gray-300"
-          }`}
-        ></span>
-        <span
-          className={`block h-[3px] rounded-sm transition-all duration-300 ${
-            mobileOpen ? "opacity-0" : "bg-gray-300"
-          }`}
-        ></span>
-        <span
-          className={`block h-[3px] rounded-sm transition-all duration-300 ${
-            mobileOpen ? "-rotate-45 -translate-y-[6px] bg-[#bfa233]" : "bg-gray-300"
-          }`}
-        ></span>
-      </button>
-
+{/* 🟡 Floating 3-Line Hamburger Icon (cleaner style) */}
+<button
+  onClick={() => setMobileOpen(!mobileOpen)}
+  className="fixed top-4 left-4 z-[9999] md:hidden flex flex-col justify-center items-center focus:outline-none"
+>
+  <span
+    className={`block w-7 h-1 rounded bg-[#fff] transition-all duration-300 ${
+      mobileOpen ? "rotate-45 translate-y-2" : ""
+    }`}
+  ></span>
+  <span
+    className={`block w-7 h-1 rounded bg-[#fff] my-1 transition-all duration-300 ${
+      mobileOpen ? "opacity-0" : ""
+    }`}
+  ></span>
+  <span
+    className={`block w-7 h-1 rounded bg-[#fff] transition-all duration-300 ${
+      mobileOpen ? "-rotate-45 -translate-y-2" : ""
+    }`}
+  ></span>
+</button>
+      
       {/* 🟡 Sidebar */}
       <aside
-        tabIndex={0}
         className={`fixed top-0 left-0 h-full bg-gradient-to-t from-[#111216] via-[#181a20] to-[#181a1f]
-          border-r border-[#23272f] flex flex-col shadow-xl transition-all duration-300 z-40
+          border-r border-[#23272f] flex flex-col shadow-xl transition-all duration-300 z-[9998]
           ${expanded ? "w-56" : "w-[65px]"}
           ${mobileOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}
-        onClick={() => setExpanded((prev) => !prev)}
-        style={{ overflowY: "hidden", overflowX: "hidden" }}
+        style={{ overflowY: "hidden" }}
       >
-        {/* 🟡 Logo + Username */}
-        <div className={`flex items-center gap-3 ${expanded ? "py-6" : "py-2"} mb-6 px-4`}>
-          <div className="flex items-center justify-center">
-            <img
-              src={Logo}
-              alt="Logo"
-              className={`${expanded ? "w-20 h-20" : "w-12 h-12"} object-contain transition-all duration-300`}
-            />
-          </div>
-
+        {/* Logo + Username */}
+        <div className={`flex items-center gap-3 ${expanded ? "py-6" : "py-3"} mb-6 px-4`}>
+          <img
+            src={Logo}
+            alt="Logo"
+            className={`${expanded ? "w-20 h-20" : "w-12 h-12"} object-contain transition-all duration-300`}
+          />
           {expanded && (
             <div className="md:block">
               <div className="font-semibold text-gray-400 text-sm">
@@ -110,7 +105,7 @@ const MobileSidebar = () => {
           )}
         </div>
 
-        {/* 🟡 Menu */}
+        {/* Menu */}
         <nav className="flex-1 px-2">
           {menu.map((section) => (
             <div key={section.section} className="mb-6">
@@ -144,7 +139,6 @@ const MobileSidebar = () => {
                               }
                             : {}
                         }
-                        tabIndex={0}
                         onClick={() => setMobileOpen(false)}
                       >
                         <span className="flex justify-center items-center w-8 h-8">
@@ -173,4 +167,4 @@ const MobileSidebar = () => {
   );
 };
 
-export default MobileSidebar;
+export default Sidebar;
