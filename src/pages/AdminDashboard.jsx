@@ -25,7 +25,6 @@ const AdminDashboard = () => {
         console.error("Error fetching deposits:", error);
       }
     };
-
     fetchDeposits();
   }, []);
 
@@ -109,9 +108,7 @@ const AdminDashboard = () => {
         }),
       });
       const data = await res.json();
-      setMethods((prev) =>
-        prev.map((m) => (m.id === data.id ? data : m))
-      );
+      setMethods((prev) => prev.map((m) => (m.id === data.id ? data : m)));
       setEditingMethod(null);
     } catch (error) {
       console.error("Error updating method:", error);
@@ -132,156 +129,162 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#120d08] text-white p-6 space-y-10">
-      <h1 className="text-3xl font-bold text-center mb-6">
-        Admin Dashboard
-      </h1>
+    <div className="min-h-screen w-full bg-[#1a120a] text-white px-6 py-10 flex flex-col items-center">
+      <div className="max-w-4xl w-full space-y-12">
+        <h1 className="text-3xl font-bold text-center mb-6">
+          Admin Dashboard
+        </h1>
 
-      {/* Deposits Section */}
-      <section>
-        <h2 className="text-xl font-semibold mb-4">Pending Deposits</h2>
-        <div className="space-y-4">
-          {deposits.length === 0 && (
-            <p className="text-gray-400 text-sm">No pending deposits.</p>
-          )}
-          {deposits.map((deposit) => (
-            <div
-              key={deposit.id}
-              className="bg-[#1f1710] rounded-xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center shadow-md"
-            >
-              <div>
-                <p className="text-sm text-gray-400">
-                  User ID: {deposit.user_id}
-                </p>
-                <p className="text-lg font-medium">
-                  Amount: ${deposit.amount}
-                </p>
-                <p className="text-xs text-gray-500">Plan: {deposit.plan}</p>
-              </div>
-              <div className="flex gap-2 mt-3 sm:mt-0">
-                <button
-                  onClick={() => handleApprove(deposit.id)}
-                  className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg text-sm"
-                >
-                  Approve
-                </button>
-                <button
-                  onClick={() => handleReject(deposit.id)}
-                  className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-sm"
-                >
-                  Reject
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Payment Methods Section */}
-      <section>
-        <h2 className="text-xl font-semibold mb-4">Payment Methods</h2>
-
-        {/* Add new method */}
-        <div className="flex flex-col sm:flex-row gap-2 mb-4">
-          <input
-            type="text"
-            placeholder="Payment method (e.g. USDT)"
-            value={newMethod.method}
-            onChange={(e) =>
-              setNewMethod({ ...newMethod, method: e.target.value })
-            }
-            className="flex-1 bg-gray-800 p-2 rounded-lg text-sm outline-none"
-          />
-          <input
-            type="text"
-            placeholder="Details (e.g. wallet address)"
-            value={newMethod.details}
-            onChange={(e) =>
-              setNewMethod({ ...newMethod, details: e.target.value })
-            }
-            className="flex-1 bg-gray-800 p-2 rounded-lg text-sm outline-none"
-          />
-          <button
-            onClick={handleAddMethod}
-            className="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 rounded-lg text-sm"
-          >
-            Add
-          </button>
-        </div>
-
-        {/* List methods */}
-        <div className="space-y-4">
-          {methods.length === 0 && (
-            <p className="text-gray-400 text-sm">No payment methods added.</p>
-          )}
-          {methods.map((method) => (
-            <div
-              key={method.id}
-              className="bg-[#1f1710] rounded-xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center shadow-md"
-            >
-              {editingMethod && editingMethod.id === method.id ? (
-                <div className="flex flex-col sm:flex-row gap-2 flex-1">
-                  <input
-                    type="text"
-                    value={editingMethod.method}
-                    onChange={(e) =>
-                      setEditingMethod({
-                        ...editingMethod,
-                        method: e.target.value,
-                      })
-                    }
-                    className="bg-gray-800 p-2 rounded-lg text-sm w-full sm:w-1/3"
-                  />
-                  <input
-                    type="text"
-                    value={editingMethod.details}
-                    onChange={(e) =>
-                      setEditingMethod({
-                        ...editingMethod,
-                        details: e.target.value,
-                      })
-                    }
-                    className="bg-gray-800 p-2 rounded-lg text-sm w-full sm:w-2/3"
-                  />
+        {/* Deposits Section */}
+        <section>
+          <h2 className="text-xl font-semibold mb-4">Pending Deposits</h2>
+          <div className="space-y-4">
+            {deposits.length === 0 && (
+              <p className="text-gray-400 text-sm">No pending deposits.</p>
+            )}
+            {deposits.map((deposit) => (
+              <div
+                key={deposit.id}
+                className="bg-[#2b1d13] rounded-xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center shadow-md"
+              >
+                <div>
+                  <p className="text-sm text-gray-400">
+                    User ID: {deposit.user_id}
+                  </p>
+                  <p className="text-lg font-medium">
+                    Amount: ${deposit.amount}
+                  </p>
+                  <p className="text-xs text-gray-500">Plan: {deposit.plan}</p>
+                </div>
+                <div className="flex gap-2 mt-3 sm:mt-0">
                   <button
-                    onClick={handleUpdateMethod}
-                    className="px-3 py-2 bg-green-600 hover:bg-green-700 rounded-lg text-sm"
+                    onClick={() => handleApprove(deposit.id)}
+                    className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg text-sm"
                   >
-                    Save
+                    Approve
                   </button>
                   <button
-                    onClick={() => setEditingMethod(null)}
-                    className="px-3 py-2 bg-gray-600 hover:bg-gray-700 rounded-lg text-sm"
+                    onClick={() => handleReject(deposit.id)}
+                    className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-sm"
                   >
-                    Cancel
+                    Reject
                   </button>
                 </div>
-              ) : (
-                <>
-                  <div>
-                    <p className="font-semibold">{method.method}</p>
-                    <p className="text-sm text-gray-400">{method.details}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Payment Methods Section */}
+        <section>
+          <h2 className="text-xl font-semibold mb-4">Payment Methods</h2>
+
+          {/* Add new method */}
+          <div className="flex flex-col gap-3 mb-6 bg-[#2b1d13] p-4 rounded-xl shadow-lg">
+            <input
+              type="text"
+              placeholder="Payment method (e.g. USDT)"
+              value={newMethod.method}
+              onChange={(e) =>
+                setNewMethod({ ...newMethod, method: e.target.value })
+              }
+              className="bg-gray-800 p-2 rounded-lg text-sm outline-none w-full"
+            />
+            <input
+              type="text"
+              placeholder="Details (e.g. wallet address)"
+              value={newMethod.details}
+              onChange={(e) =>
+                setNewMethod({ ...newMethod, details: e.target.value })
+              }
+              className="bg-gray-800 p-2 rounded-lg text-sm outline-none w-full"
+            />
+            <button
+              onClick={handleAddMethod}
+              className="w-full py-2 bg-yellow-600 hover:bg-yellow-700 rounded-lg text-sm font-semibold"
+            >
+              Add Method
+            </button>
+          </div>
+
+          {/* List methods */}
+          <div className="space-y-4">
+            {methods.length === 0 && (
+              <p className="text-gray-400 text-sm">No payment methods added.</p>
+            )}
+            {methods.map((method) => (
+              <div
+                key={method.id}
+                className="bg-[#2b1d13] rounded-xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center shadow-md"
+              >
+                {editingMethod && editingMethod.id === method.id ? (
+                  <div className="flex flex-col gap-3 w-full">
+                    <input
+                      type="text"
+                      value={editingMethod.method}
+                      onChange={(e) =>
+                        setEditingMethod({
+                          ...editingMethod,
+                          method: e.target.value,
+                        })
+                      }
+                      className="bg-gray-800 p-2 rounded-lg text-sm w-full"
+                    />
+                    <input
+                      type="text"
+                      value={editingMethod.details}
+                      onChange={(e) =>
+                        setEditingMethod({
+                          ...editingMethod,
+                          details: e.target.value,
+                        })
+                      }
+                      className="bg-gray-800 p-2 rounded-lg text-sm w-full"
+                    />
+                    <div className="flex flex-col sm:flex-row gap-2">
+                      <button
+                        onClick={handleUpdateMethod}
+                        className="w-full sm:w-auto px-3 py-2 bg-green-600 hover:bg-green-700 rounded-lg text-sm"
+                      >
+                        Save
+                      </button>
+                      <button
+                        onClick={() => setEditingMethod(null)}
+                        className="w-full sm:w-auto px-3 py-2 bg-gray-600 hover:bg-gray-700 rounded-lg text-sm"
+                      >
+                        Cancel
+                      </button>
+                    </div>
                   </div>
-                  <div className="flex gap-2 mt-3 sm:mt-0">
-                    <button
-                      onClick={() => setEditingMethod(method)}
-                      className="px-3 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-sm"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDeleteMethod(method.id)}
-                      className="px-3 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-sm"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </>
-              )}
-            </div>
-          ))}
-        </div>
-      </section>
+                ) : (
+                  <>
+                    <div>
+                      <p className="font-semibold">{method.method}</p>
+                      <p className="text-sm text-gray-400">
+                        {method.details}
+                      </p>
+                    </div>
+                    <div className="flex gap-2 mt-3 sm:mt-0">
+                      <button
+                        onClick={() => setEditingMethod(method)}
+                        className="px-3 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-sm"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDeleteMethod(method.id)}
+                        className="px-3 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-sm"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
     </div>
   );
 };
