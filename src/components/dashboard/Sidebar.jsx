@@ -63,7 +63,7 @@ const Sidebar = () => {
       {/* 🟡 Floating 3-Line Hamburger Icon (mobile only) */}
       <button
         onClick={() => setMobileOpen(!mobileOpen)}
-        className="fixed top-4 right-0 z-[9999] md:hidden flex flex-col justify-center items-center focus:outline-none"
+        className="fixed top-4 right-4 z-[9999] md:hidden flex flex-col justify-center items-center focus:outline-none"
       >
         <span
           className={`block w-7 h-1 rounded bg-[#fff] transition-all duration-300 ${
