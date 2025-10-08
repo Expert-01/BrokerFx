@@ -8,9 +8,10 @@ function MobileTopBar() {
     <>
       <div className="flex items-center justify-between mb-2">
         <span className="text-xl font-bold tracking-wide text-yellow-400">NexaExchange</span>
-        <HamburgerIcon open={sidebarOpen} onClick={() => setSidebarOpen((v) => !v)} />
+        {/*<HamburgerIcon open={sidebarOpen} onClick={() => setSidebarOpen((v) => !v)} />*/}
+        <MobileSidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       </div>
-      <MobileSidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      
     </>
   );
 }
