@@ -22,7 +22,7 @@ import Account from "./Account";
 import Withdrawal from "./Withdrawal";
 import PersonalData from "./PersonalData";
 import AccountStatus from "./AccountStatus";
-import Promotion from "../components/dashboard/Promotion";
+import Promotions from "../components/dashboard/Promotions";
 import Documents from "./Documents";
 import Pamm from "./Pamm";
 import CopyTrading from "./CopyTrading";
@@ -44,7 +44,7 @@ export default function App() {
   <Route path="/withdrawal" element={<Withdrawal />} />
   <Route path="/personal-data" element={<PersonalData />} />
   <Route path="/account-status" element={<AccountStatus />} />
-  <Route path="/promo-offers" element={<Promotion />} />
+  <Route path="/promo-offers" element={<Promotions />} />
   <Route path="/documents" element={<Documents />} />
   <Route path="/pamm" element={<Pamm />} />
   <Route path="/copy-trading" element={<CopyTrading />} />
