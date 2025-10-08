@@ -8,6 +8,12 @@ const AdminDashboard = () => {
   const [newMethod, setNewMethod] = useState({ method: "", details: "" });
   const [editingMethod, setEditingMethod] = useState(null);
 
+  // New states for manual balance adjustment
+  const [userId, setUserId] = useState("");
+  const [amount, setAmount] = useState("");
+  const [action, setAction] = useState("increase");
+  const [message, setMessage] = useState("");
+
   // Fetch deposits
   useEffect(() => {
     const fetchDeposits = async () => {
@@ -33,9 +39,7 @@ const AdminDashboard = () => {
     const fetchMethods = async () => {
       try {
         const res = await fetch(`${API_URL}/payment-methods`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         if (!res.ok) throw new Error("Failed to fetch payment methods");
         const data = await res.json();
@@ -125,6 +129,28 @@ const AdminDashboard = () => {
       setMethods((prev) => prev.filter((m) => m.id !== id));
     } catch (error) {
       console.error("Error deleting method:", error);
+    }
+  };
+
+  // Handle manual balance update
+  const handleBalanceUpdate = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch(`${API_URL}/admin/update-balance/${userId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({ amount, action }),
+      });
+      const data = await res.json();
+      setMessage(data.message || "Balance updated successfully");
+      setUserId("");
+      setAmount("");
+    } catch (error) {
+      console.error("Error updating balance:", error);
+      setMessage("Something went wrong");
     }
   };
 
@@ -283,6 +309,49 @@ const AdminDashboard = () => {
               </div>
             ))}
           </div>
+        </section>
+
+        {/* Manual Balance Adjustment Section */}
+        <section>
+          <h2 className="text-xl font-semibold mb-4">
+            Manual Balance Adjustment
+          </h2>
+          <form
+            onSubmit={handleBalanceUpdate}
+            className="bg-[#2b1d13] p-6 rounded-xl flex flex-col gap-4 shadow-lg"
+          >
+            <input
+              type="text"
+              placeholder="User ID"
+              value={userId}
+              onChange={(e) => setUserId(e.target.value)}
+              className="bg-gray-800 p-2 rounded-lg text-sm outline-none w-full"
+            />
+            <input
+              type="number"
+              placeholder="Amount"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              className="bg-gray-800 p-2 rounded-lg text-sm outline-none w-full"
+            />
+            <select
+              value={action}
+              onChange={(e) => setAction(e.target.value)}
+              className="bg-gray-800 p-2 rounded-lg text-sm outline-none w-full"
+            >
+              <option value="increase">Increase</option>
+              <option value="decrease">Decrease</option>
+            </select>
+            <button
+              type="submit"
+              className="w-full py-2 bg-yellow-600 hover:bg-yellow-700 rounded-lg text-sm font-semibold"
+            >
+              Update Balance
+            </button>
+            {message && (
+              <p className="text-sm text-center text-gray-300 mt-2">{message}</p>
+            )}
+          </form>
         </section>
       </div>
     </div>
