@@ -22,7 +22,7 @@ import Account from "./Account";
 import Withdrawal from "./Withdrawal";
 import PersonalData from "./PersonalData";
 import AccountStatus from "./AccountStatus";
-import Promotion from "./Promotion";
+import Promotion from "../components/dashboard/Promotion";
 import Documents from "./Documents";
 import Pamm from "./Pamm";
 import CopyTrading from "./CopyTrading";
