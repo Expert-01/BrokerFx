@@ -12,7 +12,7 @@ const AccountStatus = () => {
   };
 
   return (
-    <div className="min-h-screen flex bg-black-100">
+    <div className="min-h-screen flex bg-black-800">
       <Sidebar />
       <main className="flex-1 flex flex-col items-center px-2 md:px-8 py-6 md:ml-56 w-full">
         <div className="w-full max-w-5xl space-y-6">
