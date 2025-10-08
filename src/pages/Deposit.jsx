@@ -104,7 +104,7 @@ function Deposit() {
   return (
     <div className="w-full h-screen flex flex-row bg-[#111216] text-white overflow-hidden">
       {/* Sidebar */}
-      <div className="hidden md:block">
+      <div className="block">
         <Sidebar />
       </div>
 
