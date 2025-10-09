@@ -136,7 +136,7 @@ const AdminDashboard = () => {
   const handleBalanceUpdate = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`${API_URL}/admin/update-balance/${userId}`, {
+      const res = await fetch(`${API_URL}/admin/increase-balance/${userId}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
