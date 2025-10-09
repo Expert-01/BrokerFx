@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import jwt_decode from "jwt-decode"; // npm install jwt-decode
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -135,22 +136,31 @@ const AdminDashboard = () => {
   // Manual balance adjustment
   const handleBalanceUpdate = async (e) => {
     e.preventDefault();
+
     if (!userId || !amount) {
       setMessage("Please provide User ID and amount");
       return;
     }
 
     try {
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("Admin not authenticated");
+
+      // Decode token to get adminId
+      const decoded = jwt_decode(token);
+      const adminId = decoded.id; // adjust if your JWT uses a different key
+
       const res = await fetch(`${API_URL}/admin/users/increase-balance`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           userId,
           amount: Number(amount),
           action,
+          adminId,
         }),
       });
 
