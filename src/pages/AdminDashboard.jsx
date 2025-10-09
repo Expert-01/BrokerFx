@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import jwt_decode from "jwt-decode"; // npm install jwt-decode
+import {jwtDecode} from "jwt-decode"; // npm install jwt-decode
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -147,7 +147,7 @@ const AdminDashboard = () => {
       if (!token) throw new Error("Admin not authenticated");
 
       // Decode token to get adminId
-      const decoded = jwt_decode(token);
+      const decoded = jwtDecode(token);
       const adminId = decoded.id; // adjust if your JWT uses a different key
 
       const res = await fetch(`${API_URL}/admin/users/increase-balance`, {
