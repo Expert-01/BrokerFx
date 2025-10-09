@@ -8,24 +8,24 @@ const AdminDashboard = () => {
   const [newMethod, setNewMethod] = useState({ method: "", details: "" });
   const [editingMethod, setEditingMethod] = useState(null);
 
-  // New states for manual balance adjustment
+  // Manual balance adjustment states
   const [userId, setUserId] = useState("");
   const [amount, setAmount] = useState("");
   const [action, setAction] = useState("increase");
   const [message, setMessage] = useState("");
 
-  // Fetch deposits
+  // Fetch pending deposits
   useEffect(() => {
     const fetchDeposits = async () => {
       try {
-        const response = await fetch(`${API_URL}/admin/deposits`, {
+        const res = await fetch(`${API_URL}/admin/deposits`, {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
-        if (!response.ok) throw new Error("Failed to fetch deposits");
-        const data = await response.json();
+        if (!res.ok) throw new Error("Failed to fetch deposits");
+        const data = await res.json();
         setDeposits(data);
       } catch (error) {
         console.error("Error fetching deposits:", error);
@@ -58,7 +58,7 @@ const AdminDashboard = () => {
         method: "PUT",
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
-      setDeposits((prev) => prev.filter((deposit) => deposit.id !== id));
+      setDeposits((prev) => prev.filter((d) => d.id !== id));
     } catch (error) {
       console.error("Error approving deposit:", error);
     }
@@ -71,13 +71,13 @@ const AdminDashboard = () => {
         method: "POST",
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
-      setDeposits((prev) => prev.filter((deposit) => deposit.id !== id));
+      setDeposits((prev) => prev.filter((d) => d.id !== id));
     } catch (error) {
       console.error("Error rejecting deposit:", error);
     }
   };
 
-  // Add new payment method
+  // Add payment method
   const handleAddMethod = async () => {
     if (!newMethod.method || !newMethod.details) return;
     try {
@@ -132,72 +132,85 @@ const AdminDashboard = () => {
     }
   };
 
-  // Handle manual balance update
+  // Manual balance adjustment
   const handleBalanceUpdate = async (e) => {
     e.preventDefault();
+    if (!userId || !amount) {
+      setMessage("Please provide User ID and amount");
+      return;
+    }
+
     try {
-      const res = await fetch(`${API_URL}/admin/increase-balance/${userId}`, {
+      const res = await fetch(`${API_URL}/admin/users/increase-balance`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-        body: JSON.stringify({ amount, action }),
+        body: JSON.stringify({
+          userId,
+          amount: Number(amount),
+          action,
+        }),
       });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Failed to update balance");
+      }
+
       const data = await res.json();
       setMessage(data.message || "Balance updated successfully");
+
+      // Reset form
       setUserId("");
       setAmount("");
+      setAction("increase");
     } catch (error) {
       console.error("Error updating balance:", error);
-      setMessage("Something went wrong");
+      setMessage(error.message || "Something went wrong");
     }
   };
 
   return (
     <div className="min-h-screen w-full bg-[#1a120a] text-white px-6 py-10 flex flex-col items-center">
       <div className="max-w-4xl w-full space-y-12">
-        <h1 className="text-3xl font-bold text-center mb-6">
-          Admin Dashboard
-        </h1>
+        <h1 className="text-3xl font-bold text-center mb-6">Admin Dashboard</h1>
 
         {/* Deposits Section */}
         <section>
           <h2 className="text-xl font-semibold mb-4">Pending Deposits</h2>
           <div className="space-y-4">
-            {deposits.length === 0 && (
+            {deposits.length === 0 ? (
               <p className="text-gray-400 text-sm">No pending deposits.</p>
+            ) : (
+              deposits.map((deposit) => (
+                <div
+                  key={deposit.id}
+                  className="bg-[#2b1d13] rounded-xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center shadow-md"
+                >
+                  <div>
+                    <p className="text-sm text-gray-400">User ID: {deposit.user_id}</p>
+                    <p className="text-lg font-medium">Amount: ${deposit.amount}</p>
+                    <p className="text-xs text-gray-500">Plan: {deposit.plan}</p>
+                  </div>
+                  <div className="flex gap-2 mt-3 sm:mt-0">
+                    <button
+                      onClick={() => handleApprove(deposit.id)}
+                      className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg text-sm"
+                    >
+                      Approve
+                    </button>
+                    <button
+                      onClick={() => handleReject(deposit.id)}
+                      className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-sm"
+                    >
+                      Reject
+                    </button>
+                  </div>
+                </div>
+              ))
             )}
-            {deposits.map((deposit) => (
-              <div
-                key={deposit.id}
-                className="bg-[#2b1d13] rounded-xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center shadow-md"
-              >
-                <div>
-                  <p className="text-sm text-gray-400">
-                    User ID: {deposit.user_id}
-                  </p>
-                  <p className="text-lg font-medium">
-                    Amount: ${deposit.amount}
-                  </p>
-                  <p className="text-xs text-gray-500">Plan: {deposit.plan}</p>
-                </div>
-                <div className="flex gap-2 mt-3 sm:mt-0">
-                  <button
-                    onClick={() => handleApprove(deposit.id)}
-                    className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg text-sm"
-                  >
-                    Approve
-                  </button>
-                  <button
-                    onClick={() => handleReject(deposit.id)}
-                    className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-sm"
-                  >
-                    Reject
-                  </button>
-                </div>
-              </div>
-            ))}
           </div>
         </section>
 
@@ -211,18 +224,14 @@ const AdminDashboard = () => {
               type="text"
               placeholder="Payment method (e.g. USDT)"
               value={newMethod.method}
-              onChange={(e) =>
-                setNewMethod({ ...newMethod, method: e.target.value })
-              }
+              onChange={(e) => setNewMethod({ ...newMethod, method: e.target.value })}
               className="bg-gray-800 p-2 rounded-lg text-sm outline-none w-full"
             />
             <input
               type="text"
               placeholder="Details (e.g. wallet address)"
               value={newMethod.details}
-              onChange={(e) =>
-                setNewMethod({ ...newMethod, details: e.target.value })
-              }
+              onChange={(e) => setNewMethod({ ...newMethod, details: e.target.value })}
               className="bg-gray-800 p-2 rounded-lg text-sm outline-none w-full"
             />
             <button
@@ -235,87 +244,78 @@ const AdminDashboard = () => {
 
           {/* List methods */}
           <div className="space-y-4">
-            {methods.length === 0 && (
+            {methods.length === 0 ? (
               <p className="text-gray-400 text-sm">No payment methods added.</p>
+            ) : (
+              methods.map((method) => (
+                <div
+                  key={method.id}
+                  className="bg-[#2b1d13] rounded-xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center shadow-md"
+                >
+                  {editingMethod && editingMethod.id === method.id ? (
+                    <div className="flex flex-col gap-3 w-full">
+                      <input
+                        type="text"
+                        value={editingMethod.method}
+                        onChange={(e) =>
+                          setEditingMethod({ ...editingMethod, method: e.target.value })
+                        }
+                        className="bg-gray-800 p-2 rounded-lg text-sm w-full"
+                      />
+                      <input
+                        type="text"
+                        value={editingMethod.details}
+                        onChange={(e) =>
+                          setEditingMethod({ ...editingMethod, details: e.target.value })
+                        }
+                        className="bg-gray-800 p-2 rounded-lg text-sm w-full"
+                      />
+                      <div className="flex flex-col sm:flex-row gap-2">
+                        <button
+                          onClick={handleUpdateMethod}
+                          className="w-full sm:w-auto px-3 py-2 bg-green-600 hover:bg-green-700 rounded-lg text-sm"
+                        >
+                          Save
+                        </button>
+                        <button
+                          onClick={() => setEditingMethod(null)}
+                          className="w-full sm:w-auto px-3 py-2 bg-gray-600 hover:bg-gray-700 rounded-lg text-sm"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <div>
+                        <p className="font-semibold">{method.method}</p>
+                        <p className="text-sm text-gray-400">{method.details}</p>
+                      </div>
+                      <div className="flex gap-2 mt-3 sm:mt-0">
+                        <button
+                          onClick={() => setEditingMethod(method)}
+                          className="px-3 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-sm"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDeleteMethod(method.id)}
+                          className="px-3 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-sm"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              ))
             )}
-            {methods.map((method) => (
-              <div
-                key={method.id}
-                className="bg-[#2b1d13] rounded-xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center shadow-md"
-              >
-                {editingMethod && editingMethod.id === method.id ? (
-                  <div className="flex flex-col gap-3 w-full">
-                    <input
-                      type="text"
-                      value={editingMethod.method}
-                      onChange={(e) =>
-                        setEditingMethod({
-                          ...editingMethod,
-                          method: e.target.value,
-                        })
-                      }
-                      className="bg-gray-800 p-2 rounded-lg text-sm w-full"
-                    />
-                    <input
-                      type="text"
-                      value={editingMethod.details}
-                      onChange={(e) =>
-                        setEditingMethod({
-                          ...editingMethod,
-                          details: e.target.value,
-                        })
-                      }
-                      className="bg-gray-800 p-2 rounded-lg text-sm w-full"
-                    />
-                    <div className="flex flex-col sm:flex-row gap-2">
-                      <button
-                        onClick={handleUpdateMethod}
-                        className="w-full sm:w-auto px-3 py-2 bg-green-600 hover:bg-green-700 rounded-lg text-sm"
-                      >
-                        Save
-                      </button>
-                      <button
-                        onClick={() => setEditingMethod(null)}
-                        className="w-full sm:w-auto px-3 py-2 bg-gray-600 hover:bg-gray-700 rounded-lg text-sm"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    <div>
-                      <p className="font-semibold">{method.method}</p>
-                      <p className="text-sm text-gray-400">
-                        {method.details}
-                      </p>
-                    </div>
-                    <div className="flex gap-2 mt-3 sm:mt-0">
-                      <button
-                        onClick={() => setEditingMethod(method)}
-                        className="px-3 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-sm"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDeleteMethod(method.id)}
-                        className="px-3 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-sm"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </>
-                )}
-              </div>
-            ))}
           </div>
         </section>
 
         {/* Manual Balance Adjustment Section */}
         <section>
-          <h2 className="text-xl font-semibold mb-4">
-            Manual Balance Adjustment
-          </h2>
+          <h2 className="text-xl font-semibold mb-4">Manual Balance Adjustment</h2>
           <form
             onSubmit={handleBalanceUpdate}
             className="bg-[#2b1d13] p-6 rounded-xl flex flex-col gap-4 shadow-lg"
@@ -326,6 +326,7 @@ const AdminDashboard = () => {
               value={userId}
               onChange={(e) => setUserId(e.target.value)}
               className="bg-gray-800 p-2 rounded-lg text-sm outline-none w-full"
+              required
             />
             <input
               type="number"
@@ -333,6 +334,8 @@ const AdminDashboard = () => {
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               className="bg-gray-800 p-2 rounded-lg text-sm outline-none w-full"
+              required
+              step="0.01"
             />
             <select
               value={action}
