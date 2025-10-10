@@ -1,74 +1,55 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
+import { fetchUserBalance } from "../../api/user";
 
 export default function AccountOverview({ userId }) {
-  const [balance, setBalance] = useState("Loading...");
-  const [freeBalance, setFreeBalance] = useState("Loading...");
-  const [equity, setEquity] = useState("Loading...");
-  const [nickname, setNickname] = useState("Loading...");
-
-  // Fetch user balance from backend
-  useEffect(() => {
-    if (!userId) return;
-
-    const fetchBalance = async () => {
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_API_BASE_URL}/api/users/${userId}/balance`
-        );
-        const data = await response.json();
-        if (response.ok) {
-          setBalance(`$${parseFloat(data.balance).toFixed(2)} USD`);
-          setFreeBalance(`$${parseFloat(data.free_balance || 0).toFixed(2)} USD`);
-          setEquity(`$${parseFloat(data.equity || 0).toFixed(2)} USD`);
-          setNickname(data.nickname || "Account");
-        } else {
-          setBalance("Error loading");
-        }
-      } catch (err) {
-        console.error(err);
-        setBalance("Error loading");
-      }
-    };
-
-    fetchBalance();
-  }, [userId]);
+  const [balance, setBalance] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const stats = [
     { label: "Platform", value: "MT5" },
-    { label: "Account #", value: userId || "N/A" },
-    { label: "Nickname", value: nickname },
-    { label: "Balance", value: balance },
-    { label: "Free Balance", value: freeBalance },
-    { label: "Equity", value: equity },
+    { label: "Account #", value: "123456" },
+    { label: "Nickname", value: "account" },
+    { label: "Balance", value: balance !== null ? `$${Number(balance).toFixed(2)} USD` : "Loading..." },
+    { label: "Free Balance", value: "$0.00 USD" },
+    { label: "Equity", value: "$0.00 USD" },
     { label: "Open P/L", value: "$0.00 USD" },
     { label: "Net Credit", value: "$0.00 USD" },
   ];
 
+  useEffect(() => {
+    if (!userId) return;
+    setLoading(true);
+    fetchUserBalance(userId)
+      .then((data) => setBalance(data.balance))
+      .catch((err) => console.error("[AccountOverview] Error fetching balance:", err))
+      .finally(() => setLoading(false));
+  }, [userId]);
+
   return (
-    <section className="bg-black text-white min-h-screen py-10 px-6 sm:px-12">
+    <section className="bg-black text-white min-h-screen py-10 px-6 sm:px-9">
       {/* Desktop View */}
       <div className="hidden md:block">
-        <div className="w-[95%] max-w-[1100px] mx-auto border border-white/10 rounded-2xl px-12 py-10 backdrop-blur-md shadow-[0_0_20px_rgba(255,255,255,0.08)]">
+        <div className="w-[1000px] sm:w-[90%] mx-auto border border-[#bfa23320] rounded-2xl px-12 py-12 backdrop-blur-lg bg-[#1b1410cc] shadow-[0_0_10px_rgba(191,162,51,0.08)]">
           {/* Header */}
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-3xl font-bold text-yellow-400">Account Overview</h2>
-            <span className="px-4 py-1 border border-yellow-500 text-yellow-400 rounded-full text-sm">
+            <h2 className="text-3xl font-bold text-[#bfa233]">Account Overview</h2>
+            <span className="px-4 py-1 border border-[#bfa233] text-[#bfa233] rounded-full text-sm">
               Active
             </span>
           </div>
 
           {/* Stats Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 w-full justify-center items-stretch">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 w-full">
             {stats.map((item, i) => (
               <div
                 key={i}
-                className="bg-[#14100b]/60 border border-yellow-500/30 rounded-2xl p-6 text-center
-                  shadow-[0_0_15px_rgba(255,215,0,0.15)] hover:shadow-[0_0_25px_rgba(255,215,0,0.3)]
-                  transition-all duration-300 flex flex-col justify-center items-center"
+                className="bg-[#0f0a07] border border-[#bfa23330] rounded-2xl p-6 text-center
+                           shadow-[0_0_10px_rgba(191,162,51,0.05)] hover:shadow-[0_0_20px_rgba(191,162,51,0.15)]
+                           transition-all duration-300"
               >
-                <span className="text-xs text-gray-400 mb-1">{item.label}</span>
-                <span className="text-sm sm:text-base font-semibold text-yellow-400">
-                  {item.value}
+                <span className="text-xs text-gray-400 mb-1 block">{item.label}</span>
+                <span className="text-base font-semibold text-[#bfa233]">
+                  {loading && item.label === "Balance" ? "Loading..." : item.value}
                 </span>
               </div>
             ))}
@@ -78,23 +59,25 @@ export default function AccountOverview({ userId }) {
 
       {/* Mobile View */}
       <div className="block md:hidden">
-        <div className="max-w-sm mx-auto bg-[#0a0a0a] p-7 rounded-3xl shadow-lg border border-white/10">
+        <div className="max-w-sm mx-auto bg-[#1a120d] p-7 rounded-3xl shadow-md border border-[#bfa23320]">
           {/* Top Portfolio Card */}
-          <div className="bg-gradient-to-br from-[#3a2d1a]/60 to-[#1e1409]/70 p-7 rounded-3xl mb-6 text-center backdrop-blur-md border border-yellow-900/30 shadow-[0_0_25px_rgba(80,60,20,0.5)]">
+          <div className="bg-gradient-to-br from-[#3a2a1a] to-[#1e1309] p-7 rounded-3xl mb-6 text-center shadow-[0_0_15px_rgba(191,162,51,0.1)] backdrop-blur-md">
             <p className="text-gray-300 text-sm mb-2">Your Balance</p>
-            <h1 className="text-4xl font-bold text-yellow-400 mb-2">{balance}</h1>
+            <h1 className="text-4xl font-bold text-[#bfa233] mb-2">
+              {loading ? "Loading..." : balance !== null ? `$${Number(balance).toFixed(2)}` : "-"}
+            </h1>
             <p className="text-green-400 text-xs">+2.5% this month</p>
           </div>
 
           {/* Quick Info Cards */}
           <div className="grid grid-cols-2 gap-4 mb-6">
-            <div className="bg-[#111]/70 p-4 rounded-2xl border border-white/10">
+            <div className="bg-[#0f0a07] p-5 rounded-2xl border border-[#bfa23320]">
               <p className="text-xs text-gray-400 mb-1">Free Balance</p>
-              <p className="text-base font-semibold text-yellow-400">{freeBalance}</p>
+              <p className="text-base font-semibold text-[#bfa233]">$0.00</p>
             </div>
-            <div className="bg-[#111]/70 p-4 rounded-2xl border border-white/10">
+            <div className="bg-[#0f0a07] p-5 rounded-2xl border border-[#bfa23320]">
               <p className="text-xs text-gray-400 mb-1">Equity</p>
-              <p className="text-base font-semibold text-yellow-400">{equity}</p>
+              <p className="text-base font-semibold text-[#bfa233]">$0.00</p>
             </div>
           </div>
 
@@ -102,14 +85,14 @@ export default function AccountOverview({ userId }) {
           <div className="mb-6">
             <h3 className="text-sm text-gray-400 mb-3">Portfolio</h3>
             <div className="flex flex-col gap-3">
-              <div className="flex justify-between items-center bg-[#111]/70 p-4 rounded-2xl border border-white/10">
+              <div className="flex justify-between items-center bg-[#0f0a07] p-5 rounded-2xl border border-[#bfa23320]">
                 <div>
                   <p className="text-sm font-semibold text-white">AAPL</p>
                   <p className="text-xs text-gray-400">Apple Inc.</p>
                 </div>
                 <p className="text-green-400 text-sm font-semibold">+2.5%</p>
               </div>
-              <div className="flex justify-between items-center bg-[#111]/70 p-4 rounded-2xl border border-white/10">
+              <div className="flex justify-between items-center bg-[#0f0a07] p-5 rounded-2xl border border-[#bfa23320]">
                 <div>
                   <p className="text-sm font-semibold text-white">POWA</p>
                   <p className="text-xs text-gray-400">Chrome Stock</p>
@@ -122,7 +105,7 @@ export default function AccountOverview({ userId }) {
           {/* Recent Transactions */}
           <div>
             <h3 className="text-sm text-gray-400 mb-3">Recent Transaction</h3>
-            <div className="flex justify-between items-center bg-[#111]/70 p-4 rounded-2xl border border-white/10">
+            <div className="flex justify-between items-center bg-[#0f0a07] p-5 rounded-2xl border border-[#bfa23320]">
               <div>
                 <p className="text-sm font-semibold text-white">Manulife Cash Fund</p>
                 <p className="text-xs text-gray-400">Mutual Funds</p>
@@ -134,4 +117,4 @@ export default function AccountOverview({ userId }) {
       </div>
     </section>
   );
-              }
+}
