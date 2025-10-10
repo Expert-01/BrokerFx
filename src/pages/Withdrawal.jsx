@@ -19,34 +19,39 @@ const Withdrawal = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage(null);
-    setError(null);
+  e.preventDefault();
+  setLoading(true);
+  setMessage(null);
+  setError(null);
 
-    try {
-      const response = await fetch("/api/withdraw", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          amount: parseFloat(form.amount),
-          method: form.method,
-        }),
-      });
-      const data = await response.json();
+  try {
+    const token = localStorage.getItem("token"); // assuming you store JWT here
 
-      if (!response.ok) throw new Error(data.message || "Error submitting request");
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/withdraw`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        amount: parseFloat(form.amount),
+        method: form.method,
+      }),
+    });
 
-      setMessage(data.message);
-      setForm({ amount: "", method: "" });
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+    const text = await response.text(); // safer read
+    const data = text ? JSON.parse(text) : {}; // only parse if not empty
+
+    if (!response.ok) throw new Error(data.message || "Error submitting request");
+
+    setMessage(data.message || "Withdrawal submitted successfully");
+    setForm({ amount: "", method: "" });
+  } catch (err) {
+    setError(err.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen flex bg-black">
