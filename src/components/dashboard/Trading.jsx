@@ -85,7 +85,7 @@ const Trading = () => {
   return (
     <div className="flex min-h-screen bg-[#0a0908] text-[#f5e6ca]">
       {/* Sidebar */}
-      <aside className="hidden md:block z-50">
+      <aside className="hidden md:block z-50 right-9">
         <Sidebar />
       </aside>
 
