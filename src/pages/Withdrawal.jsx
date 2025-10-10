@@ -27,7 +27,7 @@ const Withdrawal = () => {
   try {
     const token = localStorage.getItem("token"); // assuming you store JWT here
 
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/withdraw`, {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/withdraw`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
