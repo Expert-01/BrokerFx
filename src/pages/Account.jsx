@@ -37,7 +37,7 @@ const Account = () => {
 			<Sidebar />
     
             
-			<main className="flex-1 flex flex-col items-center px-2 md:px-8 py-6 md:ml-56 w-[200px]">
+			<main className="flex-1 flex flex-col items-center px-2 md:px-8 py-6 md:ml-56 w-full">
 				<div className="w-full flex flex-col gap-6">
 					<AccountOverview userId={userId} />
 					<AccountsTable />
