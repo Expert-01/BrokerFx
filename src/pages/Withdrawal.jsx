@@ -8,9 +8,7 @@ const Withdrawal = () => {
   const [message, setMessage] = useState(null);
   const [error, setError] = useState(null);
 
-  // Fetch available methods (replace with your API if you have one)
   useEffect(() => {
-    // Example static methods; replace with fetch("/api/methods") if dynamic
     setMethods(["USDT Wallet", "Bank Transfer", "Crypto Wallet"]);
   }, []);
 
@@ -19,55 +17,57 @@ const Withdrawal = () => {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
-  setMessage(null);
-  setError(null);
+    e.preventDefault();
+    setLoading(true);
+    setMessage(null);
+    setError(null);
 
-  try {
-    const token = localStorage.getItem("token"); // assuming you store JWT here
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/withdraw`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          amount: parseFloat(form.amount),
+          method: form.method,
+        }),
+      });
 
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/withdraw`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        amount: parseFloat(form.amount),
-        method: form.method,
-      }),
-    });
+      const text = await response.text();
+      const data = text ? JSON.parse(text) : {};
 
-    const text = await response.text(); // safer read
-    const data = text ? JSON.parse(text) : {}; // only parse if not empty
+      if (!response.ok) throw new Error(data.message || "Error submitting request");
 
-    if (!response.ok) throw new Error(data.message || "Error submitting request");
-
-    setMessage(data.message || "Withdrawal submitted successfully");
-    setForm({ amount: "", method: "" });
-  } catch (err) {
-    setError(err.message);
-  } finally {
-    setLoading(false);
-  }
-};
+      setMessage(data.message || "Withdrawal submitted successfully");
+      setForm({ amount: "", method: "" });
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="min-h-screen flex bg-black">
+    <div className="min-h-screen flex bg-[#0b0a09] text-[#e0d7c6]">
       <Sidebar />
-      <main className="flex-1 flex flex-col items-center px-2 md:px-8 py-6 md:ml-56 w-full">
-        <div className="w-full max-w-3xl p-8 bg-gradient-to-br from-brown-800/70 to-brown-700/50 backdrop-blur-md rounded-xl shadow-lg space-y-6">
-          <h1 className="text-3xl font-bold text-yellow-400 text-center">
+
+      <main className="flex-1 flex flex-col items-center px-4 md:px-10 py-10 md:ml-56 w-full">
+        <div className="w-full max-w-3xl p-10 bg-gradient-to-br from-[#2a1f1a]/70 to-[#1c1410]/60 backdrop-blur-lg rounded-2xl border border-[#4a3b31]/40 shadow-[0_0_20px_rgba(0,0,0,0.5)] space-y-8">
+          
+          <h1 className="text-3xl font-bold text-center text-[#d8c3a5]">
             Withdraw Funds
           </h1>
 
-          {message && <div className="text-green-400 text-center">{message}</div>}
-          {error && <div className="text-red-400 text-center">{error}</div>}
+          {message && <div className="text-center text-[#88d498]">{message}</div>}
+          {error && <div className="text-center text-[#e57373]">{error}</div>}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Amount Field */}
             <div className="flex flex-col">
-              <label htmlFor="amount" className="text-yellow-200 font-semibold mb-1">
+              <label htmlFor="amount" className="text-sm font-medium text-[#c9b89a] mb-2">
                 Amount
               </label>
               <input
@@ -77,15 +77,16 @@ const Withdrawal = () => {
                 value={form.amount}
                 onChange={handleChange}
                 placeholder="Enter amount"
-                className="p-3 rounded-md bg-brown-900 text-yellow-100 placeholder-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                className="p-3 rounded-lg bg-[#1a1410] text-[#e0d7c6] placeholder-[#a8957b]/60 border border-[#4a3b31]/40 focus:outline-none focus:ring-2 focus:ring-[#a8957b]/40"
                 min="0"
                 step="0.01"
                 required
               />
             </div>
 
+            {/* Method Field */}
             <div className="flex flex-col">
-              <label htmlFor="method" className="text-yellow-200 font-semibold mb-1">
+              <label htmlFor="method" className="text-sm font-medium text-[#c9b89a] mb-2">
                 Withdrawal Method
               </label>
               <select
@@ -93,7 +94,7 @@ const Withdrawal = () => {
                 id="method"
                 value={form.method}
                 onChange={handleChange}
-                className="p-3 rounded-md bg-brown-900 text-yellow-100 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                className="p-3 rounded-lg bg-[#1a1410] text-[#e0d7c6] border border-[#4a3b31]/40 focus:outline-none focus:ring-2 focus:ring-[#a8957b]/40"
                 required
               >
                 <option value="" disabled>
@@ -107,10 +108,11 @@ const Withdrawal = () => {
               </select>
             </div>
 
+            {/* Submit Button */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-yellow-400 text-black font-semibold py-3 rounded-md hover:bg-yellow-300 transition-colors duration-200"
+              className="w-full bg-[#a8957b] text-[#1a1410] font-semibold py-3 rounded-lg hover:bg-[#bca888] transition-all duration-200 disabled:opacity-60"
             >
               {loading ? "Submitting..." : "Submit Withdrawal"}
             </button>
