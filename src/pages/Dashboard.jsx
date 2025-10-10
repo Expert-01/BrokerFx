@@ -109,6 +109,7 @@ export default function Dashboard() {
   <div className="md:hidden bg-[#000000a0] min-h-screen w-full p-5 flex flex-col gap-4" data-aos="fade-up">
         <MobileTopBar/>
         <MobileBalanceCard userId={userId} />
+    <AccountOverview userId={userId} />
         <MobileActionButtons />
         <MobileHoldingsCard />
         <MobileHotCoins />
