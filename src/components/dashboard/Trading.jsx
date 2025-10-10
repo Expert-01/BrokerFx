@@ -83,22 +83,22 @@ const Trading = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-black text-white">
+    <div className="flex min-h-screen bg-[#0a0908] text-[#f5e6ca]">
       {/* Sidebar */}
       <aside className="hidden md:block z-50">
         <Sidebar />
       </aside>
 
-      {/* Main section */}
+      {/* Main */}
       <main className="flex-1 p-4 md:p-8 w-full md:ml-64 space-y-10">
-        {/* TradingView Widget */}
-        <div className="rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(255,215,0,0.1)]">
+        {/* Chart */}
+        <div className="rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(255,215,0,0.1)] border border-yellow-600/20">
           <TradingViewWidget symbol={symbol ? symbol.toUpperCase() : "BTCUSDT"} />
         </div>
 
         {/* Trading Form */}
-        <div className="bg-[#0e1a2b]/70 backdrop-blur-xl rounded-2xl p-6 shadow-xl max-w-2xl mx-auto border border-yellow-400/10">
-          <h2 className="text-yellow-400 font-extrabold text-2xl mb-4 text-center tracking-wide">
+        <div className="bg-gradient-to-b from-[#1a1307]/90 to-[#0d0b08]/80 backdrop-blur-xl rounded-2xl p-6 shadow-[0_0_25px_rgba(139,69,19,0.3)] max-w-2xl mx-auto border border-yellow-700/20">
+          <h2 className="text-yellow-500 font-extrabold text-2xl mb-4 text-center tracking-wide">
             ⚡ Trade Digital Commodities
           </h2>
 
@@ -106,12 +106,11 @@ const Trading = () => {
             <div className="grid md:grid-cols-2 gap-4">
               {/* Symbol */}
               <div>
-                <label className="block text-yellow-400 text-sm mb-1">Symbol</label>
+                <label className="block text-yellow-500 text-sm mb-1">Symbol</label>
                 <select
-                  className="w-full rounded-lg px-3 py-2 bg-black/60 border border-yellow-400/20 focus:border-yellow-400 text-white"
+                  className="w-full rounded-lg px-3 py-2 bg-[#12100e]/90 border border-yellow-600/30 focus:border-yellow-400 text-white"
                   value={symbol}
                   onChange={(e) => setSymbol(e.target.value)}
-                  required
                 >
                   <option value="BTCUSDT">Bitcoin (BTC)</option>
                   <option value="ETHUSDT">Ethereum (ETH)</option>
@@ -125,10 +124,10 @@ const Trading = () => {
 
               {/* Amount */}
               <div>
-                <label className="block text-yellow-400 text-sm mb-1">Amount</label>
+                <label className="block text-yellow-500 text-sm mb-1">Amount</label>
                 <input
                   type="number"
-                  className="w-full rounded-lg px-3 py-2 bg-black/60 border border-yellow-400/20 focus:border-yellow-400 text-white"
+                  className="w-full rounded-lg px-3 py-2 bg-[#12100e]/90 border border-yellow-600/30 focus:border-yellow-400 text-white"
                   placeholder="Amount"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
@@ -139,29 +138,27 @@ const Trading = () => {
               </div>
             </div>
 
+            {/* Take Profit / Stop Loss */}
             <div className="grid md:grid-cols-2 gap-4">
-              {/* Take Profit */}
               <div>
-                <label className="block text-yellow-400 text-sm mb-1">
+                <label className="block text-yellow-500 text-sm mb-1">
                   Take Profit (optional)
                 </label>
                 <input
                   type="number"
-                  className="w-full rounded-lg px-3 py-2 bg-black/60 border border-yellow-400/20 focus:border-yellow-400 text-white"
+                  className="w-full rounded-lg px-3 py-2 bg-[#12100e]/90 border border-yellow-600/30 focus:border-yellow-400 text-white"
                   placeholder="e.g. 50000"
                   value={takeProfit}
                   onChange={(e) => setTakeProfit(e.target.value)}
                 />
               </div>
-
-              {/* Stop Loss */}
               <div>
-                <label className="block text-yellow-400 text-sm mb-1">
+                <label className="block text-yellow-500 text-sm mb-1">
                   Stop Loss (optional)
                 </label>
                 <input
                   type="number"
-                  className="w-full rounded-lg px-3 py-2 bg-black/60 border border-yellow-400/20 focus:border-yellow-400 text-white"
+                  className="w-full rounded-lg px-3 py-2 bg-[#12100e]/90 border border-yellow-600/30 focus:border-yellow-400 text-white"
                   placeholder="e.g. 20000"
                   value={stopLoss}
                   onChange={(e) => setStopLoss(e.target.value)}
@@ -169,12 +166,12 @@ const Trading = () => {
               </div>
             </div>
 
-            {/* Side Selection */}
+            {/* Buy / Sell */}
             <div className="flex justify-center gap-6 mt-3">
               <label className="inline-flex items-center cursor-pointer">
                 <input
                   type="radio"
-                  className="form-radio text-yellow-400"
+                  className="form-radio text-yellow-500"
                   value="buy"
                   checked={side === "buy"}
                   onChange={() => setSide("buy")}
@@ -184,7 +181,7 @@ const Trading = () => {
               <label className="inline-flex items-center cursor-pointer">
                 <input
                   type="radio"
-                  className="form-radio text-yellow-400"
+                  className="form-radio text-yellow-500"
                   value="sell"
                   checked={side === "sell"}
                   onChange={() => setSide("sell")}
@@ -193,10 +190,10 @@ const Trading = () => {
               </label>
             </div>
 
-            {/* Submit */}
+            {/* Button */}
             <button
               type="submit"
-              className="w-full bg-yellow-400 text-black font-bold py-2.5 rounded-lg hover:bg-yellow-500 transition transform hover:scale-[1.02] active:scale-[0.98]"
+              className="w-full bg-gradient-to-r from-yellow-500 via-yellow-600 to-yellow-700 text-black font-bold py-2.5 rounded-lg hover:brightness-110 transition transform hover:scale-[1.02] active:scale-[0.98]"
               disabled={loading}
             >
               {loading ? "Processing..." : side === "buy" ? "Buy Now" : "Sell Now"}
@@ -211,13 +208,13 @@ const Trading = () => {
         </div>
 
         {/* Open Trades */}
-        <section className="bg-[#0e1a2b]/60 p-4 md:p-6 rounded-2xl border border-yellow-400/10 shadow-lg">
-          <h3 className="text-xl font-bold mb-3 text-yellow-400 text-center">
+        <section className="bg-[#14110f]/80 p-4 md:p-6 rounded-2xl border border-yellow-700/20 shadow-lg">
+          <h3 className="text-xl font-bold mb-3 text-yellow-500 text-center">
             Open Positions
           </h3>
           <div className="overflow-x-auto">
-            <table className="w-full text-sm border border-yellow-400/20 rounded-lg">
-              <thead className="bg-[#181a20] text-yellow-400">
+            <table className="w-full text-sm border border-yellow-700/20 rounded-lg">
+              <thead className="bg-[#1a140c] text-yellow-400">
                 <tr>
                   <th>Symbol</th>
                   <th>Side</th>
@@ -240,7 +237,7 @@ const Trading = () => {
                   openTrades.map((t) => (
                     <tr
                       key={t.id}
-                      className="text-yellow-200 border-t border-yellow-400/10 hover:bg-[#1a2233]/60"
+                      className="text-yellow-200 border-t border-yellow-700/20 hover:bg-[#1c1207]/80"
                     >
                       <td>{t.asset}</td>
                       <td
@@ -275,13 +272,13 @@ const Trading = () => {
         </section>
 
         {/* Trade History */}
-        <section className="bg-[#0e1a2b]/60 p-4 md:p-6 rounded-2xl border border-yellow-400/10 shadow-lg">
-          <h3 className="text-xl font-bold mb-3 text-yellow-400 text-center">
+        <section className="bg-[#14110f]/80 p-4 md:p-6 rounded-2xl border border-yellow-700/20 shadow-lg">
+          <h3 className="text-xl font-bold mb-3 text-yellow-500 text-center">
             Trade History
           </h3>
           <div className="overflow-x-auto">
-            <table className="w-full text-sm border border-yellow-400/20 rounded-lg">
-              <thead className="bg-[#181a20] text-yellow-400">
+            <table className="w-full text-sm border border-yellow-700/20 rounded-lg">
+              <thead className="bg-[#1a140c] text-yellow-400">
                 <tr>
                   <th>Symbol</th>
                   <th>Side</th>
@@ -305,7 +302,7 @@ const Trading = () => {
                   tradeHistory.map((t) => (
                     <tr
                       key={t.id}
-                      className="text-yellow-200 border-t border-yellow-400/10 hover:bg-[#1a2233]/60"
+                      className="text-yellow-200 border-t border-yellow-700/20 hover:bg-[#1c1207]/80"
                     >
                       <td>{t.asset}</td>
                       <td
