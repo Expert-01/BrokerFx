@@ -1,4 +1,4 @@
-        import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 export default function MobileHoldingsCard() {
   const [coins, setCoins] = useState({});
@@ -12,14 +12,22 @@ export default function MobileHoldingsCard() {
 
   const fetchLiveData = async () => {
     try {
-      // Use your backend API from environment variable
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/market/prices`);
+      const apiUrl = import.meta.env.VITE_API_URL || "https://brokerx-backend-pcgs.onrender.com";
+      const response = await fetch(`${apiUrl}/api/market/prices`);
       if (!response.ok) throw new Error("Failed to fetch market data");
 
       const data = await response.json();
-      setCoins(data);
+
+      // Ensure data is valid before setting
+      if (data && typeof data === "object") {
+        setCoins(data);
+      } else {
+        console.error("Unexpected data structure:", data);
+        setCoins({});
+      }
     } catch (error) {
       console.error("Error fetching live prices:", error);
+      setCoins({});
     } finally {
       setLoading(false);
     }
@@ -27,7 +35,7 @@ export default function MobileHoldingsCard() {
 
   useEffect(() => {
     fetchLiveData();
-    const interval = setInterval(fetchLiveData, 10000); // refresh every 10s
+    const interval = setInterval(fetchLiveData, 15000); // refresh every 15s
     return () => clearInterval(interval);
   }, []);
 
@@ -105,14 +113,14 @@ export default function MobileHoldingsCard() {
                 ) : (
                   <>
                     <div className="text-white font-bold text-lg">
-                      ${value.toLocaleString()}
+                      ${value ? value.toLocaleString() : "0.00"}
                     </div>
                     <div
                       className={`text-sm font-semibold ${
                         change >= 0 ? "text-[#bfa233]" : "text-[#d7263d]"
                       }`}
                     >
-                      {change.toFixed(2)}%
+                      {change ? change.toFixed(2) : "0.00"}%
                     </div>
                   </>
                 )}
@@ -123,4 +131,4 @@ export default function MobileHoldingsCard() {
       </div>
     </div>
   );
-              }
+}
