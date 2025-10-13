@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import {jwtDecode} from "jwt-decode"; // npm install jwt-decode
+import { jwtDecode } from "jwt-decode"; // npm install jwt-decode
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -14,6 +14,9 @@ const AdminDashboard = () => {
   const [amount, setAmount] = useState("");
   const [action, setAction] = useState("increase");
   const [message, setMessage] = useState("");
+
+  // Registered Users
+  const [users, setUsers] = useState([]);
 
   // Fetch pending deposits
   useEffect(() => {
@@ -50,6 +53,23 @@ const AdminDashboard = () => {
       }
     };
     fetchMethods();
+  }, []);
+
+  // ✅ Fetch all registered users
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const res = await fetch(`${API_URL}/admin/users`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        if (!res.ok) throw new Error("Failed to fetch users");
+        const data = await res.json();
+        setUsers(data.users || []);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+    fetchUsers();
   }, []);
 
   // Approve deposit
@@ -136,7 +156,6 @@ const AdminDashboard = () => {
   // Manual balance adjustment
   const handleBalanceUpdate = async (e) => {
     e.preventDefault();
-
     if (!userId || !amount) {
       setMessage("Please provide User ID and amount");
       return;
@@ -146,11 +165,10 @@ const AdminDashboard = () => {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("Admin not authenticated");
 
-      // Decode token to get adminId
       const decoded = jwtDecode(token);
-      const adminId = decoded.id; // adjust if your JWT uses a different key
+      const adminId = decoded.id;
 
-      const res = await fetch(`${API_URL}/admin/users/increase-balance`, {
+      const res = await fetch(`${API_URL}/admin/increase-balance`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -164,15 +182,13 @@ const AdminDashboard = () => {
         }),
       });
 
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.error || "Failed to update balance");
-      }
+      const text = await res.text(); // Handle unexpected empty responses
+      if (!text) throw new Error("Empty response from server");
+      const data = JSON.parse(text);
 
-      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to update balance");
+
       setMessage(data.message || "Balance updated successfully");
-
-      // Reset form
       setUserId("");
       setAmount("");
       setAction("increase");
@@ -184,9 +200,48 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen w-full bg-[#1a120a] text-white px-6 py-10 flex flex-col items-center">
-      <div className="max-w-4xl w-full space-y-12">
+      <div className="max-w-5xl w-full space-y-12">
         <h1 className="text-3xl font-bold text-center mb-6">Admin Dashboard</h1>
 
+        {/* ✅ Registered Users Section */}
+        <section>
+          <h2 className="text-xl font-semibold mb-4">Registered Users</h2>
+          <div className="bg-[#2b1d13] rounded-xl p-4 shadow-lg max-h-[400px] overflow-y-auto">
+            {users.length === 0 ? (
+              <p className="text-gray-400 text-sm">No registered users yet.</p>
+            ) : (
+              <table className="w-full text-sm border-collapse">
+                <thead>
+                  <tr className="text-left border-b border-gray-700">
+                    <th className="py-2">ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Balance ($)</th>
+                    <th>Joined</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {users.map((u) => (
+                    <tr
+                      key={u.id}
+                      className="border-b border-gray-800 hover:bg-[#3b2b1a] transition"
+                    >
+                      <td className="py-2">{u.id}</td>
+                      <td>{u.fullname}</td>
+                      <td>{u.email}</td>
+                      <td>{Number(u.balance).toFixed(2)}</td>
+                      <td>
+                        {new Date(u.created_at).toLocaleDateString("en-GB")}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </section>
+
+        {/* Existing Sections Below */}
         {/* Deposits Section */}
         <section>
           <h2 className="text-xl font-semibold mb-4">Pending Deposits</h2>
