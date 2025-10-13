@@ -12,20 +12,12 @@ export default function MobileHoldingsCard() {
 
   const fetchLiveData = async () => {
     try {
-      const response = await fetch(
-        "https://api.coinstats.app/public/v1/coins?skip=0&limit=10&currency=USD"
-      );
+      // Fetch from your backend route
+      const response = await fetch("http://localhost:5000/api/market/prices");
+      if (!response.ok) throw new Error("Failed to fetch market data");
+
       const data = await response.json();
-      const fetchedCoins = {};
-
-      data.coins.forEach((coin) => {
-        fetchedCoins[coin.id.toLowerCase()] = {
-          usd: coin.price,
-          usd_24h_change: coin.priceChange1d,
-        };
-      });
-
-      setCoins(fetchedCoins);
+      setCoins(data);
     } catch (error) {
       console.error("Error fetching live prices:", error);
     } finally {
@@ -131,4 +123,4 @@ export default function MobileHoldingsCard() {
       </div>
     </div>
   );
-              }
+}
