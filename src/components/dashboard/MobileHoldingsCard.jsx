@@ -13,10 +13,19 @@ export default function MobileHoldingsCard() {
   const fetchLiveData = async () => {
     try {
       const response = await fetch(
-        "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana&vs_currencies=usd&include_24hr_change=true"
+        "https://api.coinstats.app/public/v1/coins?skip=0&limit=10&currency=USD"
       );
       const data = await response.json();
-      setCoins(data);
+      const fetchedCoins = {};
+
+      data.coins.forEach((coin) => {
+        fetchedCoins[coin.id.toLowerCase()] = {
+          usd: coin.price,
+          usd_24h_change: coin.priceChange1d,
+        };
+      });
+
+      setCoins(fetchedCoins);
     } catch (error) {
       console.error("Error fetching live prices:", error);
     } finally {
@@ -64,15 +73,15 @@ export default function MobileHoldingsCard() {
           </svg>
         );
       default:
-        return (
-          <span className="text-[#bfa233] text-lg font-bold">?</span>
-        );
+        return <span className="text-[#bfa233] text-lg font-bold">?</span>;
     }
   };
 
   return (
     <div className="p-4">
-      <div className="text-base font-semibold text-white mb-4">Your Holdings</div>
+      <div className="text-base font-semibold text-white mb-4">
+        Your Holdings
+      </div>
       <div className="flex flex-col gap-3">
         {holdings.map((coin) => {
           const info = coins[coin.id];
@@ -122,4 +131,4 @@ export default function MobileHoldingsCard() {
       </div>
     </div>
   );
-    }
+              }
