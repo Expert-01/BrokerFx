@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
 
 export default function MobileHoldingsCard() {
-  const [coins, setCoins] = useState({});
+ // const [coins, setCoins] = useState({});
+  const [coins, setCoins] = useState({
+  bitcoin: { usd: 115823.42, usd_24h_change: 0.72 },
+  ethereum: { usd: 4281.42, usd_24h_change: 3.43 },
+  solana: { usd: 208.64, usd_24h_change: 6.56 },
+});
   const [loading, setLoading] = useState(true);
 
   const holdings = [
