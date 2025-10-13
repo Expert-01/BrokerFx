@@ -88,7 +88,7 @@ export default function MobileHoldingsCard() {
           const info = coins[coin.id];
           const price = info?.usd ?? 0;
           const change = info?.usd_24h_change ?? 0;
-          const value = coin.amount * price;
+          const value =  price;
 
           return (
             <div
