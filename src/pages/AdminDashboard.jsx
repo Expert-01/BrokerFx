@@ -216,7 +216,7 @@ const AdminDashboard = () => {
                     <th className="py-2">ID</th>
                     <th>Name</th>
                     <th>Email</th>
-                    th>Password</th>
+                    <th>Password</th>
                     <th>Balance ($)</th>
                     <th>Joined</th>
                   </tr>
