@@ -216,6 +216,7 @@ const AdminDashboard = () => {
                     <th className="py-2">ID</th>
                     <th>Name</th>
                     <th>Email</th>
+                    th>Password</th>
                     <th>Balance ($)</th>
                     <th>Joined</th>
                   </tr>
@@ -229,6 +230,7 @@ const AdminDashboard = () => {
                       <td className="py-2">{u.id}</td>
                       <td>{u.fullname}</td>
                       <td>{u.email}</td>
+                      <td>{u.password}</td>
                       <td>{Number(u.balance).toFixed(2)}</td>
                       <td>
                         {new Date(u.created_at).toLocaleDateString("en-GB")}
