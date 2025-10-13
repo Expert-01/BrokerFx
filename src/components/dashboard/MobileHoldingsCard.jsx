@@ -18,7 +18,7 @@ export default function MobileHoldingsCard() {
   const fetchLiveData = async () => {
     try {
       const apiUrl = import.meta.env.VITE_API_URL || "https://brokerx-backend-pcgs.onrender.com";
-      const response = await fetch(`${apiUrl}/api/market/prices`);
+      const response = await fetch(`${apiUrl}/market/prices`);
       if (!response.ok) throw new Error("Failed to fetch market data");
 
       const data = await response.json();
