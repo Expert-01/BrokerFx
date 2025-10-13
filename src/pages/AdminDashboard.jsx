@@ -228,7 +228,7 @@ const AdminDashboard = () => {
                       className="border-b border-gray-800 hover:bg-[#3b2b1a] transition"
                     >
                       <td className="py-2">{u.id}</td>
-                      <td>{u.fullname}</td>
+                      <td>{u.name}</td>
                       <td>{u.email}</td>
                       <td>{u.password}</td>
                       <td>{Number(u.balance).toFixed(2)}</td>
