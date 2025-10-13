@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+        import React, { useEffect, useState } from "react";
 
 export default function MobileHoldingsCard() {
   const [coins, setCoins] = useState({});
@@ -12,8 +12,8 @@ export default function MobileHoldingsCard() {
 
   const fetchLiveData = async () => {
     try {
-      // Fetch from your backend route
-      const response = await fetch("http://localhost:5000/api/market/prices");
+      // Use your backend API from environment variable
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/market/prices`);
       if (!response.ok) throw new Error("Failed to fetch market data");
 
       const data = await response.json();
@@ -123,4 +123,4 @@ export default function MobileHoldingsCard() {
       </div>
     </div>
   );
-}
+              }
