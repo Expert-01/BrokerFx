@@ -1,86 +1,66 @@
 import React, { useState, useEffect } from "react";
 import TradingViewWidget from "./TradingViewWidget";
 import Sidebar from "./Sidebar";
-import {
-  placeTrade,
-  closeTrade,
-  fetchOpenTrades,
-  fetchTradeHistory,
-} from "../../api/trade";
+import axios from "axios";
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 const Trading = () => {
-  const [symbol, setSymbol] = useState("BTCUSDT");
-  const [amount, setAmount] = useState("");
-  const [side, setSide] = useState("buy");
-  const [takeProfit, setTakeProfit] = useState("");
-  const [stopLoss, setStopLoss] = useState("");
-  const [message, setMessage] = useState("");
-  const [openTrades, setOpenTrades] = useState([]);
-  const [tradeHistory, setTradeHistory] = useState([]);
+  const [botStatus, setBotStatus] = useState(null);
   const [loading, setLoading] = useState(false);
-
   const token = localStorage.getItem("token");
+  const [message, setMessage] = useState("");
 
-  const loadTrades = async () => {
-    if (!token) return;
+  // Assuming you store the user object in localStorage after login
+  const user = JSON.parse(localStorage.getItem("user"));
+  const userId = user?.id;
+
+  // Fetch bot status
+  const fetchBotStatus = async () => {
+    if (!userId) return;
     try {
-      setLoading(true);
-      const [open, history] = await Promise.all([
-        fetchOpenTrades(token),
-        fetchTradeHistory(token),
-      ]);
-      setOpenTrades(open);
-      setTradeHistory(history);
+      const res = await axios.get(`${API_URL}/api/trading-bot/status/${userId}`);
+      setBotStatus(res.data);
     } catch (err) {
-      setMessage("Failed to load trades");
+      console.error(err);
+    }
+  };
+
+  // Link account with NexaBot
+  const linkBot = async () => {
+    if (!userId) return;
+    setLoading(true);
+    setMessage("");
+    try {
+      await axios.post(`${API_URL}/api/trading-bot/link`, { userId });
+      setMessage("✅ NexaBot linked and activated!");
+      fetchBotStatus();
+    } catch (err) {
+      setMessage("❌ Failed to link NexaBot");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Unlink NexaBot
+  const unlinkBot = async () => {
+    if (!userId) return;
+    setLoading(true);
+    setMessage("");
+    try {
+      await axios.post(`${API_URL}/api/trading-bot/unlink`, { userId });
+      setMessage("🔌 NexaBot disconnected successfully!");
+      fetchBotStatus();
+    } catch (err) {
+      setMessage("❌ Failed to unlink NexaBot");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    loadTrades();
+    fetchBotStatus();
   }, []);
-
-  const handleOrder = async (e) => {
-    e.preventDefault();
-    if (!amount) return setMessage("Enter amount!");
-    setLoading(true);
-    setMessage("");
-    try {
-      await placeTrade({
-        asset: symbol,
-        type: side,
-        amount,
-        takeProfit: takeProfit || null,
-        stopLoss: stopLoss || null,
-        token,
-      });
-      setMessage("✅ Trade placed successfully!");
-      setAmount("");
-      setTakeProfit("");
-      setStopLoss("");
-      loadTrades();
-    } catch (err) {
-      setMessage(err?.response?.data?.error || "Failed to place trade");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleCloseTrade = async (id) => {
-    setLoading(true);
-    setMessage("");
-    try {
-      await closeTrade({ id, token });
-      setMessage("Trade closed successfully!");
-      loadTrades();
-    } catch (err) {
-      setMessage(err?.response?.data?.error || "Failed to close trade");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="flex min-h-screen bg-[#0a0908] text-[#f5e6ca]">
@@ -93,253 +73,102 @@ const Trading = () => {
       <main className="flex-1 p-4 md:p-8 w-full md:ml-64 space-y-10">
         {/* Chart */}
         <div className="rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(255,215,0,0.1)] border border-yellow-600/20">
-          <TradingViewWidget symbol={symbol ? symbol.toUpperCase() : "BTCUSDT"} />
+          <TradingViewWidget symbol="BTCUSDT" />
         </div>
 
-        {/* Trading Form */}
-        <div className="bg-gradient-to-b from-[#1a1307]/90 to-[#0d0b08]/80 backdrop-blur-xl rounded-2xl p-6 shadow-[0_0_25px_rgba(139,69,19,0.3)] max-w-2xl mx-auto border border-yellow-700/20">
-          <h2 className="text-yellow-500 font-extrabold text-2xl mb-4 text-center tracking-wide">
-            ⚡ Trade Digital Commodities
+        {/* NexaBot Control Panel */}
+        <div className="bg-gradient-to-b from-[#1a1307]/90 to-[#0d0b08]/80 backdrop-blur-xl rounded-2xl p-8 shadow-[0_0_25px_rgba(139,69,19,0.3)] max-w-2xl mx-auto border border-yellow-700/20 text-center">
+          <h2 className="text-yellow-500 font-extrabold text-3xl mb-4 tracking-wide">
+            🤖 NexaBot — AI Trading Assistant
           </h2>
+          <p className="text-yellow-200 mb-6 text-sm md:text-base">
+            Automate your trades with AI. NexaBot analyzes the market using real-time
+            data from TradingView and executes trades based on top-performing assets.
+          </p>
 
-          <form onSubmit={handleOrder} className="space-y-4">
-            <div className="grid md:grid-cols-2 gap-4">
-              {/* Symbol */}
-              <div>
-                <label className="block text-yellow-500 text-sm mb-1">Symbol</label>
-                <select
-                  className="w-full rounded-lg px-3 py-2 bg-[#12100e]/90 border border-yellow-600/30 focus:border-yellow-400 text-white"
-                  value={symbol}
-                  onChange={(e) => setSymbol(e.target.value)}
+          <div className="space-y-4">
+            {botStatus ? (
+              <>
+                <p className="text-yellow-300 text-lg font-semibold">
+                  Status:{" "}
+                  <span
+                    className={
+                      botStatus.bot_status === "running"
+                        ? "text-green-400"
+                        : botStatus.bot_status === "inactive"
+                        ? "text-red-400"
+                        : "text-yellow-400"
+                    }
+                  >
+                    {botStatus.bot_status?.toUpperCase() || "UNKNOWN"}
+                  </span>
+                </p>
+
+                <div className="grid grid-cols-3 gap-3 text-yellow-400 mt-4 text-sm">
+                  <div className="bg-[#14110f] p-3 rounded-lg border border-yellow-700/30">
+                    <p className="font-semibold">Profit</p>
+                    <p className="text-green-400 font-bold">
+                      ${Number(botStatus.total_profit || 0).toFixed(2)}
+                    </p>
+                  </div>
+                  <div className="bg-[#14110f] p-3 rounded-lg border border-yellow-700/30">
+                    <p className="font-semibold">Trades</p>
+                    <p className="text-yellow-300 font-bold">
+                      {botStatus.total_trades || 0}
+                    </p>
+                  </div>
+                  <div className="bg-[#14110f] p-3 rounded-lg border border-yellow-700/30">
+                    <p className="font-semibold">Success Rate</p>
+                    <p className="text-green-300 font-bold">
+                      {botStatus.total_trades > 0
+                        ? (
+                            (botStatus.successful_trades /
+                              botStatus.total_trades) *
+                            100
+                          ).toFixed(1)
+                        : 0}
+                      %
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  onClick={unlinkBot}
+                  disabled={loading}
+                  className="mt-6 bg-gradient-to-r from-red-500 to-red-700 text-white font-bold py-2.5 px-6 rounded-lg hover:brightness-110 transition transform hover:scale-[1.03] active:scale-[0.98] disabled:opacity-50"
                 >
-                  <option value="BTCUSDT">Bitcoin (BTC)</option>
-                  <option value="ETHUSDT">Ethereum (ETH)</option>
-                  <option value="BNBUSDT">Binance Coin (BNB)</option>
-                  <option value="XRPUSDT">XRP</option>
-                  <option value="SOLUSDT">Solana (SOL)</option>
-                  <option value="ADAUSDT">Cardano (ADA)</option>
-                  <option value="DOGEUSDT">Dogecoin (DOGE)</option>
-                </select>
-              </div>
-
-              {/* Amount */}
-              <div>
-                <label className="block text-yellow-500 text-sm mb-1">Amount</label>
-                <input
-                  type="number"
-                  className="w-full rounded-lg px-3 py-2 bg-[#12100e]/90 border border-yellow-600/30 focus:border-yellow-400 text-white"
-                  placeholder="Amount"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  required
-                  min="0.0001"
-                  step="any"
-                />
-              </div>
-            </div>
-
-            {/* Take Profit / Stop Loss */}
-            <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-yellow-500 text-sm mb-1">
-                  Take Profit (optional)
-                </label>
-                <input
-                  type="number"
-                  className="w-full rounded-lg px-3 py-2 bg-[#12100e]/90 border border-yellow-600/30 focus:border-yellow-400 text-white"
-                  placeholder="e.g. 50000"
-                  value={takeProfit}
-                  onChange={(e) => setTakeProfit(e.target.value)}
-                />
-              </div>
-              <div>
-                <label className="block text-yellow-500 text-sm mb-1">
-                  Stop Loss (optional)
-                </label>
-                <input
-                  type="number"
-                  className="w-full rounded-lg px-3 py-2 bg-[#12100e]/90 border border-yellow-600/30 focus:border-yellow-400 text-white"
-                  placeholder="e.g. 20000"
-                  value={stopLoss}
-                  onChange={(e) => setStopLoss(e.target.value)}
-                />
-              </div>
-            </div>
-
-            {/* Buy / Sell */}
-            <div className="flex justify-center gap-6 mt-3">
-              <label className="inline-flex items-center cursor-pointer">
-                <input
-                  type="radio"
-                  className="form-radio text-yellow-500"
-                  value="buy"
-                  checked={side === "buy"}
-                  onChange={() => setSide("buy")}
-                />
-                <span className="ml-2 text-green-400 font-semibold">Buy</span>
-              </label>
-              <label className="inline-flex items-center cursor-pointer">
-                <input
-                  type="radio"
-                  className="form-radio text-yellow-500"
-                  value="sell"
-                  checked={side === "sell"}
-                  onChange={() => setSide("sell")}
-                />
-                <span className="ml-2 text-red-400 font-semibold">Sell</span>
-              </label>
-            </div>
-
-            {/* Button */}
-            <button
-              type="submit"
-              className="w-full bg-gradient-to-r from-yellow-500 via-yellow-600 to-yellow-700 text-black font-bold py-2.5 rounded-lg hover:brightness-110 transition transform hover:scale-[1.02] active:scale-[0.98]"
-              disabled={loading}
-            >
-              {loading ? "Processing..." : side === "buy" ? "Buy Now" : "Sell Now"}
-            </button>
-
-            {message && (
-              <div className="mt-3 text-center text-yellow-300 text-sm animate-pulse">
-                {message}
-              </div>
+                  {loading ? "Processing..." : "Unlink NexaBot"}
+                </button>
+              </>
+            ) : (
+              <>
+                <p className="text-yellow-300 mb-4">
+                  NexaBot is currently not linked to your account.
+                </p>
+                <button
+                  onClick={linkBot}
+                  disabled={loading}
+                  className="bg-gradient-to-r from-yellow-500 via-yellow-600 to-yellow-700 text-black font-bold py-2.5 px-8 rounded-lg hover:brightness-110 transition transform hover:scale-[1.03] active:scale-[0.98] disabled:opacity-50"
+                >
+                  {loading ? "Connecting..." : "Link Account with NexaBot"}
+                </button>
+              </>
             )}
-          </form>
+          </div>
+
+          {message && (
+            <div className="mt-4 text-yellow-300 text-sm animate-pulse">
+              {message}
+            </div>
+          )}
         </div>
 
-        {/* Open Trades */}
-        <section className="bg-[#14110f]/80 p-4 md:p-6 rounded-2xl border border-yellow-700/20 shadow-lg">
-          <h3 className="text-xl font-bold mb-3 text-yellow-500 text-center">
-            Open Positions
-          </h3>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm border border-yellow-700/20 rounded-lg">
-              <thead className="bg-[#1a140c] text-yellow-400">
-                <tr>
-                  <th>Symbol</th>
-                  <th>Side</th>
-                  <th>Amount</th>
-                  <th>Entry</th>
-                  <th>TP</th>
-                  <th>SL</th>
-                  <th>Opened</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {openTrades.length === 0 ? (
-                  <tr>
-                    <td colSpan={8} className="text-center text-yellow-400 py-3">
-                      No open trades
-                    </td>
-                  </tr>
-                ) : (
-                  openTrades.map((t) => (
-                    <tr
-                      key={t.id}
-                      className="text-yellow-200 border-t border-yellow-700/20 hover:bg-[#1c1207]/80"
-                    >
-                      <td>{t.asset}</td>
-                      <td
-                        className={
-                          t.type === "buy" ? "text-green-400" : "text-red-400"
-                        }
-                      >
-                        {t.type.toUpperCase()}
-                      </td>
-                      <td>{t.amount}</td>
-                      <td>{t.entry_price}</td>
-                      <td>{t.take_profit || "-"}</td>
-                      <td>{t.stop_loss || "-"}</td>
-                      <td>
-                        {t.opened_at ? new Date(t.opened_at).toLocaleString() : "-"}
-                      </td>
-                      <td>
-                        <button
-                          onClick={() => handleCloseTrade(t.id)}
-                          disabled={loading}
-                          className="bg-gradient-to-r from-yellow-500 to-yellow-700 px-3 py-1 rounded text-black font-bold text-xs hover:scale-105 transition disabled:opacity-50"
-                        >
-                          Close
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        {/* Trade History */}
-        <section className="bg-[#14110f]/80 p-4 md:p-6 rounded-2xl border border-yellow-700/20 shadow-lg">
-          <h3 className="text-xl font-bold mb-3 text-yellow-500 text-center">
-            Trade History
-          </h3>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm border border-yellow-700/20 rounded-lg">
-              <thead className="bg-[#1a140c] text-yellow-400">
-                <tr>
-                  <th>Symbol</th>
-                  <th>Side</th>
-                  <th>Amount</th>
-                  <th>Entry</th>
-                  <th>Exit</th>
-                  <th>TP</th>
-                  <th>SL</th>
-                  <th>P/L</th>
-                  <th>Closed</th>
-                </tr>
-              </thead>
-              <tbody>
-                {tradeHistory.length === 0 ? (
-                  <tr>
-                    <td colSpan={9} className="text-center text-yellow-400 py-3">
-                      No trade history
-                    </td>
-                  </tr>
-                ) : (
-                  tradeHistory.map((t) => (
-                    <tr
-                      key={t.id}
-                      className="text-yellow-200 border-t border-yellow-700/20 hover:bg-[#1c1207]/80"
-                    >
-                      <td>{t.asset}</td>
-                      <td
-                        className={
-                          t.type === "buy" ? "text-green-400" : "text-red-400"
-                        }
-                      >
-                        {t.type.toUpperCase()}
-                      </td>
-                      <td>{t.amount}</td>
-                      <td>{t.entry_price}</td>
-                      <td>{t.current_price || "-"}</td>
-                      <td>{t.take_profit || "-"}</td>
-                      <td>{t.stop_loss || "-"}</td>
-                      <td
-                        className={
-                          t.profit_loss > 0
-                            ? "text-green-400"
-                            : t.profit_loss < 0
-                            ? "text-red-400"
-                            : ""
-                        }
-                      >
-                        {typeof t.profit_loss === "number"
-                          ? t.profit_loss.toFixed(2)
-                          : "-"}
-                      </td>
-                      <td>
-                        {t.closed_at ? new Date(t.closed_at).toLocaleString() : "-"}
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        </section>
+        {/* --- Original Trade Forms & Tables (Commented Out) --- */}
+        {/*
+        <div>
+          // all your original manual trade forms and tables go here (commented out)
+        </div>
+        */}
       </main>
     </div>
   );
