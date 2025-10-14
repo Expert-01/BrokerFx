@@ -168,7 +168,7 @@ const AdminDashboard = () => {
       const decoded = jwtDecode(token);
       const adminId = decoded.id;
 
-      const res = await fetch(`${API_URL}/api/admin/users/increase-balance`, {
+      const res = await fetch(`${API_URL}/admin/users/increase-balance`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
