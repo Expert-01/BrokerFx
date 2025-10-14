@@ -18,52 +18,44 @@ const Trading = () => {
     "binance-coin": [],
     ripple: [],
   });
-  const [logs, setLogs] = useState([]);
 
   const user = JSON.parse(localStorage.getItem("user"));
   const userId = user?.id;
-
-  // Helper to log messages both to state and console
-  const addLog = (msg) => {
-    console.log(msg);
-    setLogs((prev) => [...prev, `[${new Date().toLocaleTimeString()}] ${msg}`]);
-  };
-
-  addLog("Trading Page Loaded | userId: " + userId);
+  console.log("Trading Page Loaded | userId:", userId);
 
   // Fetch bot status
   const fetchBotStatus = async () => {
-    addLog("Fetching bot status...");
+    console.log("Fetching bot status...");
     if (!userId) {
-      addLog("No userId available");
+      console.warn("No userId available");
       return;
     }
     try {
       const res = await axios.get(`${API_URL}/api/trading-bot/status/${userId}`);
-      addLog("Bot status response: " + JSON.stringify(res.data));
+      console.log("Bot status response:", res.data);
       setBotStatus(res.data);
       if (res.data.simulated_trades) {
         setTrades(res.data.simulated_trades);
-        addLog("Simulated trades updated from backend: " + JSON.stringify(res.data.simulated_trades));
+        console.log("Simulated trades updated from backend:", res.data.simulated_trades);
       }
     } catch (err) {
-      addLog("Error fetching bot status: " + err);
+      console.error("Error fetching bot status:", err);
     }
   };
 
   // Link bot
   const linkBot = async () => {
-    addLog("Link bot clicked");
+    console.log("Link bot clicked");
     if (!userId) {
-      addLog("Cannot link bot: no userId");
+      console.warn("Cannot link bot: no userId");
       return;
     }
     setLinking(true);
     setMessage("");
     try {
-      addLog("Sending link request to backend...");
+      console.log("Sending link request to backend...");
       const res = await axios.post(`${API_URL}/api/trading-bot/link`, { userId });
-      addLog("Link response: " + JSON.stringify(res));
+      console.log("Link response:", res);
       if (res.status === 200) {
         setMessage("✅ Bot linked and active!");
         await fetchBotStatus();
@@ -71,7 +63,7 @@ const Trading = () => {
         setMessage("⚠️ Unexpected response while linking.");
       }
     } catch (err) {
-      addLog("Link bot error: " + err);
+      console.error("Link bot error:", err);
       setMessage("❌ Failed to link bot.");
     } finally {
       setLinking(false);
@@ -80,17 +72,17 @@ const Trading = () => {
 
   // Unlink bot
   const unlinkBot = async () => {
-    addLog("Unlink bot clicked");
+    console.log("Unlink bot clicked");
     if (!userId) {
-      addLog("Cannot unlink bot: no userId");
+      console.warn("Cannot unlink bot: no userId");
       return;
     }
     setLoading(true);
     setMessage("");
     try {
-      addLog("Sending unlink request to backend...");
+      console.log("Sending unlink request to backend...");
       const res = await axios.post(`${API_URL}/api/trading-bot/unlink`, { userId });
-      addLog("Unlink response: " + JSON.stringify(res));
+      console.log("Unlink response:", res);
       if (res.status === 200) {
         setMessage("🔌 Bot disconnected!");
         await fetchBotStatus();
@@ -98,7 +90,7 @@ const Trading = () => {
         setMessage("⚠️ Unexpected response while unlinking.");
       }
     } catch (err) {
-      addLog("Unlink bot error: " + err);
+      console.error("Unlink bot error:", err);
       setMessage("❌ Failed to unlink bot.");
     } finally {
       setLoading(false);
@@ -107,30 +99,30 @@ const Trading = () => {
 
   // Fetch live price
   const fetchLivePrice = async (coin) => {
-    addLog("Fetching live price for: " + coin);
+    console.log("Fetching live price for:", coin);
     try {
       const res = await axios.get(
         `https://api.coinstats.app/public/v1/coins/${coin}?currency=USD`
       );
-      addLog(`${coin} price: ${res.data.coin.price}`);
+      console.log(`${coin} price:`, res.data.coin.price);
       return res.data.coin.price;
     } catch (err) {
-      addLog("Error fetching live price: " + err);
+      console.error("Error fetching live price:", err);
       return null;
     }
   };
 
   // Update price history
   const updatePriceHistory = async () => {
-    addLog("Updating price history...");
+    console.log("Updating price history...");
     const assets = ["bitcoin", "ethereum", "binance-coin", "ripple"];
     for (let asset of assets) {
       const price = await fetchLivePrice(asset);
       if (!price) continue;
       setPriceHistory((prev) => {
         const history = [...(prev[asset] || []), price];
-        if (history.length > 12) history.shift();
-        addLog(`Price history updated for ${asset}: ${JSON.stringify(history)}`);
+        if (history.length > 12) history.shift(); // keep last 12 prices
+        console.log(`Price history updated for ${asset}:`, history);
         return { ...prev, [asset]: history };
       });
     }
@@ -138,13 +130,13 @@ const Trading = () => {
 
   // Simulate trade
   const simulateTrade = async () => {
-    addLog("Simulate trade triggered");
+    console.log("Simulate trade triggered");
     if (!userId) {
-      addLog("Cannot simulate trade: no userId");
+      console.warn("Cannot simulate trade: no userId");
       return;
     }
     if (botStatus?.bot_status !== "running") {
-      addLog("Bot not running, skipping simulation");
+      console.log("Bot not running, skipping simulation");
       return;
     }
     setSimulateLoading(true);
@@ -157,7 +149,7 @@ const Trading = () => {
 
       const history = priceHistory[asset] || [];
       if (history.length < 2) {
-        addLog("Not enough price history for simulation: " + asset);
+        console.log("Not enough price history for simulation:", asset);
         return;
       }
 
@@ -166,8 +158,9 @@ const Trading = () => {
       const priceChange = lastPrice - prevPrice;
       const profitLoss = action === "buy" ? priceChange * amount : -priceChange * amount;
 
-      addLog("Simulated trade details: " + JSON.stringify({ asset, action, amount, lastPrice, profitLoss }));
+      console.log("Simulated trade details:", { asset, action, amount, lastPrice, profitLoss });
 
+      // Send to backend
       const res = await axios.post(`${API_URL}/api/trading-bot/simulate/${userId}`, {
         asset,
         action,
@@ -175,8 +168,7 @@ const Trading = () => {
         price: lastPrice,
         profitLoss,
       });
-
-      addLog("Simulation response: " + JSON.stringify(res.data));
+      console.log("Simulation response:", res.data);
 
       const newTrade = {
         asset,
@@ -187,9 +179,9 @@ const Trading = () => {
         time: new Date().toLocaleTimeString(),
       };
       setTrades((prev) => [newTrade, ...prev]);
-      addLog("Trade added to state: " + JSON.stringify(newTrade));
+      console.log("Trade added to state:", newTrade);
     } catch (err) {
-      addLog("Error simulating trade: " + err);
+      console.error("Error simulating trade:", err);
     } finally {
       setSimulateLoading(false);
     }
@@ -197,41 +189,154 @@ const Trading = () => {
 
   // Initial fetch and interval
   useEffect(() => {
-    addLog("Mounting Trading component, starting intervals");
+    console.log("Mounting Trading component, starting intervals");
     if (!userId) {
-      addLog("No userId, cannot start intervals");
+      console.warn("No userId, cannot start intervals");
       return;
     }
 
     fetchBotStatus();
     const interval = setInterval(async () => {
-      addLog("Interval tick: fetching bot status, updating prices, simulating trade");
+      console.log("Interval tick: fetching bot status, updating prices, simulating trade");
       await fetchBotStatus();
       await updatePriceHistory();
       await simulateTrade();
     }, 5000);
 
     return () => {
-      addLog("Unmounting Trading component, clearing interval");
+      console.log("Unmounting Trading component, clearing interval");
       clearInterval(interval);
     };
   }, [userId]);
 
   return (
-    <div className="flex min-h-screen bg-[#0a0908] text-[#f5e6ca] relative">
+    <div className="flex min-h-screen bg-[#0a0908] text-[#f5e6ca]">
       <aside className="hidden md:block z-50 right-9">
         <Sidebar />
       </aside>
 
       <main className="flex-1 p-4 md:p-8 w-full md:ml-64 space-y-6">
-        {/* Chart and Bot Panel */}
-        {/* ... your existing JSX remains the same ... */}
+        {/* Chart */}
+        <div className="rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(255,215,0,0.1)] border border-yellow-600/20">
+          <TradingViewWidget symbol="BTCUSDT" />
+        </div>
 
-        {/* Log Panel */}
-        <div className="fixed bottom-0 left-0 w-full max-h-40 overflow-y-auto bg-black/80 text-yellow-400 text-xs p-2 z-50">
-          {logs.map((log, idx) => (
-            <div key={idx}>{log}</div>
-          ))}
+        {/* Bot Panel */}
+        <div className="bg-gradient-to-b from-[#1a1307]/90 to-[#0d0b08]/80 backdrop-blur-xl rounded-2xl p-5 shadow-[0_0_20px_rgba(139,69,19,0.3)] max-w-2xl mx-auto border border-yellow-700/20 text-center text-sm">
+          <h2 className="text-yellow-500 font-bold text-xl mb-2 tracking-wide">
+            🤖 NexaBot — Trading Calibration
+          </h2>
+          <p className="text-yellow-200 mb-3 text-xs md:text-sm">
+            Automated trading based on live market data.
+          </p>
+
+          {message && (
+            <div
+              className={`mb-2 ${
+                message.includes("✅")
+                  ? "text-green-400"
+                  : message.includes("❌")
+                  ? "text-red-400"
+                  : "text-yellow-300"
+              }`}
+            >
+              {message}
+            </div>
+          )}
+
+          {botStatus ? (
+            <>
+              <p className="text-yellow-300 font-semibold text-xs">
+                Status:{" "}
+                <span
+                  className={
+                    botStatus.bot_status === "running"
+                      ? "text-green-400"
+                      : botStatus.bot_status === "inactive"
+                      ? "text-red-400"
+                      : "text-yellow-400"
+                  }
+                >
+                  {botStatus.bot_status?.toUpperCase() || "UNKNOWN"}
+                </span>
+              </p>
+              <div className="grid grid-cols-3 gap-2 text-yellow-400 mt-2 text-xs">
+                <div className="bg-[#14110f] p-1.5 rounded-lg border border-yellow-700/30">
+                  <p className="font-semibold">Profit</p>
+                  <p className="text-green-400 font-bold">${Number(botStatus.total_profit || 0).toFixed(2)}</p>
+                </div>
+                <div className="bg-[#14110f] p-1.5 rounded-lg border border-yellow-700/30">
+                  <p className="font-semibold">Trades</p>
+                  <p className="text-yellow-300 font-bold">{botStatus.total_trades || 0}</p>
+                </div>
+                <div className="bg-[#14110f] p-1.5 rounded-lg border border-yellow-700/30">
+                  <p className="font-semibold">Success Rate</p>
+                  <p className="text-green-300 font-bold">
+                    {botStatus.total_trades > 0
+                      ? ((botStatus.successful_trades / botStatus.total_trades) * 100).toFixed(1)
+                      : 0}%
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={unlinkBot}
+                disabled={loading}
+                className="mt-3 bg-gradient-to-r from-red-500 to-red-700 text-white font-bold py-1.5 px-4 rounded-lg hover:brightness-110 transition text-xs"
+              >
+                {loading ? "Processing..." : "Unlink Bot"}
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={linkBot}
+              disabled={linking}
+              className="mt-2 bg-gradient-to-r from-yellow-500 via-yellow-600 to-yellow-700 text-black font-bold py-1.5 px-4 rounded-lg hover:brightness-110 transition text-xs"
+            >
+              {linking ? "Connecting..." : "Link Bot"}
+            </button>
+          )}
+        </div>
+
+        {/* Simulated Trades Table */}
+        <div className="max-w-2xl mx-auto rounded-2xl overflow-hidden border border-yellow-700/20 bg-[#0d0b08]/90 shadow-[0_0_15px_rgba(255,215,0,0.1)] p-4">
+          <h3 className="text-yellow-500 font-bold text-lg mb-2">📊 Trade Log</h3>
+          <table className="w-full text-xs md:text-sm text-left text-yellow-200">
+            <thead>
+              <tr className="border-b border-yellow-600/30">
+                <th className="py-1 px-2">Time</th>
+                <th className="py-1 px-2">Asset</th>
+                <th className="py-1 px-2">Action</th>
+                <th className="py-1 px-2">Amount</th>
+                <th className="py-1 px-2">Price (USD)</th>
+                <th className="py-1 px-2">P/L</th>
+              </tr>
+            </thead>
+            <tbody>
+              {trades.length === 0 ? (
+                <tr>
+                  <td colSpan="6" className="text-center py-2 text-yellow-400">
+                    No simulated trades yet.
+                  </td>
+                </tr>
+              ) : (
+                trades.map((t, idx) => (
+                  <tr key={idx} className="border-b border-yellow-600/20">
+                    <td className="py-1 px-2">{t.time}</td>
+                    <td className="py-1 px-2">{t.asset.toUpperCase()}</td>
+                    <td className={`py-1 px-2 ${t.action === "buy" ? "text-green-400" : "text-red-400"}`}>
+                      {t.action.toUpperCase()}
+                    </td>
+                    <td className="py-1 px-2">{t.amount}</td>
+                    <td className="py-1 px-2">${t.price.toFixed(2)}</td>
+                    <td className={`py-1 px-2 ${t.profitLoss >= 0 ? "text-green-400" : "text-red-400"}`}>
+                      ${t.profitLoss.toFixed(2)}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
       </main>
     </div>
