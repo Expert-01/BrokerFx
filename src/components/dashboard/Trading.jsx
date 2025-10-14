@@ -10,7 +10,6 @@ const Trading = () => {
   const [loading, setLoading] = useState(false);
   const [linking, setLinking] = useState(false);
   const [message, setMessage] = useState("");
-
   const [trades, setTrades] = useState([]);
   const [simulateLoading, setSimulateLoading] = useState(false);
   const [priceHistory, setPriceHistory] = useState({
@@ -45,7 +44,9 @@ const Trading = () => {
       if (res.status === 200) {
         setMessage("✅ Bot linked and active!");
         await fetchBotStatus();
-      } else setMessage("⚠️ Unexpected response while linking.");
+      } else {
+        setMessage("⚠️ Unexpected response while linking.");
+      }
     } catch (err) {
       console.error(err);
       setMessage("❌ Failed to link bot.");
@@ -63,7 +64,9 @@ const Trading = () => {
       if (res.status === 200) {
         setMessage("🔌 Bot disconnected!");
         await fetchBotStatus();
-      } else setMessage("⚠️ Unexpected response while unlinking.");
+      } else {
+        setMessage("⚠️ Unexpected response while unlinking.");
+      }
     } catch (err) {
       console.error(err);
       setMessage("❌ Failed to unlink bot.");
@@ -93,13 +96,13 @@ const Trading = () => {
       if (!price) continue;
       setPriceHistory((prev) => {
         const history = [...(prev[asset] || []), price];
-        if (history.length > 12) history.shift();
+        if (history.length > 12) history.shift(); // last 12 prices
         return { ...prev, [asset]: history };
       });
     }
   };
 
-  // Simulate trade based on recent price change
+  // Simulate trade
   const simulateTrade = async () => {
     if (!userId) return;
     setSimulateLoading(true);
@@ -111,11 +114,12 @@ const Trading = () => {
       const amount = (Math.random() * 0.05 + 0.01).toFixed(4);
 
       const history = priceHistory[asset] || [];
-      if (history.length < 2) return; // Need at least 2 prices
+      if (history.length < 2) return;
 
       const lastPrice = history[history.length - 1];
       const prevPrice = history[history.length - 2];
       const priceChange = lastPrice - prevPrice;
+
       const profitLoss = action === "buy" ? priceChange * amount : -priceChange * amount;
 
       // Save simulated trade to backend
@@ -135,6 +139,7 @@ const Trading = () => {
         profitLoss,
         time: new Date().toLocaleTimeString(),
       };
+
       setTrades((prev) => [newTrade, ...prev]);
     } catch (err) {
       console.error(err);
@@ -143,6 +148,7 @@ const Trading = () => {
     }
   };
 
+  // Initial fetch and interval
   useEffect(() => {
     fetchBotStatus();
     const interval = setInterval(async () => {
@@ -159,19 +165,19 @@ const Trading = () => {
         <Sidebar />
       </aside>
 
-      <main className="flex-1 p-4 md:p-8 w-full md:ml-64 space-y-8">
+      <main className="flex-1 p-4 md:p-8 w-full md:ml-64 space-y-6">
         {/* Chart */}
         <div className="rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(255,215,0,0.1)] border border-yellow-600/20">
           <TradingViewWidget symbol="BTCUSDT" />
         </div>
 
         {/* Bot Panel */}
-        <div className="bg-gradient-to-b from-[#1a1307]/90 to-[#0d0b08]/80 backdrop-blur-xl rounded-2xl p-6 shadow-[0_0_25px_rgba(139,69,19,0.3)] max-w-2xl mx-auto border border-yellow-700/20 text-center text-sm">
-          <h2 className="text-yellow-500 font-bold text-2xl mb-3 tracking-wide">
+        <div className="bg-gradient-to-b from-[#1a1307]/90 to-[#0d0b08]/80 backdrop-blur-xl rounded-2xl p-5 shadow-[0_0_20px_rgba(139,69,19,0.3)] max-w-2xl mx-auto border border-yellow-700/20 text-center text-sm">
+          <h2 className="text-yellow-500 font-bold text-xl mb-2 tracking-wide">
             🤖 NexaBot — Trading Calibration
           </h2>
-          <p className="text-yellow-200 mb-4 text-xs md:text-sm">
-            Automated trading and calibration based on live market data.
+          <p className="text-yellow-200 mb-3 text-xs md:text-sm">
+            Automated trading based on live market data.
           </p>
 
           {message && (
@@ -190,7 +196,7 @@ const Trading = () => {
 
           {botStatus ? (
             <>
-              <p className="text-yellow-300 font-semibold text-sm">
+              <p className="text-yellow-300 font-semibold text-xs">
                 Status:{" "}
                 <span
                   className={
@@ -204,16 +210,16 @@ const Trading = () => {
                   {botStatus.bot_status?.toUpperCase() || "UNKNOWN"}
                 </span>
               </p>
-              <div className="grid grid-cols-3 gap-2 text-yellow-400 mt-3 text-xs">
-                <div className="bg-[#14110f] p-2 rounded-lg border border-yellow-700/30">
+              <div className="grid grid-cols-3 gap-2 text-yellow-400 mt-2 text-xs">
+                <div className="bg-[#14110f] p-1.5 rounded-lg border border-yellow-700/30">
                   <p className="font-semibold">Profit</p>
                   <p className="text-green-400 font-bold">${Number(botStatus.total_profit || 0).toFixed(2)}</p>
                 </div>
-                <div className="bg-[#14110f] p-2 rounded-lg border border-yellow-700/30">
+                <div className="bg-[#14110f] p-1.5 rounded-lg border border-yellow-700/30">
                   <p className="font-semibold">Trades</p>
                   <p className="text-yellow-300 font-bold">{botStatus.total_trades || 0}</p>
                 </div>
-                <div className="bg-[#14110f] p-2 rounded-lg border border-yellow-700/30">
+                <div className="bg-[#14110f] p-1.5 rounded-lg border border-yellow-700/30">
                   <p className="font-semibold">Success Rate</p>
                   <p className="text-green-300 font-bold">
                     {botStatus.total_trades > 0
@@ -226,7 +232,7 @@ const Trading = () => {
               <button
                 onClick={unlinkBot}
                 disabled={loading}
-                className="mt-4 bg-gradient-to-r from-red-500 to-red-700 text-white font-bold py-1.5 px-4 rounded-lg hover:brightness-110 transition text-xs"
+                className="mt-3 bg-gradient-to-r from-red-500 to-red-700 text-white font-bold py-1.5 px-4 rounded-lg hover:brightness-110 transition text-xs"
               >
                 {loading ? "Processing..." : "Unlink Bot"}
               </button>
@@ -244,7 +250,7 @@ const Trading = () => {
 
         {/* Simulated Trades Table */}
         <div className="max-w-2xl mx-auto rounded-2xl overflow-hidden border border-yellow-700/20 bg-[#0d0b08]/90 shadow-[0_0_15px_rgba(255,215,0,0.1)] p-4">
-          <h3 className="text-yellow-500 font-bold text-xl mb-2">📊 Trade Log</h3>
+          <h3 className="text-yellow-500 font-bold text-lg mb-2">📊 Trade Log</h3>
           <table className="w-full text-xs md:text-sm text-left text-yellow-200">
             <thead>
               <tr className="border-b border-yellow-600/30">
@@ -259,3 +265,32 @@ const Trading = () => {
             <tbody>
               {trades.length === 0 ? (
                 <tr>
+                  <td colSpan="6" className="text-center py-2 text-yellow-400">
+                    No simulated trades yet.
+                  </td>
+                </tr>
+              ) : (
+                trades.map((t, idx) => (
+                  <tr key={idx} className="border-b border-yellow-600/20">
+                    <td className="py-1 px-2">{t.time}</td>
+                    <td className="py-1 px-2">{t.asset.toUpperCase()}</td>
+                    <td className={`py-1 px-2 ${t.action === "buy" ? "text-green-400" : "text-red-400"}`}>
+                      {t.action.toUpperCase()}
+                    </td>
+                    <td className="py-1 px-2">{t.amount}</td>
+                    <td className="py-1 px-2">${t.price.toFixed(2)}</td>
+                    <td className={`py-1 px-2 ${t.profitLoss >= 0 ? "text-green-400" : "text-red-400"}`}>
+                      ${t.profitLoss.toFixed(2)}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+  );
+};
+
+export default Trading;
