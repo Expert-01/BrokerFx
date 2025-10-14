@@ -7,9 +7,9 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 const Trading = () => {
   const [botStatus, setBotStatus] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [linking, setLinking] = useState(false);
-  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false); // For simulation & unlink
+  const [linking, setLinking] = useState(false); // For linking
+  const [message, setMessage] = useState(""); // General status message
 
   // Simulation states
   const [simulateAsset, setSimulateAsset] = useState("bitcoin");
@@ -17,7 +17,6 @@ const Trading = () => {
   const [simulateAmount, setSimulateAmount] = useState("");
   const [simulateMessage, setSimulateMessage] = useState("");
 
-  // Assuming you store the user object in localStorage after login
   const user = JSON.parse(localStorage.getItem("user"));
   const userId = user?.id;
 
@@ -32,7 +31,7 @@ const Trading = () => {
     }
   };
 
-  // Link account with NexaBot
+  // Link NexaBot
   const linkBot = async () => {
     if (!userId) return;
     setLinking(true);
@@ -59,9 +58,13 @@ const Trading = () => {
     setLoading(true);
     setMessage("");
     try {
-      await axios.post(`${API_URL}/api/trading-bot/unlink`, { userId });
-      setMessage("🔌 NexaBot disconnected successfully!");
-      await fetchBotStatus();
+      const res = await axios.post(`${API_URL}/api/trading-bot/unlink`, { userId });
+      if (res.status === 200) {
+        setMessage("🔌 NexaBot disconnected successfully!");
+        await fetchBotStatus();
+      } else {
+        setMessage("⚠️ Unexpected response while unlinking NexaBot.");
+      }
     } catch (err) {
       console.error(err);
       setMessage("❌ Failed to unlink NexaBot.");
@@ -70,12 +73,10 @@ const Trading = () => {
     }
   };
 
-  // Fetch live price from CoinStats
+  // Fetch live price
   const fetchLivePrice = async (coin) => {
     try {
-      const res = await axios.get(
-        `https://api.coinstats.app/public/v1/coins/${coin}?currency=USD`
-      );
+      const res = await axios.get(`https://api.coinstats.app/public/v1/coins/${coin}?currency=USD`);
       return res.data.coin.price;
     } catch (err) {
       console.error("Error fetching live price:", err);
@@ -96,7 +97,6 @@ const Trading = () => {
       const price = await fetchLivePrice(simulateAsset);
       if (!price) throw new Error("Failed to fetch price");
 
-      // Simple profit/loss mock logic
       const profitLoss =
         simulateAction === "buy"
           ? price * 0.01 * parseFloat(simulateAmount)
@@ -132,12 +132,10 @@ const Trading = () => {
 
   return (
     <div className="flex min-h-screen bg-[#0a0908] text-[#f5e6ca]">
-      {/* Sidebar */}
       <aside className="hidden md:block z-50 right-9">
         <Sidebar />
       </aside>
 
-      {/* Main */}
       <main className="flex-1 p-4 md:p-8 w-full md:ml-64 space-y-10">
         {/* Chart */}
         <div className="rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(255,215,0,0.1)] border border-yellow-600/20">
@@ -155,6 +153,21 @@ const Trading = () => {
           </p>
 
           <div className="space-y-4">
+            {/* Message always visible */}
+            {message && (
+              <div
+                className={`text-sm ${
+                  message.includes("✅")
+                    ? "text-green-400"
+                    : message.includes("❌")
+                    ? "text-red-400"
+                    : "text-yellow-300"
+                }`}
+              >
+                {message}
+              </div>
+            )}
+
             {botStatus ? (
               <>
                 <p className="text-yellow-300 text-lg font-semibold">
@@ -189,10 +202,7 @@ const Trading = () => {
                     <p className="font-semibold">Success Rate</p>
                     <p className="text-green-300 font-bold">
                       {botStatus.total_trades > 0
-                        ? (
-                            (botStatus.successful_trades / botStatus.total_trades) *
-                            100
-                          ).toFixed(1)
+                        ? ((botStatus.successful_trades / botStatus.total_trades) * 100).toFixed(1)
                         : 0}
                       %
                     </p>
@@ -202,7 +212,7 @@ const Trading = () => {
                 <button
                   onClick={unlinkBot}
                   disabled={loading}
-                  className="mt-6 bg-gradient-to-r from-red-500 to-red-700 text-white font-bold py-2.5 px-6 rounded-lg hover:brightness-110 transition transform hover:scale-[1.03] active:scale-[0.98] disabled:opacity-50"
+                  className="mt-6 bg-gradient-to-r from-red-500 to-red-700 text-white font-bold py-2.5 px-6 rounded-lg hover:brightness-110 transition"
                 >
                   {loading ? "Processing..." : "Unlink NexaBot"}
                 </button>
@@ -215,35 +225,20 @@ const Trading = () => {
                 <button
                   onClick={linkBot}
                   disabled={linking}
-                  className="bg-gradient-to-r from-yellow-500 via-yellow-600 to-yellow-700 text-black font-bold py-2.5 px-8 rounded-lg hover:brightness-110 transition transform hover:scale-[1.03] active:scale-[0.98] disabled:opacity-50"
+                  className="bg-gradient-to-r from-yellow-500 via-yellow-600 to-yellow-700 text-black font-bold py-2.5 px-8 rounded-lg hover:brightness-110 transition"
                 >
                   {linking ? "Connecting..." : "Link Account with NexaBot"}
                 </button>
               </>
             )}
           </div>
-
-          {message && (
-            <div
-              className={`mt-4 text-sm ${
-                message.includes("✅")
-                  ? "text-green-400"
-                  : message.includes("❌")
-                  ? "text-red-400"
-                  : "text-yellow-300"
-              }`}
-            >
-              {message}
-            </div>
-          )}
         </div>
 
-        {/* 🔹 Simulate Trade */}
+        {/* Simulate Trade */}
         <div className="bg-gradient-to-b from-[#1a1307]/90 to-[#0d0b08]/80 backdrop-blur-xl rounded-2xl p-8 shadow-[0_0_25px_rgba(139,69,19,0.3)] max-w-2xl mx-auto border border-yellow-700/20 text-center mt-10">
           <h3 className="text-yellow-500 font-extrabold text-2xl mb-4 tracking-wide">
             ⚡ Simulate NexaBot Trade (Live Price)
           </h3>
-
           <div className="grid md:grid-cols-2 gap-4 mb-4">
             <div>
               <label className="block text-yellow-500 mb-1">Asset</label>
@@ -272,7 +267,7 @@ const Trading = () => {
             </div>
           </div>
 
-          <div>
+          <div className="mb-4">
             <label className="block text-yellow-500 mb-1">Amount</label>
             <input
               type="number"
@@ -286,7 +281,7 @@ const Trading = () => {
           <button
             onClick={handleSimulateTrade}
             disabled={loading}
-            className="mt-4 bg-gradient-to-r from-yellow-500 via-yellow-600 to-yellow-700 text-black font-bold py-2.5 px-6 rounded-lg hover:brightness-110 transition"
+            className="mt-2 bg-gradient-to-r from-yellow-500 via-yellow-600 to-yellow-700 text-black font-bold py-2.5 px-6 rounded-lg hover:brightness-110 transition"
           >
             {loading ? "Simulating..." : "Simulate Trade"}
           </button>
@@ -311,3 +306,5 @@ const Trading = () => {
 };
 
 export default Trading;
+
+          
