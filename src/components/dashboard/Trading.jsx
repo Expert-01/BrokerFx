@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import TradingViewWidget from "./TradingViewWidget";
 import Sidebar from "./Sidebar";
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
-const API_URL = import.meta.env.VITE_API_URL; // make sure it's like: https://brokerx-backend-pcgs.onrender.com
+const API_URL = import.meta.env.VITE_API_URL; // e.g. https://brokerx-backend-pcgs.onrender.com/api
 
 const Trading = () => {
   const [botStatus, setBotStatus] = useState(null);
@@ -20,13 +21,32 @@ const Trading = () => {
   });
   const [highlightedTrade, setHighlightedTrade] = useState(null);
   const [heartbeat, setHeartbeat] = useState(false);
+  const [userId, setUserId] = useState(null);
 
-  const user = JSON.parse(localStorage.getItem("user"));
-  const userId = user?.id;
+  // --- Decode user from token on mount ---
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setMessage("❌ No token found. Please log in again.");
+      return;
+    }
+    try {
+      const decoded = jwtDecode(token);
+      const id = decoded.id || decoded.userId || decoded.user?.id;
+      if (!id) {
+        setMessage("❌ Invalid token: no userId found.");
+        return;
+      }
+      setUserId(id);
+    } catch (err) {
+      console.error("JWT decode error:", err);
+      setMessage("❌ Invalid token.");
+    }
+  }, []);
 
   // --- Fetch bot status ---
   const fetchBotStatus = async () => {
-    if (!userId) return console.warn("No userId available");
+    if (!userId) return;
     try {
       const res = await axios.get(`${API_URL}/trading-bot/status/${userId}`);
       setBotStatus(res.data);
@@ -47,7 +67,9 @@ const Trading = () => {
         setMessage("✅ Bot linked and active!");
         setBotStatus(res.data.bot_status || { bot_status: "running" });
         if (res.data.simulated_trades) setTrades(res.data.simulated_trades);
-      } else setMessage(`⚠️ Unexpected response: ${JSON.stringify(res.data)}`);
+      } else {
+        setMessage(`⚠️ Unexpected response: ${JSON.stringify(res.data)}`);
+      }
     } catch (err) {
       console.error("Link bot error:", err);
       setMessage("❌ Failed to link bot.");
