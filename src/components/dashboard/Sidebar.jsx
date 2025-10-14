@@ -7,8 +7,6 @@ import {
   Sliders,
   Bell,
   FileText,
-  PieChart,
-  Users,
   Table,
   UserCheck,
   LogOut,
@@ -31,8 +29,6 @@ const menu = [
       { name: "Account Status", icon: <Sliders size={20} />, link: "/account-status" },
       { name: "Promo/Offers", icon: <Bell size={20} />, link: "/promo-offers" },
       { name: "Documents", icon: <FileText size={20} />, link: "/documents" },
-     // { name: "Pamm", icon: <PieChart size={20} />, link: "/pamm" },
-     // { name: "Copy Trading", icon: <Users size={20} />, link: "/copy-trading" },
       { name: "Trade with Bot", icon: <Table size={20} />, link: "/trading" },
       { name: "Partner Area", icon: <UserCheck size={20} />, link: "/partner-area" },
       { name: "Sign Out", icon: <LogOut size={20} />, link: "/logout" },
@@ -60,23 +56,23 @@ const Sidebar = () => {
 
   return (
     <>
-      {/* 🟡 Floating 3-Line Hamburger Icon (mobile only) */}
+      {/* 🟡 Hamburger (mobile only) */}
       <button
         onClick={() => setMobileOpen(!mobileOpen)}
         className="fixed top-4 right-4 z-[9999] md:hidden flex flex-col justify-center items-center focus:outline-none"
       >
         <span
-          className={`block w-7 h-1 rounded bg-[#fff] transition-all duration-300 ${
+          className={`block w-7 h-1 rounded bg-white transition-all duration-300 ${
             mobileOpen ? "rotate-45 translate-y-2" : ""
           }`}
         ></span>
         <span
-          className={`block w-7 h-1 rounded bg-[#fff] my-1 transition-all duration-300 ${
+          className={`block w-7 h-1 rounded bg-white my-1 transition-all duration-300 ${
             mobileOpen ? "opacity-0" : ""
           }`}
         ></span>
         <span
-          className={`block w-7 h-1 rounded bg-[#fff] transition-all duration-300 ${
+          className={`block w-7 h-1 rounded bg-white transition-all duration-300 ${
             mobileOpen ? "-rotate-45 -translate-y-2" : ""
           }`}
         ></span>
@@ -90,7 +86,7 @@ const Sidebar = () => {
           ${mobileOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}
         style={{ overflowY: "hidden" }}
       >
-        {/* Logo + Username */}
+        {/* 🟡 Logo + User Info */}
         <div className={`flex items-center gap-3 ${expanded ? "py-6" : "py-4"} mb-6 px-4`}>
           <img
             src={Logo}
@@ -102,11 +98,23 @@ const Sidebar = () => {
               <div className="font-semibold text-gray-400 text-sm">
                 {user?.name || "User"}
               </div>
+              {/* 🆔 Display User ID */}
+              {user?.id && (
+                <div
+                  className="text-white text-xs font-bold tracking-wide mt-1 cursor-pointer hover:text-yellow-400 transition-all"
+                  onClick={() => {
+                    navigator.clipboard.writeText(user.id);
+                    alert("User ID copied!");
+                  }}
+                >
+                  ID: {user.id}
+                </div>
+              )}
             </div>
           )}
         </div>
 
-        {/* Menu */}
+        {/* 🟡 Menu */}
         <nav className="flex-1 px-2 overflow-y-auto">
           {menu.map((section) => (
             <div key={section.section} className="mb-6">
@@ -164,7 +172,7 @@ const Sidebar = () => {
           ))}
         </nav>
 
-        {/* 🟡 Collapse Toggle Button */}
+        {/* 🟡 Collapse Button */}
         <div className="flex justify-center items-center py-4 border-t border-[#23272f]">
           <button
             onClick={() => setExpanded(!expanded)}
