@@ -214,6 +214,7 @@ const AdminDashboard = () => {
                 <thead>
                   <tr className="text-left border-b border-gray-700">
                     <th className="py-2">ID</th>
+                    <th className="px-2">User ID</th>
                     <th>Name</th>
                     <th>Email</th>
                     <th>Password</th>
@@ -228,6 +229,7 @@ const AdminDashboard = () => {
                       className="border-b border-gray-800 hover:bg-[#3b2b1a] transition"
                     >
                       <td className="py-2">{u.id}</td>
+                      <td className="px-2">{u.user_id}</td>
                       <td>{u.name}</td>
                       <td>{u.email}</td>
                       <td>{u.password}</td>
