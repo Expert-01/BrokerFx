@@ -11,6 +11,12 @@ const Trading = () => {
   const token = localStorage.getItem("token");
   const [message, setMessage] = useState("");
 
+  // Simulation states
+  const [simulateAsset, setSimulateAsset] = useState("bitcoin");
+  const [simulateAction, setSimulateAction] = useState("buy");
+  const [simulateAmount, setSimulateAmount] = useState("");
+  const [simulateMessage, setSimulateMessage] = useState("");
+
   // Assuming you store the user object in localStorage after login
   const user = JSON.parse(localStorage.getItem("user"));
   const userId = user?.id;
@@ -53,6 +59,52 @@ const Trading = () => {
       fetchBotStatus();
     } catch (err) {
       setMessage("❌ Failed to unlink NexaBot");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch live price from CoinStats
+  const fetchLivePrice = async (coin) => {
+    try {
+      const res = await axios.get(`https://api.coinstats.app/public/v1/coins/${coin}?currency=USD`);
+      return res.data.coin.price;
+    } catch (err) {
+      console.error("Error fetching live price:", err);
+      return null;
+    }
+  };
+
+  // Simulate trade
+  const handleSimulateTrade = async () => {
+    if (!userId || !simulateAmount) return;
+    setLoading(true);
+    setSimulateMessage("");
+
+    try {
+      const price = await fetchLivePrice(simulateAsset);
+      if (!price) throw new Error("Failed to fetch price");
+
+      // Simple profit/loss mock logic
+      const profitLoss =
+        simulateAction === "buy"
+          ? price * 0.01 * parseFloat(simulateAmount)
+          : -price * 0.01 * parseFloat(simulateAmount);
+
+      await axios.post(`${API_URL}/api/trading-bot/simulate/${userId}`, {
+        asset: simulateAsset,
+        action: simulateAction,
+        amount: parseFloat(simulateAmount),
+        price,
+        profitLoss,
+      });
+
+      setSimulateMessage(`✅ Trade simulated at $${price.toFixed(2)} | P/L: $${profitLoss.toFixed(2)}`);
+      fetchBotStatus();
+      setSimulateAmount("");
+    } catch (err) {
+      console.error(err);
+      setSimulateMessage("❌ Failed to simulate trade.");
     } finally {
       setLoading(false);
     }
@@ -163,12 +215,63 @@ const Trading = () => {
           )}
         </div>
 
-        {/* --- Original Trade Forms & Tables (Commented Out) --- */}
-        {/*
-        <div>
-          // all your original manual trade forms and tables go here (commented out)
+        {/* 🔹 Simulate Trade (Live Price from CoinStats) */}
+        <div className="bg-gradient-to-b from-[#1a1307]/90 to-[#0d0b08]/80 backdrop-blur-xl rounded-2xl p-8 shadow-[0_0_25px_rgba(139,69,19,0.3)] max-w-2xl mx-auto border border-yellow-700/20 text-center mt-10">
+          <h3 className="text-yellow-500 font-extrabold text-2xl mb-4 tracking-wide">
+            ⚡ Simulate NexaBot Trade (Live Price)
+          </h3>
+
+          <div className="grid md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label className="block text-yellow-500 mb-1">Asset</label>
+              <select
+                className="w-full rounded-lg px-3 py-2 bg-[#12100e]/90 border border-yellow-600/30 text-white"
+                value={simulateAsset}
+                onChange={(e) => setSimulateAsset(e.target.value)}
+              >
+                <option value="bitcoin">Bitcoin (BTC)</option>
+                <option value="ethereum">Ethereum (ETH)</option>
+                <option value="binance-coin">BNB</option>
+                <option value="ripple">XRP</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-yellow-500 mb-1">Action</label>
+              <select
+                className="w-full rounded-lg px-3 py-2 bg-[#12100e]/90 border border-yellow-600/30 text-white"
+                value={simulateAction}
+                onChange={(e) => setSimulateAction(e.target.value)}
+              >
+                <option value="buy">Buy</option>
+                <option value="sell">Sell</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-yellow-500 mb-1">Amount</label>
+            <input
+              type="number"
+              className="w-full rounded-lg px-3 py-2 bg-[#12100e]/90 border border-yellow-600/30 text-white"
+              value={simulateAmount}
+              onChange={(e) => setSimulateAmount(e.target.value)}
+              placeholder="0.01"
+            />
+          </div>
+
+          <button
+            onClick={handleSimulateTrade}
+            disabled={loading}
+            className="mt-4 bg-gradient-to-r from-yellow-500 via-yellow-600 to-yellow-700 text-black font-bold py-2.5 px-6 rounded-lg hover:brightness-110 transition"
+          >
+            {loading ? "Simulating..." : "Simulate Trade"}
+          </button>
+
+          {simulateMessage && (
+            <p className="mt-3 text-yellow-300 text-sm">{simulateMessage}</p>
+          )}
         </div>
-        */}
       </main>
     </div>
   );
