@@ -8,7 +8,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 const Trading = () => {
   const [botStatus, setBotStatus] = useState(null);
   const [loading, setLoading] = useState(false);
-  const token = localStorage.getItem("token");
+  const [linking, setLinking] = useState(false);
   const [message, setMessage] = useState("");
 
   // Simulation states
@@ -28,23 +28,28 @@ const Trading = () => {
       const res = await axios.get(`${API_URL}/api/trading-bot/status/${userId}`);
       setBotStatus(res.data);
     } catch (err) {
-      console.error(err);
+      console.error("Error fetching bot status:", err);
     }
   };
 
   // Link account with NexaBot
   const linkBot = async () => {
     if (!userId) return;
-    setLoading(true);
+    setLinking(true);
     setMessage("");
     try {
-      await axios.post(`${API_URL}/api/trading-bot/link`, { userId });
-      setMessage("✅ NexaBot linked and activated!");
-      fetchBotStatus();
+      const res = await axios.post(`${API_URL}/api/trading-bot/link`, { userId });
+      if (res.status === 200) {
+        setMessage("✅ NexaBot linked and activated!");
+        await fetchBotStatus();
+      } else {
+        setMessage("⚠️ Unexpected response while linking NexaBot.");
+      }
     } catch (err) {
-      setMessage("❌ Failed to link NexaBot");
+      console.error(err);
+      setMessage("❌ Failed to link NexaBot. Please try again.");
     } finally {
-      setLoading(false);
+      setLinking(false);
     }
   };
 
@@ -56,9 +61,10 @@ const Trading = () => {
     try {
       await axios.post(`${API_URL}/api/trading-bot/unlink`, { userId });
       setMessage("🔌 NexaBot disconnected successfully!");
-      fetchBotStatus();
+      await fetchBotStatus();
     } catch (err) {
-      setMessage("❌ Failed to unlink NexaBot");
+      console.error(err);
+      setMessage("❌ Failed to unlink NexaBot.");
     } finally {
       setLoading(false);
     }
@@ -67,7 +73,9 @@ const Trading = () => {
   // Fetch live price from CoinStats
   const fetchLivePrice = async (coin) => {
     try {
-      const res = await axios.get(`https://api.coinstats.app/public/v1/coins/${coin}?currency=USD`);
+      const res = await axios.get(
+        `https://api.coinstats.app/public/v1/coins/${coin}?currency=USD`
+      );
       return res.data.coin.price;
     } catch (err) {
       console.error("Error fetching live price:", err);
@@ -77,7 +85,10 @@ const Trading = () => {
 
   // Simulate trade
   const handleSimulateTrade = async () => {
-    if (!userId || !simulateAmount) return;
+    if (!userId || !simulateAmount) {
+      setSimulateMessage("⚠️ Please enter an amount to simulate.");
+      return;
+    }
     setLoading(true);
     setSimulateMessage("");
 
@@ -99,12 +110,17 @@ const Trading = () => {
         profitLoss,
       });
 
-      setSimulateMessage(`✅ Trade simulated at $${price.toFixed(2)} | P/L: $${profitLoss.toFixed(2)}`);
-      fetchBotStatus();
+      setSimulateMessage(
+        `✅ Trade simulated for ${simulateAction.toUpperCase()} ${simulateAmount} ${simulateAsset.toUpperCase()} @ $${price.toFixed(
+          2
+        )} | P/L: $${profitLoss.toFixed(2)}`
+      );
+
+      await fetchBotStatus();
       setSimulateAmount("");
     } catch (err) {
       console.error(err);
-      setSimulateMessage("❌ Failed to simulate trade.");
+      setSimulateMessage("❌ Failed to simulate trade. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -174,8 +190,7 @@ const Trading = () => {
                     <p className="text-green-300 font-bold">
                       {botStatus.total_trades > 0
                         ? (
-                            (botStatus.successful_trades /
-                              botStatus.total_trades) *
+                            (botStatus.successful_trades / botStatus.total_trades) *
                             100
                           ).toFixed(1)
                         : 0}
@@ -199,23 +214,31 @@ const Trading = () => {
                 </p>
                 <button
                   onClick={linkBot}
-                  disabled={loading}
+                  disabled={linking}
                   className="bg-gradient-to-r from-yellow-500 via-yellow-600 to-yellow-700 text-black font-bold py-2.5 px-8 rounded-lg hover:brightness-110 transition transform hover:scale-[1.03] active:scale-[0.98] disabled:opacity-50"
                 >
-                  {loading ? "Connecting..." : "Link Account with NexaBot"}
+                  {linking ? "Connecting..." : "Link Account with NexaBot"}
                 </button>
               </>
             )}
           </div>
 
           {message && (
-            <div className="mt-4 text-yellow-300 text-sm animate-pulse">
+            <div
+              className={`mt-4 text-sm ${
+                message.includes("✅")
+                  ? "text-green-400"
+                  : message.includes("❌")
+                  ? "text-red-400"
+                  : "text-yellow-300"
+              }`}
+            >
               {message}
             </div>
           )}
         </div>
 
-        {/* 🔹 Simulate Trade (Live Price from CoinStats) */}
+        {/* 🔹 Simulate Trade */}
         <div className="bg-gradient-to-b from-[#1a1307]/90 to-[#0d0b08]/80 backdrop-blur-xl rounded-2xl p-8 shadow-[0_0_25px_rgba(139,69,19,0.3)] max-w-2xl mx-auto border border-yellow-700/20 text-center mt-10">
           <h3 className="text-yellow-500 font-extrabold text-2xl mb-4 tracking-wide">
             ⚡ Simulate NexaBot Trade (Live Price)
@@ -269,7 +292,17 @@ const Trading = () => {
           </button>
 
           {simulateMessage && (
-            <p className="mt-3 text-yellow-300 text-sm">{simulateMessage}</p>
+            <p
+              className={`mt-3 text-sm ${
+                simulateMessage.includes("✅")
+                  ? "text-green-400"
+                  : simulateMessage.includes("❌")
+                  ? "text-red-400"
+                  : "text-yellow-300"
+              }`}
+            >
+              {simulateMessage}
+            </p>
           )}
         </div>
       </main>
