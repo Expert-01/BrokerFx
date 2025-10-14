@@ -12,6 +12,8 @@ import {
   LogOut,
   User,
   ChevronLeft,
+  Copy,
+  Check,
 } from "lucide-react";
 import { jwtDecode } from "jwt-decode";
 import { Link, useLocation } from "react-router-dom";
@@ -40,6 +42,7 @@ const Sidebar = () => {
   const [user, setUser] = useState(null);
   const [expanded, setExpanded] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
@@ -54,6 +57,12 @@ const Sidebar = () => {
       }
     }
   }, []);
+
+  const handleCopy = (text) => {
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  };
 
   return (
     <>
@@ -99,16 +108,21 @@ const Sidebar = () => {
               <div className="font-semibold text-gray-400 text-sm">
                 {user?.name || "User"}
               </div>
-              {/* 🆔 Display Randomized User ID */}
+
+              {/* 🆔 Display User ID with Copy Icon */}
               {user?.user_id && (
-                <div
-                  className="text-white text-xs font-bold tracking-wide mt-1 cursor-pointer hover:text-yellow-400 transition-all"
-                  onClick={() => {
-                    navigator.clipboard.writeText(user.user_id);
-                    alert("User ID copied!");
-                  }}
-                >
-                  ID: {user.user_id}
+                <div className="flex items-center gap-1 text-white text-xs font-bold tracking-wide mt-1">
+                  <span>ID: {user.user_id}</span>
+                  <button
+                    onClick={() => handleCopy(user.user_id)}
+                    className="p-1 rounded hover:bg-[#2a2f38] transition-all duration-300"
+                  >
+                    {copied ? (
+                      <Check size={14} className="text-green-400" />
+                    ) : (
+                      <Copy size={14} className="text-gray-400 hover:text-yellow-400" />
+                    )}
+                  </button>
                 </div>
               )}
             </div>
