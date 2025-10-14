@@ -100,15 +100,15 @@ const Sidebar = () => {
                 {user?.name || "User"}
               </div>
               {/* 🆔 Display Randomized User ID */}
-              {user?.user_id && (
+              {user?.id && (
                 <div
                   className="text-white text-xs font-bold tracking-wide mt-1 cursor-pointer hover:text-yellow-400 transition-all"
                   onClick={() => {
-                    navigator.clipboard.writeText(user.user_id);
+                    navigator.clipboard.writeText(user.id);
                     alert("User ID copied!");
                   }}
                 >
-                  ID: {user.user_id}
+                  ID: {user.id}
                 </div>
               )}
             </div>
