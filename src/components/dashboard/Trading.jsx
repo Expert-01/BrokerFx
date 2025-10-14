@@ -21,26 +21,41 @@ const Trading = () => {
 
   const user = JSON.parse(localStorage.getItem("user"));
   const userId = user?.id;
+  console.log("Trading Page Loaded | userId:", userId);
 
   // Fetch bot status
   const fetchBotStatus = async () => {
-    if (!userId) return;
+    console.log("Fetching bot status...");
+    if (!userId) {
+      console.warn("No userId available");
+      return;
+    }
     try {
       const res = await axios.get(`${API_URL}/api/trading-bot/status/${userId}`);
+      console.log("Bot status response:", res.data);
       setBotStatus(res.data);
-      if (res.data.simulated_trades) setTrades(res.data.simulated_trades);
+      if (res.data.simulated_trades) {
+        setTrades(res.data.simulated_trades);
+        console.log("Simulated trades updated from backend:", res.data.simulated_trades);
+      }
     } catch (err) {
       console.error("Error fetching bot status:", err);
     }
   };
 
-  // Link / Unlink
+  // Link bot
   const linkBot = async () => {
-    if (!userId) return;
+    console.log("Link bot clicked");
+    if (!userId) {
+      console.warn("Cannot link bot: no userId");
+      return;
+    }
     setLinking(true);
     setMessage("");
     try {
+      console.log("Sending link request to backend...");
       const res = await axios.post(`${API_URL}/api/trading-bot/link`, { userId });
+      console.log("Link response:", res);
       if (res.status === 200) {
         setMessage("✅ Bot linked and active!");
         await fetchBotStatus();
@@ -48,19 +63,26 @@ const Trading = () => {
         setMessage("⚠️ Unexpected response while linking.");
       }
     } catch (err) {
-      console.error(err);
+      console.error("Link bot error:", err);
       setMessage("❌ Failed to link bot.");
     } finally {
       setLinking(false);
     }
   };
 
+  // Unlink bot
   const unlinkBot = async () => {
-    if (!userId) return;
+    console.log("Unlink bot clicked");
+    if (!userId) {
+      console.warn("Cannot unlink bot: no userId");
+      return;
+    }
     setLoading(true);
     setMessage("");
     try {
+      console.log("Sending unlink request to backend...");
       const res = await axios.post(`${API_URL}/api/trading-bot/unlink`, { userId });
+      console.log("Unlink response:", res);
       if (res.status === 200) {
         setMessage("🔌 Bot disconnected!");
         await fetchBotStatus();
@@ -68,7 +90,7 @@ const Trading = () => {
         setMessage("⚠️ Unexpected response while unlinking.");
       }
     } catch (err) {
-      console.error(err);
+      console.error("Unlink bot error:", err);
       setMessage("❌ Failed to unlink bot.");
     } finally {
       setLoading(false);
@@ -77,10 +99,12 @@ const Trading = () => {
 
   // Fetch live price
   const fetchLivePrice = async (coin) => {
+    console.log("Fetching live price for:", coin);
     try {
       const res = await axios.get(
         `https://api.coinstats.app/public/v1/coins/${coin}?currency=USD`
       );
+      console.log(`${coin} price:`, res.data.coin.price);
       return res.data.coin.price;
     } catch (err) {
       console.error("Error fetching live price:", err);
@@ -90,13 +114,15 @@ const Trading = () => {
 
   // Update price history
   const updatePriceHistory = async () => {
+    console.log("Updating price history...");
     const assets = ["bitcoin", "ethereum", "binance-coin", "ripple"];
     for (let asset of assets) {
       const price = await fetchLivePrice(asset);
       if (!price) continue;
       setPriceHistory((prev) => {
         const history = [...(prev[asset] || []), price];
-        if (history.length > 12) history.shift(); // last 12 prices
+        if (history.length > 12) history.shift(); // keep last 12 prices
+        console.log(`Price history updated for ${asset}:`, history);
         return { ...prev, [asset]: history };
       });
     }
@@ -104,7 +130,15 @@ const Trading = () => {
 
   // Simulate trade
   const simulateTrade = async () => {
-    if (!userId) return;
+    console.log("Simulate trade triggered");
+    if (!userId) {
+      console.warn("Cannot simulate trade: no userId");
+      return;
+    }
+    if (botStatus?.bot_status !== "running") {
+      console.log("Bot not running, skipping simulation");
+      return;
+    }
     setSimulateLoading(true);
 
     try {
@@ -114,22 +148,27 @@ const Trading = () => {
       const amount = (Math.random() * 0.05 + 0.01).toFixed(4);
 
       const history = priceHistory[asset] || [];
-      if (history.length < 2) return;
+      if (history.length < 2) {
+        console.log("Not enough price history for simulation:", asset);
+        return;
+      }
 
       const lastPrice = history[history.length - 1];
       const prevPrice = history[history.length - 2];
       const priceChange = lastPrice - prevPrice;
-
       const profitLoss = action === "buy" ? priceChange * amount : -priceChange * amount;
 
-      // Save simulated trade to backend
-      await axios.post(`${API_URL}/api/trading-bot/simulate/${userId}`, {
+      console.log("Simulated trade details:", { asset, action, amount, lastPrice, profitLoss });
+
+      // Send to backend
+      const res = await axios.post(`${API_URL}/api/trading-bot/simulate/${userId}`, {
         asset,
         action,
         amount: parseFloat(amount),
         price: lastPrice,
         profitLoss,
       });
+      console.log("Simulation response:", res.data);
 
       const newTrade = {
         asset,
@@ -139,10 +178,10 @@ const Trading = () => {
         profitLoss,
         time: new Date().toLocaleTimeString(),
       };
-
       setTrades((prev) => [newTrade, ...prev]);
+      console.log("Trade added to state:", newTrade);
     } catch (err) {
-      console.error(err);
+      console.error("Error simulating trade:", err);
     } finally {
       setSimulateLoading(false);
     }
@@ -150,14 +189,25 @@ const Trading = () => {
 
   // Initial fetch and interval
   useEffect(() => {
+    console.log("Mounting Trading component, starting intervals");
+    if (!userId) {
+      console.warn("No userId, cannot start intervals");
+      return;
+    }
+
     fetchBotStatus();
     const interval = setInterval(async () => {
+      console.log("Interval tick: fetching bot status, updating prices, simulating trade");
       await fetchBotStatus();
       await updatePriceHistory();
       await simulateTrade();
     }, 5000);
-    return () => clearInterval(interval);
-  }, []);
+
+    return () => {
+      console.log("Unmounting Trading component, clearing interval");
+      clearInterval(interval);
+    };
+  }, [userId]);
 
   return (
     <div className="flex min-h-screen bg-[#0a0908] text-[#f5e6ca]">
