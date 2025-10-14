@@ -76,7 +76,9 @@ const Trading = () => {
   // Fetch live price
   const fetchLivePrice = async (coin) => {
     try {
-      const res = await axios.get(`https://api.coinstats.app/public/v1/coins/${coin}?currency=USD`);
+      const res = await axios.get(
+        `https://api.coinstats.app/public/v1/coins/${coin}?currency=USD`
+      );
       return res.data.coin.price;
     } catch (err) {
       console.error("Error fetching live price:", err);
@@ -126,8 +128,15 @@ const Trading = () => {
     }
   };
 
+  // Initial fetch
   useEffect(() => {
     fetchBotStatus();
+  }, []);
+
+  // Poll bot status every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(fetchBotStatus, 5000);
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -148,8 +157,7 @@ const Trading = () => {
             🤖 NexaBot — AI Trading Assistant
           </h2>
           <p className="text-yellow-200 mb-6 text-sm md:text-base">
-            Automate your trades with AI. NexaBot analyzes the market using real-time
-            data from TradingView and executes trades based on top-performing assets.
+            Automate your trades with AI. NexaBot analyzes the market using real-time data from TradingView and executes trades based on top-performing assets.
           </p>
 
           <div className="space-y-4">
@@ -203,8 +211,7 @@ const Trading = () => {
                     <p className="text-green-300 font-bold">
                       {botStatus.total_trades > 0
                         ? ((botStatus.successful_trades / botStatus.total_trades) * 100).toFixed(1)
-                        : 0}
-                      %
+                        : 0}%
                     </p>
                   </div>
                 </div>
@@ -306,5 +313,3 @@ const Trading = () => {
 };
 
 export default Trading;
-
-          
