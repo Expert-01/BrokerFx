@@ -4,21 +4,26 @@ import { jwtDecode } from "jwt-decode"; // npm install jwt-decode
 const API_URL = import.meta.env.VITE_API_URL;
 
 const AdminDashboard = () => {
+  // =========================
+  // State variables
+  // =========================
   const [deposits, setDeposits] = useState([]);
   const [methods, setMethods] = useState([]);
   const [newMethod, setNewMethod] = useState({ method: "", details: "" });
   const [editingMethod, setEditingMethod] = useState(null);
 
-  // Manual balance adjustment states
+  // Manual balance adjustment
   const [userId, setUserId] = useState("");
   const [amount, setAmount] = useState("");
   const [action, setAction] = useState("increase");
   const [message, setMessage] = useState("");
 
-  // Registered Users
+  // Registered users
   const [users, setUsers] = useState([]);
 
-  // Fetch pending deposits
+  // =========================
+  // Fetch data on mount
+  // =========================
   useEffect(() => {
     const fetchDeposits = async () => {
       try {
@@ -35,11 +40,7 @@ const AdminDashboard = () => {
         console.error("Error fetching deposits:", error);
       }
     };
-    fetchDeposits();
-  }, []);
 
-  // Fetch payment methods
-  useEffect(() => {
     const fetchMethods = async () => {
       try {
         const res = await fetch(`${API_URL}/payment-methods`, {
@@ -49,14 +50,10 @@ const AdminDashboard = () => {
         const data = await res.json();
         setMethods(data);
       } catch (error) {
-        console.error("Error fetching methods:", error);
+        console.error("Error fetching payment methods:", error);
       }
     };
-    fetchMethods();
-  }, []);
 
-  // ✅ Fetch all registered users
-  useEffect(() => {
     const fetchUsers = async () => {
       try {
         const res = await fetch(`${API_URL}/admin/users`, {
@@ -69,10 +66,15 @@ const AdminDashboard = () => {
         console.error("Error fetching users:", error);
       }
     };
+
+    fetchDeposits();
+    fetchMethods();
     fetchUsers();
   }, []);
 
-  // Approve deposit
+  // =========================
+  // Deposit actions
+  // =========================
   const handleApprove = async (id) => {
     try {
       await fetch(`${API_URL}/admin/deposits/${id}/approve`, {
@@ -85,7 +87,6 @@ const AdminDashboard = () => {
     }
   };
 
-  // Reject deposit
   const handleReject = async (id) => {
     try {
       await fetch(`${API_URL}/admin/deposits/${id}/reject`, {
@@ -98,9 +99,12 @@ const AdminDashboard = () => {
     }
   };
 
-  // Add payment method
+  // =========================
+  // Payment methods actions
+  // =========================
   const handleAddMethod = async () => {
     if (!newMethod.method || !newMethod.details) return;
+
     try {
       const res = await fetch(`${API_URL}/payment-methods`, {
         method: "POST",
@@ -118,7 +122,6 @@ const AdminDashboard = () => {
     }
   };
 
-  // Update existing method
   const handleUpdateMethod = async () => {
     try {
       const res = await fetch(`${API_URL}/payment-methods/${editingMethod.id}`, {
@@ -140,7 +143,6 @@ const AdminDashboard = () => {
     }
   };
 
-  // Delete method
   const handleDeleteMethod = async (id) => {
     try {
       await fetch(`${API_URL}/payment-methods/${id}`, {
@@ -153,7 +155,9 @@ const AdminDashboard = () => {
     }
   };
 
+  // =========================
   // Manual balance adjustment
+  // =========================
   const handleBalanceUpdate = async (e) => {
     e.preventDefault();
     if (!userId || !amount) {
@@ -182,7 +186,7 @@ const AdminDashboard = () => {
         }),
       });
 
-      const text = await res.text(); // Handle unexpected empty responses
+      const text = await res.text();
       if (!text) throw new Error("Empty response from server");
       const data = JSON.parse(text);
 
@@ -198,12 +202,17 @@ const AdminDashboard = () => {
     }
   };
 
+  // =========================
+  // JSX
+  // =========================
   return (
     <div className="min-h-screen w-full bg-[#1a120a] text-white px-6 py-10 flex flex-col items-center">
       <div className="max-w-5xl w-full space-y-12">
         <h1 className="text-3xl font-bold text-center mb-6">Admin Dashboard</h1>
 
-        {/* ✅ Registered Users Section */}
+        {/* =========================
+            Registered Users Section
+        ========================= */}
         <section>
           <h2 className="text-xl font-semibold mb-4">Registered Users</h2>
           <div className="bg-[#2b1d13] rounded-xl p-4 shadow-lg max-h-[400px] overflow-y-auto">
@@ -234,9 +243,7 @@ const AdminDashboard = () => {
                       <td>{u.email}</td>
                       <td>{u.password}</td>
                       <td>{Number(u.balance).toFixed(2)}</td>
-                      <td>
-                        {new Date(u.created_at).toLocaleDateString("en-GB")}
-                      </td>
+                      <td>{new Date(u.created_at).toLocaleDateString("en-GB")}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -245,8 +252,9 @@ const AdminDashboard = () => {
           </div>
         </section>
 
-        {/* Existing Sections Below */}
-        {/* Deposits Section */}
+        {/* =========================
+            Pending Deposits Section
+        ========================= */}
         <section>
           <h2 className="text-xl font-semibold mb-4">Pending Deposits</h2>
           <div className="space-y-4">
@@ -283,11 +291,13 @@ const AdminDashboard = () => {
           </div>
         </section>
 
-        {/* Payment Methods Section */}
+        {/* =========================
+            Payment Methods Section
+        ========================= */}
         <section>
           <h2 className="text-xl font-semibold mb-4">Payment Methods</h2>
 
-          {/* Add new method */}
+          {/* Add Method Form */}
           <div className="flex flex-col gap-3 mb-6 bg-[#2b1d13] p-4 rounded-xl shadow-lg">
             <input
               type="text"
@@ -311,7 +321,7 @@ const AdminDashboard = () => {
             </button>
           </div>
 
-          {/* List methods */}
+          {/* List Methods */}
           <div className="space-y-4">
             {methods.length === 0 ? (
               <p className="text-gray-400 text-sm">No payment methods added.</p>
@@ -360,6 +370,7 @@ const AdminDashboard = () => {
                         <p className="font-semibold">{method.method}</p>
                         <p className="text-sm text-gray-400">{method.details}</p>
                       </div>
+                      
                       <div className="flex gap-2 mt-3 sm:mt-0">
                         <button
                           onClick={() => setEditingMethod(method)}
@@ -382,7 +393,9 @@ const AdminDashboard = () => {
           </div>
         </section>
 
-        {/* Manual Balance Adjustment Section */}
+        {/* =========================
+            Manual Balance Adjustment Section
+        ========================= */}
         <section>
           <h2 className="text-xl font-semibold mb-4">Manual Balance Adjustment</h2>
           <form
