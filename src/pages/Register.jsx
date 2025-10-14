@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar.jsx";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom"; // ✅ import useNavigate
 import Button from "@/components/UI/Button.jsx";
 import axios from "axios";
 import registerBg from "@/assets/login-bg.png";
@@ -8,6 +8,8 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 
 export default function Signup() {
+  const navigate = useNavigate(); // ✅ initialize navigate
+
   // Animate On Scroll (AOS) initialization
   useEffect(() => {
     AOS.init({ duration: 1000, once: true });
@@ -34,7 +36,15 @@ export default function Signup() {
         `${import.meta.env.VITE_API_URL}/auth/signup`,
         { name: form.name, email: form.email, password: form.password }
       );
+
+      // Show success message
       setMessage(res.data.message);
+
+      // ✅ Redirect to login after 1.5 seconds
+      setTimeout(() => {
+        navigate("/login");
+      }, 1500);
+
     } catch (error) {
       setMessage(error.response?.data?.message || "Something went wrong");
     }
@@ -158,4 +168,4 @@ export default function Signup() {
       </div>
     </>
   );
-    }
+}
