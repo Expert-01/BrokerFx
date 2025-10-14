@@ -3,6 +3,7 @@ import Sidebar from "../components/dashboard/Sidebar";
 import { jwtDecode } from "jwt-decode";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import { Copy, Check } from "lucide-react";
 
 function Deposit() {
   const [method, setMethod] = useState("crypto");
@@ -13,6 +14,7 @@ function Deposit() {
   const [success, setSuccess] = useState("");
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [selectedDetails, setSelectedDetails] = useState(null);
+  const [copied, setCopied] = useState(false);
 
   // Initialize AOS animations
   useEffect(() => {
@@ -57,6 +59,12 @@ function Deposit() {
     );
     setSelectedDetails(details || null);
   }, [method, paymentMethods]);
+
+  const handleCopy = (text) => {
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -166,25 +174,49 @@ function Deposit() {
             {/* Payment method details */}
             {selectedDetails && (
               <div
-                className="mb-6 p-3 rounded-lg bg-[#23272f] text-sm text-gray-300"
+                className="mb-6 p-3 rounded-lg bg-[#23272f] text-sm text-gray-300 overflow-x-auto"
                 data-aos="fade-in"
               >
                 {selectedDetails.method.toLowerCase() === "crypto" ? (
                   <>
-                    <p>
+                    <p className="flex items-center gap-2">
                       <span className="font-semibold text-[#bfa233]">Asset:</span>{" "}
                       {asset.toUpperCase()}
                     </p>
-                    <p>
+                    <p className="flex items-center gap-2">
                       <span className="font-semibold text-[#bfa233]">Wallet:</span>{" "}
-                      {selectedDetails.wallet_address || "Not provided"}
+                      <span className="truncate">{selectedDetails.wallet_address || "Not provided"}</span>
+                      {selectedDetails.wallet_address && (
+                        <button
+                          onClick={() => handleCopy(selectedDetails.wallet_address)}
+                          className="p-1 rounded hover:bg-[#2a2f38] transition-all duration-300"
+                        >
+                          {copied ? (
+                            <Check size={14} className="text-green-400" />
+                          ) : (
+                            <Copy size={14} className="text-gray-400 hover:text-yellow-400" />
+                          )}
+                        </button>
+                      )}
                     </p>
                   </>
                 ) : (
                   <>
-                    <p>
+                    <p className="flex items-center gap-2">
                       <span className="font-semibold text-[#bfa233]">Details:</span>{" "}
-                      {selectedDetails.details || "Not provided"}
+                      <span className="truncate">{selectedDetails.details || "Not provided"}</span>
+                      {selectedDetails.details && (
+                        <button
+                          onClick={() => handleCopy(selectedDetails.details)}
+                          className="p-1 rounded hover:bg-[#2a2f38] transition-all duration-300"
+                        >
+                          {copied ? (
+                            <Check size={14} className="text-green-400" />
+                          ) : (
+                            <Copy size={14} className="text-gray-400 hover:text-yellow-400" />
+                          )}
+                        </button>
+                      )}
                     </p>
                   </>
                 )}
