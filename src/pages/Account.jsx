@@ -40,12 +40,12 @@ const Account = () => {
 			<main className="flex-1 flex flex-col items-center px-2 md:px-8 py-6 md:ml-56 w-full">
 				<div className="w-full flex flex-col gap-6">
 					<AccountOverview userId={userId} />
-					<AccountsTable />
+				{/*	<AccountsTable />
 					<div className="flex flex-col md:flex-row gap-6">
 						<div className="flex-1">
 							<OpenPositions positions={mockPositions} />
 						</div>
-						<div className="flex-1">
+						{/*<div className="flex-1">
 							<ProfitLossCumulative />
 						</div>
 					</div>
@@ -56,7 +56,7 @@ const Account = () => {
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 						<DownloadSection />
 						<Notifications />
-					</div>
+					</div>*/}
 					<Promotions />
 				</div>
 			</main>
