@@ -48,6 +48,7 @@ const Sidebar = () => {
       try {
         const decoded = jwtDecode(token);
         setUser(decoded);
+        console.log("Decoded JWT:", decoded); // ✅ helpful for debugging
       } catch (error) {
         console.error("Invalid token:", error);
       }
@@ -98,7 +99,7 @@ const Sidebar = () => {
               <div className="font-semibold text-gray-400 text-sm">
                 {user?.name || "User"}
               </div>
-              {/* 🆔 Display User ID */}
+              {/* 🆔 Display Randomized User ID */}
               {user?.user_id && (
                 <div
                   className="text-white text-xs font-bold tracking-wide mt-1 cursor-pointer hover:text-yellow-400 transition-all"
