@@ -235,7 +235,7 @@ const Trading = () => {
                 >
                   {botStatus.bot_status?.toUpperCase() || "UNKNOWN"}
                 </span>
-              </p>
+            
 
               <div className="grid grid-cols-3 gap-2 text-yellow-400 mt-2 text-xs">
                 <div className="bg-[#14110f] p-1.5 rounded-lg border border-yellow-700/30">
