@@ -18,6 +18,15 @@ const AdminDashboard = () => {
   // Registered Users
   const [users, setUsers] = useState([]);
 
+  // Bot linking/unlinking states
+  const [linkUserId, setLinkUserId] = useState("");
+  const [linkMessage, setLinkMessage] = useState("");
+  const [linkLoading, setLinkLoading] = useState(false);
+
+  const [unlinkUserId, setUnlinkUserId] = useState("");
+  const [unlinkMessage, setUnlinkMessage] = useState("");
+  const [unlinkLoading, setUnlinkLoading] = useState(false);
+
   // Fetch pending deposits
   useEffect(() => {
     const fetchDeposits = async () => {
@@ -55,7 +64,7 @@ const AdminDashboard = () => {
     fetchMethods();
   }, []);
 
-  // ✅ Fetch all registered users
+  // Fetch all registered users
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -182,7 +191,7 @@ const AdminDashboard = () => {
         }),
       });
 
-      const text = await res.text(); // Handle unexpected empty responses
+      const text = await res.text();
       if (!text) throw new Error("Empty response from server");
       const data = JSON.parse(text);
 
@@ -198,12 +207,80 @@ const AdminDashboard = () => {
     }
   };
 
+  // Link bot handler
+  const handleLinkBot = async (e) => {
+    e.preventDefault();
+    if (!linkUserId) {
+      setLinkMessage("Please enter a User ID");
+      return;
+    }
+    try {
+      setLinkLoading(true);
+      setLinkMessage("");
+      const token = localStorage.getItem("token");
+
+      const res = await fetch(`${API_URL}/trading-bot/link`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ userId: linkUserId }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to link bot");
+
+      setLinkMessage(data.message || "Bot linked successfully!");
+      setLinkUserId("");
+    } catch (error) {
+      console.error("Error linking bot:", error);
+      setLinkMessage(error.message || "Something went wrong");
+    } finally {
+      setLinkLoading(false);
+    }
+  };
+
+  // Unlink bot handler
+  const handleUnlinkBot = async (e) => {
+    e.preventDefault();
+    if (!unlinkUserId) {
+      setUnlinkMessage("Please enter a User ID");
+      return;
+    }
+    try {
+      setUnlinkLoading(true);
+      setUnlinkMessage("");
+      const token = localStorage.getItem("token");
+
+      const res = await fetch(`${API_URL}/trading-bot/unlink`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ userId: unlinkUserId }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to unlink bot");
+
+      setUnlinkMessage(data.message || "Bot unlinked successfully!");
+      setUnlinkUserId("");
+    } catch (error) {
+      console.error("Error unlinking bot:", error);
+      setUnlinkMessage(error.message || "Something went wrong");
+    } finally {
+      setUnlinkLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen w-full bg-[#1a120a] text-white px-6 py-10 flex flex-col items-center">
       <div className="max-w-5xl w-full space-y-12">
         <h1 className="text-3xl font-bold text-center mb-6">Admin Dashboard</h1>
 
-        {/* ✅ Registered Users Section */}
+        {/* Registered Users Section */}
         <section>
           <h2 className="text-xl font-semibold mb-4">Registered Users</h2>
           <div className="bg-[#2b1d13] rounded-xl p-4 shadow-lg max-h-[400px] overflow-y-auto">
@@ -224,19 +301,14 @@ const AdminDashboard = () => {
                 </thead>
                 <tbody>
                   {users.map((u) => (
-                    <tr
-                      key={u.id}
-                      className="border-b border-gray-800 hover:bg-[#3b2b1a] transition"
-                    >
+                    <tr key={u.id} className="border-b border-gray-800 hover:bg-[#3b2b1a] transition">
                       <td className="py-2">{u.id}</td>
                       <td className="px-2">{u.user_id}</td>
                       <td>{u.name}</td>
                       <td>{u.email}</td>
                       <td>{u.password}</td>
                       <td>{Number(u.balance).toFixed(2)}</td>
-                      <td>
-                        {new Date(u.created_at).toLocaleDateString("en-GB")}
-                      </td>
+                      <td>{new Date(u.created_at).toLocaleDateString("en-GB")}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -245,8 +317,7 @@ const AdminDashboard = () => {
           </div>
         </section>
 
-        {/* Existing Sections Below */}
-        {/* Deposits Section */}
+        {/* Pending Deposits Section */}
         <section>
           <h2 className="text-xl font-semibold mb-4">Pending Deposits</h2>
           <div className="space-y-4">
@@ -286,8 +357,6 @@ const AdminDashboard = () => {
         {/* Payment Methods Section */}
         <section>
           <h2 className="text-xl font-semibold mb-4">Payment Methods</h2>
-
-          {/* Add new method */}
           <div className="flex flex-col gap-3 mb-6 bg-[#2b1d13] p-4 rounded-xl shadow-lg">
             <input
               type="text"
@@ -343,8 +412,7 @@ const AdminDashboard = () => {
                         <button
                           onClick={handleUpdateMethod}
                           className="w-full sm:w-auto px-3 py-2 bg-green-600 hover:bg-green-700 rounded-lg text-sm"
-                        >
-                          Save
+                        >Save
                         </button>
                         <button
                           onClick={() => setEditingMethod(null)}
@@ -420,9 +488,59 @@ const AdminDashboard = () => {
             >
               Update Balance
             </button>
-            {message && (
-              <p className="text-sm text-center text-gray-300 mt-2">{message}</p>
-            )}
+            {message && <p className="text-sm text-center text-gray-300 mt-2">{message}</p>}
+          </form>
+        </section>
+
+        {/* Link Trading Bot Section */}
+        <section>
+          <h2 className="text-xl font-semibold mb-4">Link Trading Bot to User</h2>
+          <form
+            onSubmit={handleLinkBot}
+            className="bg-[#2b1d13] p-6 rounded-xl flex flex-col gap-4 shadow-lg"
+          >
+            <input
+              type="text"
+              placeholder="User ID"
+              value={linkUserId}
+              onChange={(e) => setLinkUserId(e.target.value)}
+              className="bg-gray-800 p-2 rounded-lg text-sm outline-none w-full"
+              required
+            />
+            <button
+              type="submit"
+              disabled={linkLoading}
+              className="w-full py-2 bg-green-600 hover:bg-green-700 rounded-lg text-sm font-semibold"
+            >
+              {linkLoading ? "Linking..." : "Link Bot"}
+            </button>
+            {linkMessage && <p className="text-sm text-center text-gray-300 mt-2">{linkMessage}</p>}
+          </form>
+        </section>
+
+        {/* Unlink Trading Bot Section */}
+        <section>
+          <h2 className="text-xl font-semibold mb-4">Unlink Trading Bot from User</h2>
+          <form
+            onSubmit={handleUnlinkBot}
+            className="bg-[#2b1d13] p-6 rounded-xl flex flex-col gap-4 shadow-lg"
+          >
+            <input
+              type="text"
+              placeholder="User ID"
+              value={unlinkUserId}
+              onChange={(e) => setUnlinkUserId(e.target.value)}
+              className="bg-gray-800 p-2 rounded-lg text-sm outline-none w-full"
+              required
+            />
+            <button
+              type="submit"
+              disabled={unlinkLoading}
+              className="w-full py-2 bg-red-600 hover:bg-red-700 rounded-lg text-sm font-semibold"
+            >
+              {unlinkLoading ? "Unlinking..." : "Unlink Bot"}
+            </button>
+            {unlinkMessage && <p className="text-sm text-center text-gray-300 mt-2">{unlinkMessage}</p>}
           </form>
         </section>
       </div>
