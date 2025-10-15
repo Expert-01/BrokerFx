@@ -52,6 +52,11 @@ const Trading = () => {
     ripple: null,
   });
 
+
+  const [marketTrends, setMarketTrends] = useState(null);
+const [showTrends, setShowTrends] = useState(false);
+
+  
   // Decode user token
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -437,7 +442,30 @@ const Trading = () => {
         )}
       </main>
     </div>
+
+
+    {showTrends && marketTrends && (
+  <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+    <div className="bg-[#0d0b08] p-4 rounded-2xl max-w-sm w-full relative">
+      <button
+        onClick={() => setShowTrends(false)}
+        className="absolute top-2 right-2 text-red-500 font-bold text-lg"
+      >
+        ✖
+      </button>
+      <h2 className="text-yellow-400 font-bold mb-2 text-center">Market Trends</h2>
+      <ul className="text-yellow-300 text-sm space-y-1">
+        {Object.entries(marketTrends).map(([asset, trend]) => (
+          <li key={asset}>
+            <span className="font-semibold">{asset.toUpperCase()}:</span> {trend}
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+)}
   );
+  
 };
 
 export default Trading;
