@@ -3,7 +3,6 @@ import TradingViewWidget from "./TradingViewWidget";
 import Sidebar from "./Sidebar";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
-import botIcon from "@/assets/file_00000000e0dc620e828f76b3ffb86fa3.png"; // 👈 import your bot icon image
 
 const API_URL = import.meta.env.VITE_API_URL; // https://brokerx-backend-pcgs.onrender.com/api
 
@@ -165,7 +164,6 @@ const Trading = () => {
       </aside>
       <main className="flex-1 p-4 md:p-8 w-full md:ml-64 space-y-6">
 
-        {/* Chart */}
         <div className="rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(255,215,0,0.1)] border border-yellow-600/20">
           <TradingViewWidget symbol="BTCUSDT" />
         </div>
@@ -173,53 +171,65 @@ const Trading = () => {
         {/* Bot Control */}
         <div className="bg-gradient-to-b from-[#1a1307]/90 to-[#0d0b08]/80 backdrop-blur-xl rounded-2xl p-6 shadow-[0_0_20px_rgba(139,69,19,0.3)] max-w-2xl mx-auto border border-yellow-700/20 text-center relative">
 
-          {/* Metallic Glow & Rotation */}
           <style>{`
             @keyframes rotateY {
               0% { transform: rotateY(0deg); filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5)); }
-              50% { transform: rotateY(180deg); filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.9)); }
+              50% { transform: rotateY(180deg); filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8)); }
               100% { transform: rotateY(360deg); filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5)); }
             }
-            .animate-rotateY { animation: rotateY 2.5s linear infinite; transform-style: preserve-3d; }
-            .bot-pulse { animation: pulseGlow 3s infinite alternate; }
+            .animate-rotateY {
+              animation: rotateY 2.5s linear infinite;
+              transform-style: preserve-3d;
+            }
+            .metallic-bot {
+              background: radial-gradient(circle at 30% 30%, #ffd700, #c0a000, #6b5600);
+              -webkit-background-clip: text;
+              -webkit-text-fill-color: transparent;
+              filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.6));
+            }
+            .bot-pulse {
+              animation: pulseGlow 3s infinite alternate;
+            }
             @keyframes pulseGlow {
               from { filter: drop-shadow(0 0 5px rgba(255,215,0,0.3)); }
               to { filter: drop-shadow(0 0 15px rgba(255,215,0,0.8)); }
             }
           `}</style>
 
-          {/* Bot Icon */}
           <div className="flex flex-col items-center mb-3">
-            <img
-              src={botIcon}
-              alt="NexaBot"
-              className={`w-28 h-28 ${linking || botStatus?.bot_status === "running" ? "animate-rotateY" : "bot-pulse"}`}
-            />
+            <div
+              className={`text-7xl ${
+                linking || botStatus?.bot_status === "running"
+                  ? "animate-rotateY metallic-bot"
+                  : "metallic-bot bot-pulse"
+              }`}
+            >
+              🤖
+            </div>
           </div>
 
-          {/* Status */}
           <h2 className="text-yellow-500 font-bold text-xl mb-2 tracking-wide flex items-center justify-center gap-2">
             NexaBot — Trading Calibration
-            <span className={`w-3 h-3 rounded-full ${
-              botStatus?.bot_status === "running"
-                ? "bg-green-400 animate-pulse"
-                : botStatus?.bot_status === "inactive"
-                ? "bg-red-400 animate-pulse"
-                : "bg-yellow-400 animate-pulse"
+            <span className={`w-3 h-3 rounded-full ${botStatus?.bot_status === "running"
+              ? "bg-green-400 animate-pulse"
+              : botStatus?.bot_status === "inactive"
+              ? "bg-red-400 animate-pulse"
+              : "bg-yellow-400 animate-pulse"
             }`}></span>
           </h2>
 
           {message && (
             <p className={`text-sm mt-1 ${
-              message.includes("✅") ? "text-green-400" :
-              message.includes("❌") ? "text-red-400" :
-              "text-yellow-300"
+              message.includes("✅")
+                ? "text-green-400"
+                : message.includes("❌")
+                ? "text-red-400"
+                : "text-yellow-300"
             }`}>
               {message}
             </p>
           )}
 
-          {/* Buttons */}
           <div className="flex justify-center gap-3 mt-4">
             <button
               onClick={linkBot}
