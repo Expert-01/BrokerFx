@@ -3,6 +3,27 @@ import TradingViewWidget from "./TradingViewWidget";
 import Sidebar from "./Sidebar";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
+import { Line } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -22,7 +43,8 @@ const Trading = () => {
   const [highlightedTrade, setHighlightedTrade] = useState(null);
   const [heartbeat, setHeartbeat] = useState(false);
   const [userId, setUserId] = useState(null);
-  const [trend, setTrend] = useState(""); // New: track current trend
+  const [trend, setTrend] = useState(""); 
+  const [showChart, setShowChart] = useState(false); // New: chart modal state
 
   // --- Decode user ---
   useEffect(() => {
@@ -127,11 +149,9 @@ const Trading = () => {
       const history = priceHistory[asset] || [];
       if (history.length < 6) return;
 
-      // --- Calculate moving averages ---
       const shortMA = history.slice(-3).reduce((sum, p) => sum + p, 0) / 3;
       const longMA = history.slice(-6).reduce((sum, p) => sum + p, 0) / 6;
 
-      // --- Determine action based on trend ---
       let action = "buy";
       let currentTrend = "";
       if (shortMA > longMA) {
@@ -174,13 +194,11 @@ const Trading = () => {
     }
   };
 
-  // --- Derived stats ---
   const totalProfit = trades.reduce((sum, t) => sum + t.profitLoss, 0);
   const totalTrades = trades.length;
   const successfulTrades = trades.filter((t) => t.profitLoss > 0).length;
   const successRate = totalTrades > 0 ? ((successfulTrades / totalTrades) * 100).toFixed(1) : 0;
 
-  // --- Interval loop ---
   useEffect(() => {
     if (!userId) return;
     fetchBotStatus();
@@ -192,6 +210,12 @@ const Trading = () => {
     }, 5000);
     return () => clearInterval(interval);
   }, [userId]);
+
+  // --- Helper: Calculate MA for chart ---
+  const movingAverage = (prices, period) =>
+    prices.map((_, i, arr) =>
+      i < period - 1 ? null : arr.slice(i - period + 1, i + 1).reduce((a, b) => a + b, 0) / period
+    );
 
   return (
     <div className="flex min-h-screen bg-[#0a0908] text-[#f5e6ca]">
@@ -230,9 +254,7 @@ const Trading = () => {
             ></span>
           </h2>
 
-          {trend && (
-            <p className="text-sm mt-1 text-blue-400 font-semibold">{trend}</p>
-          )}
+          {trend && <p className="text-sm mt-1 text-blue-400 font-semibold">{trend}</p>}
 
           {message && (
             <p
@@ -262,13 +284,21 @@ const Trading = () => {
             </button>
 
             {botStatus?.bot_status === "running" && (
-              <button
-                onClick={unlinkBot}
-                disabled={loading}
-                className="bg-gradient-to-r from-red-500 to-red-700 text-white font-bold py-2 px-4 rounded-lg hover:brightness-110 transition text-xs"
-              >
-                {loading ? "Processing..." : "Unlink Bot"}
-              </button>
+              <>
+                <button
+                  onClick={unlinkBot}
+                  disabled={loading}
+                  className="bg-gradient-to-r from-red-500 to-red-700 text-white font-bold py-2 px-4 rounded-lg hover:brightness-110 transition text-xs"
+                >
+                  {loading ? "Processing..." : "Unlink Bot"}
+                </button>
+                <button
+                  onClick={() => setShowChart(true)}
+                  className="bg-gradient-to-r from-blue-500 to-blue-700 text-white font-bold py-2 px-4 rounded-lg hover:brightness-110 transition text-xs"
+                >
+                  BotChart
+                </button>
+              </>
             )}
           </div>
 
@@ -344,6 +374,48 @@ const Trading = () => {
             </tbody>
           </table>
         </div>
+
+        {/* --- Chart Modal --- */}
+        {showChart && (
+          <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+            <div className="bg-[#0d0b08] p-4 rounded-2xl max-w-3xl w-full relative">
+              <button
+                onClick={() => setShowChart(false)}
+                className="absolute top-2 right-2 text-red-500 font-bold"
+              >
+                ✖
+              </button>
+              <h2 className="text-yellow-400 font-bold mb-2 text-center">Bot Trend Chart</h2>
+              <div className="h-96">
+                <Line
+                  data={{
+                    labels: Array.from({ length: priceHistory.bitcoin.length }, (_, i) => i + 1),
+                    datasets: Object.entries(priceHistory).map(([asset, prices]) => ({
+                      label: asset.toUpperCase(),
+                      data: prices,
+                      borderColor:
+                        asset === "bitcoin"
+                          ? "rgba(255, 215, 0, 0.8)"
+                          : asset === "ethereum"
+                          ? "rgba(0, 255, 255, 0.8)"
+                          : asset === "binance-coin"
+                          ? "rgba(0, 255, 0, 0.8)"
+                          : "rgba(255,0,0,0.8)",
+                      backgroundColor: "rgba(255, 255, 255, 0.1)",
+                      tension: 0.2,
+                    })),
+                  }}
+                  options={{ responsive: true, maintainAspectRatio: false }}
+                />
+              </div>
+
+
+
+
+
+              </div>
+          </div>
+        )}
       </main>
     </div>
   );
