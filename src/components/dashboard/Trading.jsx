@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import TradingViewWidget from "./TradingViewWidget";
 import Sidebar from "./Sidebar";
 import axios from "axios";
-import { jwtDecode } from "jwt-decode";
+import jwtDecode from "jwt-decode";
 import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -43,8 +43,14 @@ const Trading = () => {
   const [highlightedTrade, setHighlightedTrade] = useState(null);
   const [heartbeat, setHeartbeat] = useState(false);
   const [userId, setUserId] = useState(null);
-  const [trend, setTrend] = useState(""); 
-  const [showChart, setShowChart] = useState(false); // New: chart modal state
+  const [trend, setTrend] = useState("");
+  const [showChart, setShowChart] = useState(false);
+  const [lastTrends, setLastTrends] = useState({
+    bitcoin: null,
+    ethereum: null,
+    "binance-coin": null,
+    ripple: null,
+  });
 
   // --- Decode user ---
   useEffect(() => {
@@ -137,83 +143,89 @@ const Trading = () => {
     }
   };
 
-  // --- Simulate trade using MA trend ---
+  // --- Simulate trade on trend change ---
+  const simulateTrade = async () => {
+    if (!userId || botStatus?.bot_status !== "running") return;
+    setSimulateLoading(true);
 
+    try {
+      const assets = ["bitcoin", "ethereum", "binance-coin", "ripple"];
+      let tradesToAdd = [];
+      let updatedTrends = { ...lastTrends };
 
+      for (let asset of assets) {
+        const history = priceHistory[asset] || [];
+        if (history.length < 6) continue;
 
+        const shortMA = history.slice(-3).reduce((sum, p) => sum + p, 0) / 3;
+        const longMA = history.slice(-6).reduce((sum, p) => sum + p, 0) / 6;
 
+        let currentTrend = "";
+        if (shortMA > longMA) currentTrend = "Uptrend 🔺";
+        else if (shortMA < longMA) currentTrend = "Downtrend 🔻";
+        else currentTrend = "Sideways ➖";
 
+        // Only trade if trend has changed for this asset
+        if (currentTrend !== lastTrends[asset] && currentTrend !== "Sideways ➖") {
+          const lastPrice = history.at(-1);
+          const prevPrice = history.at(-2);
+          const amount = (Math.random() * 0.05 + 0.01).toFixed(4);
+          const priceChange = lastPrice - prevPrice;
+          const profitLoss = currentTrend === "Uptrend 🔺" ? priceChange * amount : -priceChange * amount;
 
+          const newTrade = {
+            asset,
+            action: currentTrend === "Uptrend 🔺" ? "buy" : "sell",
+            amount,
+            price: lastPrice,
+            profitLoss,
+            time: new Date().toLocaleTimeString(),
+          };
 
+          tradesToAdd.push(newTrade);
+          updatedTrends[asset] = currentTrend;
+        }
+      }
 
+      if (tradesToAdd.length > 0) {
+        setTrades((prev) => [...tradesToAdd, ...prev]);
+        setLastTrends(updatedTrends);
+        tradesToAdd.forEach(async (trade) => {
+          setHighlightedTrade(trade.time);
+          await axios.post(`${API_URL}/trading-bot/simulate/${userId}`, trade);
+        });
+        setTimeout(() => setHighlightedTrade(null), 2000);
+      }
 
-  // --- Simulate trade only on trend change ---
-const simulateTrade = async () => {
-  if (!userId || botStatus?.bot_status !== "running") return;
-  setSimulateLoading(true);
+      // Update overall bot trend (strongest)
+      const strongest = Object.values(updatedTrends).filter((t) => t !== null);
+      if (strongest.length > 0) setTrend(strongest[strongest.length - 1]);
+    } catch (err) {
+      console.error("Error simulating trade:", err);
+    } finally {
+      setSimulateLoading(false);
+    }
+  };
 
-  try {
-    const assets = ["bitcoin", "ethereum", "binance-coin", "ripple"];
-    let tradesToAdd = [];
-
-    for (let asset of assets) {
-      const history = priceHistory[asset] || [];
-      if (history.length < 6) continue;
-
+  // --- Check market trends ---
+  const checkMarketTrends = () => {
+    const trends = {};
+    Object.entries(priceHistory).forEach(([asset, history]) => {
+      if (history.length < 6) {
+        trends[asset] = "Not enough data ⏳";
+        return;
+      }
       const shortMA = history.slice(-3).reduce((sum, p) => sum + p, 0) / 3;
       const longMA = history.slice(-6).reduce((sum, p) => sum + p, 0) / 6;
 
-      let currentTrend = "";
-      if (shortMA > longMA) currentTrend = "Uptrend 🔺";
-      else if (shortMA < longMA) currentTrend = "Downtrend 🔻";
-      else currentTrend = "Sideways ➖";
-
-      // Only trade if trend has changed for this asset
-      const lastTradeForAsset = trades.find((t) => t.asset === asset)?.action || null;
-      const newAction = currentTrend === "Uptrend 🔺" ? "buy" :
-                        currentTrend === "Downtrend 🔻" ? "sell" :
-                        Math.random() < 0.5 ? "buy" : "sell";
-
-      if (
-        (newAction === "buy" && lastTradeForAsset !== "buy") ||
-        (newAction === "sell" && lastTradeForAsset !== "sell")
-      ) {
-        const lastPrice = history.at(-1);
-        const prevPrice = history.at(-2);
-        const amount = (Math.random() * 0.05 + 0.01).toFixed(4);
-        const priceChange = lastPrice - prevPrice;
-        const profitLoss = newAction === "buy" ? priceChange * amount : -priceChange * amount;
-
-        tradesToAdd.push({
-          asset,
-          action: newAction,
-          amount,
-          price: lastPrice,
-          profitLoss,
-          time: new Date().toLocaleTimeString(),
-        });
-
-        // Update trend state to strongest trend among assets
-        if (!trend || Math.abs(shortMA - longMA) > Math.abs(tradesToAdd[0]?.trendStrength || 0)) {
-          setTrend(currentTrend);
-        }
-      }
-    }
-
-    // Add trades to state and send to API
-    for (let newTrade of tradesToAdd) {
-      setHighlightedTrade(newTrade.time);
-      setTrades((prev) => [newTrade, ...prev]);
-      await axios.post(`${API_URL}/trading-bot/simulate/${userId}`, newTrade);
-    }
-
-    setTimeout(() => setHighlightedTrade(null), 2000);
-  } catch (err) {
-    console.error("Error simulating trade:", err);
-  } finally {
-    setSimulateLoading(false);
-  }
-};
+      if (shortMA > longMA) trends[asset] = "Uptrend 🔺";
+      else if (shortMA < longMA) trends[asset] = "Downtrend 🔻";
+      else trends[asset] = "Sideways ➖";
+    });
+    console.table(trends);
+    alert(Object.entries(trends).map(([a, t]) => `${a.toUpperCase()}: ${t}`).join("\n"));
+    return trends;
+  };
 
   const totalProfit = trades.reduce((sum, t) => sum + t.profitLoss, 0);
   const totalTrades = trades.length;
@@ -231,12 +243,6 @@ const simulateTrade = async () => {
     }, 5000);
     return () => clearInterval(interval);
   }, [userId]);
-
-  // --- Helper: Calculate MA for chart ---
-  const movingAverage = (prices, period) =>
-    prices.map((_, i, arr) =>
-      i < period - 1 ? null : arr.slice(i - period + 1, i + 1).reduce((a, b) => a + b, 0) / period
-    );
 
   return (
     <div className="flex min-h-screen bg-[#0a0908] text-[#f5e6ca]">
@@ -276,7 +282,6 @@ const simulateTrade = async () => {
           </h2>
 
           {trend && <p className="text-sm mt-1 text-blue-400 font-semibold">{trend}</p>}
-
           {message && (
             <p
               className={`text-sm mt-1 ${
@@ -313,11 +318,19 @@ const simulateTrade = async () => {
                 >
                   {loading ? "Processing..." : "Unlink Bot"}
                 </button>
+
                 <button
                   onClick={() => setShowChart(true)}
                   className="bg-gradient-to-r from-blue-500 to-blue-700 text-white font-bold py-2 px-4 rounded-lg hover:brightness-110 transition text-xs"
                 >
                   BotChart
+                </button>
+
+                <button
+                  onClick={checkMarketTrends}
+                  className="bg-gradient-to-r from-purple-500 to-purple-700 text-white font-bold py-2 px-4 rounded-lg hover:brightness-110 transition text-xs"
+                >
+                  Market Trends
                 </button>
               </>
             )}
@@ -340,7 +353,7 @@ const simulateTrade = async () => {
           </div>
         </div>
 
-        {/* Trades */}
+        {/* Trades Table */}
         <div className="max-w-2xl mx-auto rounded-2xl overflow-hidden border border-yellow-700/20 bg-[#0d0b08]/90 shadow-[0_0_15px_rgba(255,215,0,0.1)] p-4">
           <h3 className="text-yellow-500 font-bold text-lg mb-2">📊 Trade Log</h3>
           <table className="w-full text-xs md:text-sm text-left text-yellow-200">
@@ -366,27 +379,17 @@ const simulateTrade = async () => {
                   <tr
                     key={idx}
                     className={`border-b border-yellow-600/20 ${
-                      highlightedTrade === t.time
-                        ? "bg-yellow-600/20 animate-pulse"
-                        : ""
+                      highlightedTrade === t.time ? "bg-yellow-600/20 animate-pulse" : ""
                     }`}
                   >
                     <td className="py-1 px-2">{t.time}</td>
                     <td className="py-1 px-2">{t.asset.toUpperCase()}</td>
-                    <td
-                      className={`${
-                        t.action === "buy" ? "text-green-400" : "text-red-400"
-                      } py-1 px-2`}
-                    >
+                    <td className={`${t.action === "buy" ? "text-green-400" : "text-red-400"} py-1 px-2`}>
                       {t.action.toUpperCase()}
                     </td>
                     <td className="py-1 px-2">{t.amount}</td>
                     <td className="py-1 px-2">${t.price.toFixed(2)}</td>
-                    <td
-                      className={`${
-                        t.profitLoss >= 0 ? "text-green-400" : "text-red-400"
-                      } py-1 px-2`}
-                    >
+                    <td className={`${t.profitLoss >= 0 ? "text-green-400" : "text-red-400"} py-1 px-2`}>
                       ${t.profitLoss.toFixed(2)}
                     </td>
                   </tr>
@@ -402,7 +405,7 @@ const simulateTrade = async () => {
             <div className="bg-[#0d0b08] p-4 rounded-2xl max-w-3xl w-full relative">
               <button
                 onClick={() => setShowChart(false)}
-                className="absolute top-2 right-2 text-red-500 font-bold"
+                className="absolute top-2 right-2 text-red-500 font-bold text-lg"
               >
                 ✖
               </button>
@@ -418,23 +421,28 @@ const simulateTrade = async () => {
                         asset === "bitcoin"
                           ? "rgba(255, 215, 0, 0.8)"
                           : asset === "ethereum"
-                          ? "rgba(0, 255, 255, 0.8)"
+                          ? "rgba(98, 0, 238, 0.8)"
                           : asset === "binance-coin"
-                          ? "rgba(0, 255, 0, 0.8)"
-                          : "rgba(255,0,0,0.8)",
-                      backgroundColor: "rgba(255, 255, 255, 0.1)",
-                      tension: 0.2,
+                          ? "rgba(255, 99, 132, 0.8)"
+                          : "rgba(0, 255, 255, 0.8)",
+                      backgroundColor: "transparent",
+                      tension: 0.3,
                     })),
                   }}
-                  options={{ responsive: true, maintainAspectRatio: false }}
+                  options={{
+                    responsive: true,
+                    plugins: {
+                      legend: { position: "top", labels: { color: "#FFD700" } },
+                      title: { display: false },
+                    },
+                    scales: {
+                      x: { ticks: { color: "#FFD700" }, grid: { color: "#444" } },
+                      y: { ticks: { color: "#FFD700" }, grid: { color: "#444" } },
+                    },
+                  }}
                 />
               </div>
-
-
-
-
-
-              </div>
+            </div>
           </div>
         )}
       </main>
@@ -443,3 +451,4 @@ const simulateTrade = async () => {
 };
 
 export default Trading;
+        
