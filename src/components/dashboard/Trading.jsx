@@ -143,8 +143,70 @@ const Trading = () => {
     }
   };
 
-  // --- Simulate trade on trend change ---
+
   const simulateTrade = async () => {
+  if (!userId || botStatus?.bot_status !== "running") return;
+  setSimulateLoading(true);
+
+  try {
+    const assets = ["bitcoin", "ethereum", "binance-coin", "ripple"];
+    let tradesToAdd = [];
+    let updatedTrends = { ...lastTrends };
+
+    for (let asset of assets) {
+      const history = priceHistory[asset] || [];
+      if (history.length < 3) continue; // reduced from 6
+
+      const shortMA = history.slice(-2).reduce((sum, p) => sum + p, 0) / 2; // short MA
+      const longMA = history.slice(-3).reduce((sum, p) => sum + p, 0) / 3; // long MA
+
+      let currentTrend = "";
+      if (shortMA > longMA) currentTrend = "Uptrend 🔺";
+      else if (shortMA < longMA) currentTrend = "Downtrend 🔻";
+      else currentTrend = "Sideways ➖";
+
+      if (currentTrend !== lastTrends[asset] && currentTrend !== "Sideways ➖") {
+        const lastPrice = history.at(-1);
+        const prevPrice = history.at(-2);
+        const amount = (Math.random() * 0.05 + 0.01).toFixed(4);
+        const priceChange = lastPrice - prevPrice;
+        const profitLoss = currentTrend === "Uptrend 🔺" ? priceChange * amount : -priceChange * amount;
+
+        const newTrade = {
+          asset,
+          action: currentTrend === "Uptrend 🔺" ? "buy" : "sell",
+          amount,
+          price: lastPrice,
+          profitLoss,
+          time: new Date().toLocaleTimeString(),
+        };
+
+        tradesToAdd.push(newTrade);
+        updatedTrends[asset] = currentTrend;
+      }
+    }
+
+    if (tradesToAdd.length > 0) {
+      setTrades((prev) => [...tradesToAdd, ...prev]);
+      setLastTrends(updatedTrends);
+      tradesToAdd.forEach(async (trade) => {
+        setHighlightedTrade(trade.time);
+        await axios.post(`${API_URL}/trading-bot/simulate/${userId}`, trade);
+      });
+      setTimeout(() => setHighlightedTrade(null), 2000);
+    }
+
+    const strongest = Object.values(updatedTrends).filter((t) => t !== null);
+    if (strongest.length > 0) setTrend(strongest[strongest.length - 1]);
+  } catch (err) {
+    console.error("Error simulating trade:", err);
+  } finally {
+    setSimulateLoading(false);
+  }
+};
+
+  // --- Simulate trade on trend change ---
+ /* const simulateTrade = async () => {
     if (!userId || botStatus?.bot_status !== "running") return;
     setSimulateLoading(true);
 
@@ -205,10 +267,10 @@ const Trading = () => {
     } finally {
       setSimulateLoading(false);
     }
-  };
+  };*/
 
   // --- Check market trends ---
-  const checkMarketTrends = () => {
+ /* const checkMarketTrends = () => {
     const trends = {};
     Object.entries(priceHistory).forEach(([asset, history]) => {
       if (history.length < 6) {
@@ -226,7 +288,31 @@ const Trading = () => {
     alert(Object.entries(trends).map(([a, t]) => `${a.toUpperCase()}: ${t}`).join("\n"));
     return trends;
   };
+*/
 
+  const checkMarketTrends = () => {
+  const trends = {};
+  const requiredPoints = 3; // Temporarily reduce for faster trend detection
+  Object.entries(priceHistory).forEach(([asset, history]) => {
+    if (history.length < requiredPoints) {
+      // Fill with last known price if available
+      const lastPrice = history[history.length - 1] || 0;
+      trends[asset] = lastPrice === 0 ? "No data ⏳" : "Initializing…";
+      return;
+    }
+
+    const shortMA = history.slice(-2).reduce((sum, p) => sum + p, 0) / 2; // Short MA: 2 points
+    const longMA = history.slice(-requiredPoints).reduce((sum, p) => sum + p, 0) / requiredPoints; // Long MA: 3 points
+
+    if (shortMA > longMA) trends[asset] = "Uptrend 🔺";
+    else if (shortMA < longMA) trends[asset] = "Downtrend 🔻";
+    else trends[asset] = "Sideways ➖";
+  });
+
+  console.table(trends); // Display in console
+  return trends;
+};
+  
   const totalProfit = trades.reduce((sum, t) => sum + t.profitLoss, 0);
   const totalTrades = trades.length;
   const successfulTrades = trades.filter((t) => t.profitLoss > 0).length;
