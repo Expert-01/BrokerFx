@@ -3,7 +3,7 @@ import TradingViewWidget from "./TradingViewWidget";
 import Sidebar from "./Sidebar";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
-import botIcon from "@/assets/phone.png"; // 👈 import your bot icon image
+import botIcon from "@/assets/file_00000000e0dc620e828f76b3ffb86fa3.png"; // 👈 import your bot icon image
 
 const API_URL = import.meta.env.VITE_API_URL; // https://brokerx-backend-pcgs.onrender.com/api
 
