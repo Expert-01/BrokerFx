@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import TradingViewWidget from "./TradingViewWidget";
 import Sidebar from "./Sidebar";
 import axios from "axios";
-import jwtDecode from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
