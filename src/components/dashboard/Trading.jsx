@@ -401,41 +401,7 @@ const Trading = () => {
               </button>
               <h2 className="text-yellow-400 font-bold mb-2 text-center">Bot Trend Chart</h2>
               <div className="h-96">
-                <Line
-                  data={{
-                    labels: Array.from({ length: priceHistory.bitcoin.length }, (_, i) => i + 1),
-                    datasets: ASSETS.map((asset) => ({
-                      label: asset.toUpperCase(),
-                      data: priceHistory[asset],
-                      borderColor:
-                        asset === "bitcoin"
-                          ? "rgba(255, 215, 0, 0.8)"
-                          : asset === "ethereum"
-                          ? "rgba(98, 0, 238, 0.8)"
-                          : asset === "binance-coin"
-                          ? "rgba(255, 99, 132, 0.8)"
-                          : "rgba(0, 255, 255, 0.8)",
-                      backgroundColor: "transparent",
-                      tension: 0.3,
-                    })),
-                  }}
-                  options={{
-                    responsive: true,
-                    plugins: {
-                      legend: { position: "top", labels: { color: "#FFD700" } },
-                      title: { display: false},
-                    scales: {
-                      x: {
-                        ticks: { color: "#FFD700" },
-                        grid: { color: "rgba(255,215,0,0.1)" },
-                      },
-                      y: {
-                        ticks: { color: "#FFD700" },
-                        grid: { color: "rgba(255,215,0,0.1)" },
-                      },
-                    },
-                  }}
-                />
+                
               </div>
             </div>
           </div>
