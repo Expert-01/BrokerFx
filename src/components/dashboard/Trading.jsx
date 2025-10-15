@@ -138,61 +138,82 @@ const Trading = () => {
   };
 
   // --- Simulate trade using MA trend ---
-  const simulateTrade = async () => {
-    if (!userId || botStatus?.bot_status !== "running") return;
-    setSimulateLoading(true);
 
-    try {
-      const assets = ["bitcoin", "ethereum", "binance-coin", "ripple"];
-      const asset = assets[Math.floor(Math.random() * assets.length)];
 
+
+
+
+
+
+
+
+  // --- Simulate trade only on trend change ---
+const simulateTrade = async () => {
+  if (!userId || botStatus?.bot_status !== "running") return;
+  setSimulateLoading(true);
+
+  try {
+    const assets = ["bitcoin", "ethereum", "binance-coin", "ripple"];
+    let tradesToAdd = [];
+
+    for (let asset of assets) {
       const history = priceHistory[asset] || [];
-      if (history.length < 6) return;
+      if (history.length < 6) continue;
 
       const shortMA = history.slice(-3).reduce((sum, p) => sum + p, 0) / 3;
       const longMA = history.slice(-6).reduce((sum, p) => sum + p, 0) / 6;
 
-      let action = "buy";
       let currentTrend = "";
-      if (shortMA > longMA) {
-        action = "buy";
-        currentTrend = "Uptrend 🔺";
-      } else if (shortMA < longMA) {
-        action = "sell";
-        currentTrend = "Downtrend 🔻";
-      } else {
-        action = Math.random() < 0.5 ? "buy" : "sell";
-        currentTrend = "Sideways ➖";
+      if (shortMA > longMA) currentTrend = "Uptrend 🔺";
+      else if (shortMA < longMA) currentTrend = "Downtrend 🔻";
+      else currentTrend = "Sideways ➖";
+
+      // Only trade if trend has changed for this asset
+      const lastTradeForAsset = trades.find((t) => t.asset === asset)?.action || null;
+      const newAction = currentTrend === "Uptrend 🔺" ? "buy" :
+                        currentTrend === "Downtrend 🔻" ? "sell" :
+                        Math.random() < 0.5 ? "buy" : "sell";
+
+      if (
+        (newAction === "buy" && lastTradeForAsset !== "buy") ||
+        (newAction === "sell" && lastTradeForAsset !== "sell")
+      ) {
+        const lastPrice = history.at(-1);
+        const prevPrice = history.at(-2);
+        const amount = (Math.random() * 0.05 + 0.01).toFixed(4);
+        const priceChange = lastPrice - prevPrice;
+        const profitLoss = newAction === "buy" ? priceChange * amount : -priceChange * amount;
+
+        tradesToAdd.push({
+          asset,
+          action: newAction,
+          amount,
+          price: lastPrice,
+          profitLoss,
+          time: new Date().toLocaleTimeString(),
+        });
+
+        // Update trend state to strongest trend among assets
+        if (!trend || Math.abs(shortMA - longMA) > Math.abs(tradesToAdd[0]?.trendStrength || 0)) {
+          setTrend(currentTrend);
+        }
       }
-      setTrend(currentTrend);
+    }
 
-      const lastPrice = history.at(-1);
-      const prevPrice = history.at(-2);
-      const amount = (Math.random() * 0.05 + 0.01).toFixed(4);
-      const priceChange = lastPrice - prevPrice;
-      const profitLoss = action === "buy" ? priceChange * amount : -priceChange * amount;
-
-      const newTrade = {
-        asset,
-        action,
-        amount,
-        price: lastPrice,
-        profitLoss,
-        time: new Date().toLocaleTimeString(),
-      };
-
+    // Add trades to state and send to API
+    for (let newTrade of tradesToAdd) {
       setHighlightedTrade(newTrade.time);
       setTrades((prev) => [newTrade, ...prev]);
-
       await axios.post(`${API_URL}/trading-bot/simulate/${userId}`, newTrade);
-
-      setTimeout(() => setHighlightedTrade(null), 2000);
-    } catch (err) {
-      console.error("Error simulating trade:", err);
-    } finally {
-      setSimulateLoading(false);
     }
-  };
+
+    setTimeout(() => setHighlightedTrade(null), 2000);
+  } catch (err) {
+    console.error("Error simulating trade:", err);
+  } finally {
+    setSimulateLoading(false);
+  }
+};
 
   const totalProfit = trades.reduce((sum, t) => sum + t.profitLoss, 0);
   const totalTrades = trades.length;
