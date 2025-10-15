@@ -177,23 +177,10 @@ const Trading = () => {
               50% { transform: rotateY(180deg); filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8)); }
               100% { transform: rotateY(360deg); filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5)); }
             }
-            .animate-rotateY {
-              animation: rotateY 2.5s linear infinite;
-              transform-style: preserve-3d;
-            }
-            .metallic-bot {
-              background: radial-gradient(circle at 30% 30%, #ffd700, #c0a000, #6b5600);
-              -webkit-background-clip: text;
-              -webkit-text-fill-color: transparent;
-              filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.6));
-            }
-            .bot-pulse {
-              animation: pulseGlow 3s infinite alternate;
-            }
-            @keyframes pulseGlow {
-              from { filter: drop-shadow(0 0 5px rgba(255,215,0,0.3)); }
-              to { filter: drop-shadow(0 0 15px rgba(255,215,0,0.8)); }
-            }
+            .animate-rotateY { animation: rotateY 2.5s linear infinite; transform-style: preserve-3d; }
+            .metallic-bot { background: radial-gradient(circle at 30% 30%, #ffd700, #c0a000, #6b5600); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.6)); }
+            .bot-pulse { animation: pulseGlow 3s infinite alternate; }
+            @keyframes pulseGlow { from { filter: drop-shadow(0 0 5px rgba(255,215,0,0.3)); } to { filter: drop-shadow(0 0 15px rgba(255,215,0,0.8)); } }
           `}</style>
 
           <div className="flex flex-col items-center mb-3">
@@ -249,6 +236,29 @@ const Trading = () => {
               </button>
             )}
           </div>
+
+          {/* --- Bot Stats --- */}
+          {botStatus && (
+            <div className="grid grid-cols-3 gap-2 text-yellow-400 mt-4 text-xs">
+              <div className="bg-[#14110f] p-1.5 rounded-lg border border-yellow-700/30">
+                <p className="font-semibold">Profit</p>
+                <p className="text-green-400 font-bold">${Number(botStatus.total_profit || 0).toFixed(2)}</p>
+              </div>
+              <div className="bg-[#14110f] p-1.5 rounded-lg border border-yellow-700/30">
+                <p className="font-semibold">Trades</p>
+                <p className="text-yellow-300 font-bold">{botStatus.total_trades || 0}</p>
+              </div>
+              <div className="bg-[#14110f] p-1.5 rounded-lg border border-yellow-700/30">
+                <p className="font-semibold">Success Rate</p>
+                <p className="text-green-300 font-bold">
+                  {botStatus.total_trades > 0
+                    ? ((botStatus.successful_trades / botStatus.total_trades) * 100).toFixed(1)
+                    : 0}%
+                </p>
+              </div>
+            </div>
+          )}
+
         </div>
 
         {/* Trades */}
@@ -285,6 +295,7 @@ const Trading = () => {
             </tbody>
           </table>
         </div>
+
       </main>
     </div>
   );
