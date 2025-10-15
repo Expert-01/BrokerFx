@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import TradingViewWidget from "./TradingViewWidget";
 import Sidebar from "./Sidebar";
 import axios from "axios";
@@ -26,7 +26,6 @@ ChartJS.register(
 );
 
 const API_URL = import.meta.env.VITE_API_URL;
-const ASSETS = ["bitcoin", "ethereum", "binance-coin", "ripple"];
 
 const Trading = () => {
   const [botStatus, setBotStatus] = useState(null);
@@ -42,22 +41,12 @@ const Trading = () => {
     ripple: [],
   });
   const [highlightedTrade, setHighlightedTrade] = useState(null);
+  const [heartbeat, setHeartbeat] = useState(false);
   const [userId, setUserId] = useState(null);
-  const [trend, setTrend] = useState("");
-  const [showChart, setShowChart] = useState(false);
-  const [lastTrends, setLastTrends] = useState({
-    bitcoin: null,
-    ethereum: null,
-    "binance-coin": null,
-    ripple: null,
-  });
+  const [trend, setTrend] = useState(""); 
+  const [showChart, setShowChart] = useState(false); // New: chart modal state
 
-
-  const [marketTrends, setMarketTrends] = useState(null);
-const [showTrends, setShowTrends] = useState(false);
-
-  
-  // Decode user token
+  // --- Decode user ---
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) return setMessage("❌ No token found. Please log in again.");
@@ -72,8 +61,8 @@ const [showTrends, setShowTrends] = useState(false);
     }
   }, []);
 
-  // Fetch bot status
-  const fetchBotStatus = useCallback(async () => {
+  // --- Fetch bot status ---
+  const fetchBotStatus = async () => {
     if (!userId) return;
     try {
       const res = await axios.get(`${API_URL}/trading-bot/status/${userId}`);
@@ -82,9 +71,9 @@ const [showTrends, setShowTrends] = useState(false);
     } catch (err) {
       console.error("Error fetching bot status:", err);
     }
-  }, [userId]);
+  };
 
-  // Link / Unlink bot
+  // --- Link / Unlink bot ---
   const linkBot = async () => {
     if (!userId) return setMessage("❌ No userId found.");
     setLinking(true);
@@ -122,7 +111,7 @@ const [showTrends, setShowTrends] = useState(false);
     }
   };
 
-  // Fetch live price
+  // --- Fetch live prices ---
   const fetchLivePrice = async (coin) => {
     try {
       const res = await axios.get(
@@ -130,14 +119,14 @@ const [showTrends, setShowTrends] = useState(false);
       );
       return res.data.coin.price;
     } catch (err) {
-      console.error(`Error fetching ${coin} price:`, err);
+      console.error("Error fetching live price:", err);
       return null;
     }
   };
 
-  // Update price history
-  const updatePriceHistory = useCallback(async () => {
-    for (let asset of ASSETS) {
+  const updatePriceHistory = async () => {
+    const assets = ["bitcoin", "ethereum", "binance-coin", "ripple"];
+    for (let asset of assets) {
       const price = await fetchLivePrice(asset);
       if (!price) continue;
       setPriceHistory((prev) => {
@@ -146,98 +135,87 @@ const [showTrends, setShowTrends] = useState(false);
         return { ...prev, [asset]: history };
       });
     }
-  }, []);
+  };
 
-  // Simulate trade
-  const simulateTrade = useCallback(async () => {
+  // --- Simulate trade using MA trend ---
+  const simulateTrade = async () => {
     if (!userId || botStatus?.bot_status !== "running") return;
     setSimulateLoading(true);
+
     try {
-      let tradesToAdd = [];
-      let updatedTrends = { ...lastTrends };
+      const assets = ["bitcoin", "ethereum", "binance-coin", "ripple"];
+      const asset = assets[Math.floor(Math.random() * assets.length)];
 
-      for (let asset of ASSETS) {
-        const history = priceHistory[asset] || [];
-        if (history.length < 3) continue;
+      const history = priceHistory[asset] || [];
+      if (history.length < 6) return;
 
-        const shortMA = history.slice(-2).reduce((sum, p) => sum + p, 0) / 2;
-        const longMA = history.slice(-3).reduce((sum, p) => sum + p, 0) / 3;
+      const shortMA = history.slice(-3).reduce((sum, p) => sum + p, 0) / 3;
+      const longMA = history.slice(-6).reduce((sum, p) => sum + p, 0) / 6;
 
-        let currentTrend = shortMA > longMA ? "Uptrend 🔺" : shortMA < longMA ? "Downtrend 🔻" : "Sideways ➖";
-
-        if (currentTrend !== lastTrends[asset] && currentTrend !== "Sideways ➖") {
-          const lastPrice = history.at(-1);
-          const prevPrice = history.at(-2);
-          const amount = (Math.random() * 0.05 + 0.01).toFixed(4);
-          const priceChange = lastPrice - prevPrice;
-          const profitLoss = currentTrend === "Uptrend 🔺" ? priceChange * amount : -priceChange * amount;
-
-          const newTrade = {
-            asset,
-            action: currentTrend === "Uptrend 🔺" ? "buy" : "sell",
-            amount,
-            price: lastPrice,
-            profitLoss,
-            time: new Date().toLocaleTimeString(),
-          };
-
-          tradesToAdd.push(newTrade);
-          updatedTrends[asset] = currentTrend;
-        }
+      let action = "buy";
+      let currentTrend = "";
+      if (shortMA > longMA) {
+        action = "buy";
+        currentTrend = "Uptrend 🔺";
+      } else if (shortMA < longMA) {
+        action = "sell";
+        currentTrend = "Downtrend 🔻";
+      } else {
+        action = Math.random() < 0.5 ? "buy" : "sell";
+        currentTrend = "Sideways ➖";
       }
+      setTrend(currentTrend);
 
-      if (tradesToAdd.length > 0) {
-        setTrades((prev) => [...tradesToAdd, ...prev]);
-        setLastTrends(updatedTrends);
+      const lastPrice = history.at(-1);
+      const prevPrice = history.at(-2);
+      const amount = (Math.random() * 0.05 + 0.01).toFixed(4);
+      const priceChange = lastPrice - prevPrice;
+      const profitLoss = action === "buy" ? priceChange * amount : -priceChange * amount;
 
-        tradesToAdd.forEach(async (trade) => {
-          setHighlightedTrade(trade.time);
-          await axios.post(`${API_URL}/trading-bot/simulate/${userId}`, trade);
-        });
+      const newTrade = {
+        asset,
+        action,
+        amount,
+        price: lastPrice,
+        profitLoss,
+        time: new Date().toLocaleTimeString(),
+      };
 
-        setTimeout(() => setHighlightedTrade(null), 2000);
-      }
+      setHighlightedTrade(newTrade.time);
+      setTrades((prev) => [newTrade, ...prev]);
 
-      const strongestTrend = Object.values(updatedTrends).filter(Boolean).pop();
-      if (strongestTrend) setTrend(strongestTrend);
+      await axios.post(`${API_URL}/trading-bot/simulate/${userId}`, newTrade);
+
+      setTimeout(() => setHighlightedTrade(null), 2000);
     } catch (err) {
       console.error("Error simulating trade:", err);
     } finally {
       setSimulateLoading(false);
     }
-  }, [userId, botStatus, priceHistory, lastTrends]);
-
-  const checkMarketTrends = () => {
-    const trends = {};
-    const requiredPoints = 3;
-    Object.entries(priceHistory).forEach(([asset, history]) => {
-      if (history.length < requiredPoints) {
-        trends[asset] = history.length ? "Initializing…" : "No data ⏳";
-        return;
-      }
-      const shortMA = history.slice(-2).reduce((sum, p) => sum + p, 0) / 2;
-      const longMA = history.slice(-requiredPoints).reduce((sum, p) => sum + p, 0) / requiredPoints;
-      trends[asset] = shortMA > longMA ? "Uptrend 🔺" : shortMA < longMA ? "Downtrend 🔻" : "Sideways ➖";
-    });
-    console.table(trends);
-    return trends;
   };
 
-  // Total stats
   const totalProfit = trades.reduce((sum, t) => sum + t.profitLoss, 0);
   const totalTrades = trades.length;
-  const successRate = totalTrades ? ((trades.filter((t) => t.profitLoss > 0).length / totalTrades) * 100).toFixed(1) : 0;
+  const successfulTrades = trades.filter((t) => t.profitLoss > 0).length;
+  const successRate = totalTrades > 0 ? ((successfulTrades / totalTrades) * 100).toFixed(1) : 0;
 
   useEffect(() => {
     if (!userId) return;
     fetchBotStatus();
     const interval = setInterval(async () => {
+      setHeartbeat((prev) => !prev);
       await fetchBotStatus();
       await updatePriceHistory();
       await simulateTrade();
     }, 5000);
     return () => clearInterval(interval);
-  }, [userId, fetchBotStatus, updatePriceHistory, simulateTrade]);
+  }, [userId]);
+
+  // --- Helper: Calculate MA for chart ---
+  const movingAverage = (prices, period) =>
+    prices.map((_, i, arr) =>
+      i < period - 1 ? null : arr.slice(i - period + 1, i + 1).reduce((a, b) => a + b, 0) / period
+    );
 
   return (
     <div className="flex min-h-screen bg-[#0a0908] text-[#f5e6ca]">
@@ -277,6 +255,7 @@ const [showTrends, setShowTrends] = useState(false);
           </h2>
 
           {trend && <p className="text-sm mt-1 text-blue-400 font-semibold">{trend}</p>}
+
           {message && (
             <p
               className={`text-sm mt-1 ${
@@ -313,25 +292,17 @@ const [showTrends, setShowTrends] = useState(false);
                 >
                   {loading ? "Processing..." : "Unlink Bot"}
                 </button>
-
                 <button
                   onClick={() => setShowChart(true)}
                   className="bg-gradient-to-r from-blue-500 to-blue-700 text-white font-bold py-2 px-4 rounded-lg hover:brightness-110 transition text-xs"
                 >
                   BotChart
                 </button>
-
-                <button
-                  onClick={checkMarketTrends}
-                  className="bg-gradient-to-r from-purple-500 to-purple-700 text-white font-bold py-2 px-4 rounded-lg hover:brightness-110 transition text-xs"
-                >
-                  Market Trends
-                </button>
               </>
             )}
           </div>
 
-          {/* Live Stats */}
+          {/* --- Live Stats --- */}
           <div className="grid grid-cols-3 gap-2 text-yellow-400 mt-4 text-xs">
             <div className="bg-[#14110f] p-1.5 rounded-lg border border-yellow-700/30">
               <p className="font-semibold">Profit</p>
@@ -348,7 +319,7 @@ const [showTrends, setShowTrends] = useState(false);
           </div>
         </div>
 
-        {/* Trades Table */}
+        {/* Trades */}
         <div className="max-w-2xl mx-auto rounded-2xl overflow-hidden border border-yellow-700/20 bg-[#0d0b08]/90 shadow-[0_0_15px_rgba(255,215,0,0.1)] p-4">
           <h3 className="text-yellow-500 font-bold text-lg mb-2">📊 Trade Log</h3>
           <table className="w-full text-xs md:text-sm text-left text-yellow-200">
@@ -374,17 +345,27 @@ const [showTrends, setShowTrends] = useState(false);
                   <tr
                     key={idx}
                     className={`border-b border-yellow-600/20 ${
-                      highlightedTrade === t.time ? "bg-yellow-600/20 animate-pulse" : ""
+                      highlightedTrade === t.time
+                        ? "bg-yellow-600/20 animate-pulse"
+                        : ""
                     }`}
                   >
                     <td className="py-1 px-2">{t.time}</td>
                     <td className="py-1 px-2">{t.asset.toUpperCase()}</td>
-                    <td className={`${t.action === "buy" ? "text-green-400" : "text-red-400"} py-1 px-2`}>
+                    <td
+                      className={`${
+                        t.action === "buy" ? "text-green-400" : "text-red-400"
+                      } py-1 px-2`}
+                    >
                       {t.action.toUpperCase()}
                     </td>
                     <td className="py-1 px-2">{t.amount}</td>
                     <td className="py-1 px-2">${t.price.toFixed(2)}</td>
-                    <td className={`${t.profitLoss >= 0 ? "text-green-400" : "text-red-400"} py-1 px-2`}>
+                    <td
+                      className={`${
+                        t.profitLoss >= 0 ? "text-green-400" : "text-red-400"
+                      } py-1 px-2`}
+                    >
                       ${t.profitLoss.toFixed(2)}
                     </td>
                   </tr>
@@ -394,78 +375,50 @@ const [showTrends, setShowTrends] = useState(false);
           </table>
         </div>
 
-        {/* Chart Modal */}
+        {/* --- Chart Modal --- */}
         {showChart && (
           <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
             <div className="bg-[#0d0b08] p-4 rounded-2xl max-w-3xl w-full relative">
               <button
                 onClick={() => setShowChart(false)}
-                className="absolute top-2 right-2 text-red-500 font-bold text-lg"
+                className="absolute top-2 right-2 text-red-500 font-bold"
               >
                 ✖
               </button>
               <h2 className="text-yellow-400 font-bold mb-2 text-center">Bot Trend Chart</h2>
               <div className="h-96">
                 <Line
-  data={{
-    labels: Array.from({ length: priceHistory.bitcoin.length }, (_, i) => i + 1),
-    datasets: Object.entries(priceHistory).map(([asset, prices]) => ({
-      label: asset.toUpperCase(),
-      data: prices.length ? prices : [0], // ensure no empty array
-      borderColor:
-        asset === "bitcoin"
-          ? "rgba(255, 215, 0, 0.8)"
-          : asset === "ethereum"
-          ? "rgba(98, 0, 238, 0.8)"
-          : asset === "binance-coin"
-          ? "rgba(255, 99, 132, 0.8)"
-          : "rgba(0, 255, 255, 0.8)",
-      backgroundColor: "transparent",
-      tension: 0.3,
-    })),
-  }}
-  options={{
-    responsive: true,
-    plugins: {
-      legend: { position: "top", labels: { color: "#FFD700" } },
-      title: { display: false },
-    },
-    scales: {
-      x: { ticks: { color: "#FFD700" }, grid: { color: "#444" } },
-      y: { ticks: { color: "#FFD700" }, grid: { color: "#444" } },
-    },
-  }}
-/>
+                  data={{
+                    labels: Array.from({ length: priceHistory.bitcoin.length }, (_, i) => i + 1),
+                    datasets: Object.entries(priceHistory).map(([asset, prices]) => ({
+                      label: asset.toUpperCase(),
+                      data: prices,
+                      borderColor:
+                        asset === "bitcoin"
+                          ? "rgba(255, 215, 0, 0.8)"
+                          : asset === "ethereum"
+                          ? "rgba(0, 255, 255, 0.8)"
+                          : asset === "binance-coin"
+                          ? "rgba(0, 255, 0, 0.8)"
+                          : "rgba(255,0,0,0.8)",
+                      backgroundColor: "rgba(255, 255, 255, 0.1)",
+                      tension: 0.2,
+                    })),
+                  }}
+                  options={{ responsive: true, maintainAspectRatio: false }}
+                />
               </div>
-            </div>
+
+
+
+
+
+              </div>
           </div>
         )}
       </main>
     </div>
-
-
-    {showTrends && marketTrends && (
-  <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-    <div className="bg-[#0d0b08] p-4 rounded-2xl max-w-sm w-full relative">
-      <button
-        onClick={() => setShowTrends(false)}
-        className="absolute top-2 right-2 text-red-500 font-bold text-lg"
-      >
-        ✖
-      </button>
-      <h2 className="text-yellow-400 font-bold mb-2 text-center">Market Trends</h2>
-      <ul className="text-yellow-300 text-sm space-y-1">
-        {Object.entries(marketTrends).map(([asset, trend]) => (
-          <li key={asset}>
-            <span className="font-semibold">{asset.toUpperCase()}:</span> {trend}
-          </li>
-        ))}
-      </ul>
-    </div>
-  </div>
-)}
   );
-  
 };
 
 export default Trading;
