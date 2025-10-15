@@ -22,6 +22,7 @@ const Trading = () => {
   const [highlightedTrade, setHighlightedTrade] = useState(null);
   const [heartbeat, setHeartbeat] = useState(false);
   const [userId, setUserId] = useState(null);
+  const [trend, setTrend] = useState(""); // New: track current trend
 
   // --- Decode user ---
   useEffect(() => {
@@ -114,21 +115,40 @@ const Trading = () => {
     }
   };
 
-  // --- Simulate trade ---
+  // --- Simulate trade using MA trend ---
   const simulateTrade = async () => {
     if (!userId || botStatus?.bot_status !== "running") return;
     setSimulateLoading(true);
+
     try {
       const assets = ["bitcoin", "ethereum", "binance-coin", "ripple"];
       const asset = assets[Math.floor(Math.random() * assets.length)];
-      const action = Math.random() < 0.5 ? "buy" : "sell";
-      const amount = (Math.random() * 0.05 + 0.01).toFixed(4);
 
       const history = priceHistory[asset] || [];
-      if (history.length < 2) return;
+      if (history.length < 6) return;
+
+      // --- Calculate moving averages ---
+      const shortMA = history.slice(-3).reduce((sum, p) => sum + p, 0) / 3;
+      const longMA = history.slice(-6).reduce((sum, p) => sum + p, 0) / 6;
+
+      // --- Determine action based on trend ---
+      let action = "buy";
+      let currentTrend = "";
+      if (shortMA > longMA) {
+        action = "buy";
+        currentTrend = "Uptrend 🔺";
+      } else if (shortMA < longMA) {
+        action = "sell";
+        currentTrend = "Downtrend 🔻";
+      } else {
+        action = Math.random() < 0.5 ? "buy" : "sell";
+        currentTrend = "Sideways ➖";
+      }
+      setTrend(currentTrend);
 
       const lastPrice = history.at(-1);
       const prevPrice = history.at(-2);
+      const amount = (Math.random() * 0.05 + 0.01).toFixed(4);
       const priceChange = lastPrice - prevPrice;
       const profitLoss = action === "buy" ? priceChange * amount : -priceChange * amount;
 
@@ -144,7 +164,6 @@ const Trading = () => {
       setHighlightedTrade(newTrade.time);
       setTrades((prev) => [newTrade, ...prev]);
 
-      // Send trade to backend
       await axios.post(`${API_URL}/trading-bot/simulate/${userId}`, newTrade);
 
       setTimeout(() => setHighlightedTrade(null), 2000);
@@ -210,6 +229,10 @@ const Trading = () => {
               }`}
             ></span>
           </h2>
+
+          {trend && (
+            <p className="text-sm mt-1 text-blue-400 font-semibold">{trend}</p>
+          )}
 
           {message && (
             <p
