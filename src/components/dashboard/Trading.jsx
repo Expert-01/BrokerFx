@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import TradingViewWidget from "./TradingViewWidget";
 import Sidebar from "./Sidebar";
 import axios from "axios";
-import { jwtDecode } from "jwt-decode";
+import jwtDecode from "jwt-decode";
 import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -26,6 +26,7 @@ ChartJS.register(
 );
 
 const API_URL = import.meta.env.VITE_API_URL;
+const ASSETS = ["bitcoin", "ethereum", "binance-coin", "ripple"];
 
 const Trading = () => {
   const [botStatus, setBotStatus] = useState(null);
@@ -41,7 +42,6 @@ const Trading = () => {
     ripple: [],
   });
   const [highlightedTrade, setHighlightedTrade] = useState(null);
-  const [heartbeat, setHeartbeat] = useState(false);
   const [userId, setUserId] = useState(null);
   const [trend, setTrend] = useState("");
   const [showChart, setShowChart] = useState(false);
@@ -52,7 +52,7 @@ const Trading = () => {
     ripple: null,
   });
 
-  // --- Decode user ---
+  // Decode user token
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) return setMessage("❌ No token found. Please log in again.");
@@ -67,8 +67,8 @@ const Trading = () => {
     }
   }, []);
 
-  // --- Fetch bot status ---
-  const fetchBotStatus = async () => {
+  // Fetch bot status
+  const fetchBotStatus = useCallback(async () => {
     if (!userId) return;
     try {
       const res = await axios.get(`${API_URL}/trading-bot/status/${userId}`);
@@ -77,9 +77,9 @@ const Trading = () => {
     } catch (err) {
       console.error("Error fetching bot status:", err);
     }
-  };
+  }, [userId]);
 
-  // --- Link / Unlink bot ---
+  // Link / Unlink bot
   const linkBot = async () => {
     if (!userId) return setMessage("❌ No userId found.");
     setLinking(true);
@@ -117,7 +117,7 @@ const Trading = () => {
     }
   };
 
-  // --- Fetch live prices ---
+  // Fetch live price
   const fetchLivePrice = async (coin) => {
     try {
       const res = await axios.get(
@@ -125,14 +125,14 @@ const Trading = () => {
       );
       return res.data.coin.price;
     } catch (err) {
-      console.error("Error fetching live price:", err);
+      console.error(`Error fetching ${coin} price:`, err);
       return null;
     }
   };
 
-  const updatePriceHistory = async () => {
-    const assets = ["bitcoin", "ethereum", "binance-coin", "ripple"];
-    for (let asset of assets) {
+  // Update price history
+  const updatePriceHistory = useCallback(async () => {
+    for (let asset of ASSETS) {
       const price = await fetchLivePrice(asset);
       if (!price) continue;
       setPriceHistory((prev) => {
@@ -141,93 +141,25 @@ const Trading = () => {
         return { ...prev, [asset]: history };
       });
     }
-  };
+  }, []);
 
-
-  const simulateTrade = async () => {
-  if (!userId || botStatus?.bot_status !== "running") return;
-  setSimulateLoading(true);
-
-  try {
-    const assets = ["bitcoin", "ethereum", "binance-coin", "ripple"];
-    let tradesToAdd = [];
-    let updatedTrends = { ...lastTrends };
-
-    for (let asset of assets) {
-      const history = priceHistory[asset] || [];
-      if (history.length < 3) continue; // reduced from 6
-
-      const shortMA = history.slice(-2).reduce((sum, p) => sum + p, 0) / 2; // short MA
-      const longMA = history.slice(-3).reduce((sum, p) => sum + p, 0) / 3; // long MA
-
-      let currentTrend = "";
-      if (shortMA > longMA) currentTrend = "Uptrend 🔺";
-      else if (shortMA < longMA) currentTrend = "Downtrend 🔻";
-      else currentTrend = "Sideways ➖";
-
-      if (currentTrend !== lastTrends[asset] && currentTrend !== "Sideways ➖") {
-        const lastPrice = history.at(-1);
-        const prevPrice = history.at(-2);
-        const amount = (Math.random() * 0.05 + 0.01).toFixed(4);
-        const priceChange = lastPrice - prevPrice;
-        const profitLoss = currentTrend === "Uptrend 🔺" ? priceChange * amount : -priceChange * amount;
-
-        const newTrade = {
-          asset,
-          action: currentTrend === "Uptrend 🔺" ? "buy" : "sell",
-          amount,
-          price: lastPrice,
-          profitLoss,
-          time: new Date().toLocaleTimeString(),
-        };
-
-        tradesToAdd.push(newTrade);
-        updatedTrends[asset] = currentTrend;
-      }
-    }
-
-    if (tradesToAdd.length > 0) {
-      setTrades((prev) => [...tradesToAdd, ...prev]);
-      setLastTrends(updatedTrends);
-      tradesToAdd.forEach(async (trade) => {
-        setHighlightedTrade(trade.time);
-        await axios.post(`${API_URL}/trading-bot/simulate/${userId}`, trade);
-      });
-      setTimeout(() => setHighlightedTrade(null), 2000);
-    }
-
-    const strongest = Object.values(updatedTrends).filter((t) => t !== null);
-    if (strongest.length > 0) setTrend(strongest[strongest.length - 1]);
-  } catch (err) {
-    console.error("Error simulating trade:", err);
-  } finally {
-    setSimulateLoading(false);
-  }
-};
-
-  // --- Simulate trade on trend change ---
- /* const simulateTrade = async () => {
+  // Simulate trade
+  const simulateTrade = useCallback(async () => {
     if (!userId || botStatus?.bot_status !== "running") return;
     setSimulateLoading(true);
-
     try {
-      const assets = ["bitcoin", "ethereum", "binance-coin", "ripple"];
       let tradesToAdd = [];
       let updatedTrends = { ...lastTrends };
 
-      for (let asset of assets) {
+      for (let asset of ASSETS) {
         const history = priceHistory[asset] || [];
-        if (history.length < 6) continue;
+        if (history.length < 3) continue;
 
-        const shortMA = history.slice(-3).reduce((sum, p) => sum + p, 0) / 3;
-        const longMA = history.slice(-6).reduce((sum, p) => sum + p, 0) / 6;
+        const shortMA = history.slice(-2).reduce((sum, p) => sum + p, 0) / 2;
+        const longMA = history.slice(-3).reduce((sum, p) => sum + p, 0) / 3;
 
-        let currentTrend = "";
-        if (shortMA > longMA) currentTrend = "Uptrend 🔺";
-        else if (shortMA < longMA) currentTrend = "Downtrend 🔻";
-        else currentTrend = "Sideways ➖";
+        let currentTrend = shortMA > longMA ? "Uptrend 🔺" : shortMA < longMA ? "Downtrend 🔻" : "Sideways ➖";
 
-        // Only trade if trend has changed for this asset
         if (currentTrend !== lastTrends[asset] && currentTrend !== "Sideways ➖") {
           const lastPrice = history.at(-1);
           const prevPrice = history.at(-2);
@@ -252,83 +184,55 @@ const Trading = () => {
       if (tradesToAdd.length > 0) {
         setTrades((prev) => [...tradesToAdd, ...prev]);
         setLastTrends(updatedTrends);
+
         tradesToAdd.forEach(async (trade) => {
           setHighlightedTrade(trade.time);
           await axios.post(`${API_URL}/trading-bot/simulate/${userId}`, trade);
         });
+
         setTimeout(() => setHighlightedTrade(null), 2000);
       }
 
-      // Update overall bot trend (strongest)
-      const strongest = Object.values(updatedTrends).filter((t) => t !== null);
-      if (strongest.length > 0) setTrend(strongest[strongest.length - 1]);
+      const strongestTrend = Object.values(updatedTrends).filter(Boolean).pop();
+      if (strongestTrend) setTrend(strongestTrend);
     } catch (err) {
       console.error("Error simulating trade:", err);
     } finally {
       setSimulateLoading(false);
     }
-  };*/
-
-  // --- Check market trends ---
- /* const checkMarketTrends = () => {
-    const trends = {};
-    Object.entries(priceHistory).forEach(([asset, history]) => {
-      if (history.length < 6) {
-        trends[asset] = "Not enough data ⏳";
-        return;
-      }
-      const shortMA = history.slice(-3).reduce((sum, p) => sum + p, 0) / 3;
-      const longMA = history.slice(-6).reduce((sum, p) => sum + p, 0) / 6;
-
-      if (shortMA > longMA) trends[asset] = "Uptrend 🔺";
-      else if (shortMA < longMA) trends[asset] = "Downtrend 🔻";
-      else trends[asset] = "Sideways ➖";
-    });
-    console.table(trends);
-    alert(Object.entries(trends).map(([a, t]) => `${a.toUpperCase()}: ${t}`).join("\n"));
-    return trends;
-  };
-*/
+  }, [userId, botStatus, priceHistory, lastTrends]);
 
   const checkMarketTrends = () => {
-  const trends = {};
-  const requiredPoints = 3; // Temporarily reduce for faster trend detection
-  Object.entries(priceHistory).forEach(([asset, history]) => {
-    if (history.length < requiredPoints) {
-      // Fill with last known price if available
-      const lastPrice = history[history.length - 1] || 0;
-      trends[asset] = lastPrice === 0 ? "No data ⏳" : "Initializing…";
-      return;
-    }
+    const trends = {};
+    const requiredPoints = 3;
+    Object.entries(priceHistory).forEach(([asset, history]) => {
+      if (history.length < requiredPoints) {
+        trends[asset] = history.length ? "Initializing…" : "No data ⏳";
+        return;
+      }
+      const shortMA = history.slice(-2).reduce((sum, p) => sum + p, 0) / 2;
+      const longMA = history.slice(-requiredPoints).reduce((sum, p) => sum + p, 0) / requiredPoints;
+      trends[asset] = shortMA > longMA ? "Uptrend 🔺" : shortMA < longMA ? "Downtrend 🔻" : "Sideways ➖";
+    });
+    console.table(trends);
+    return trends;
+  };
 
-    const shortMA = history.slice(-2).reduce((sum, p) => sum + p, 0) / 2; // Short MA: 2 points
-    const longMA = history.slice(-requiredPoints).reduce((sum, p) => sum + p, 0) / requiredPoints; // Long MA: 3 points
-
-    if (shortMA > longMA) trends[asset] = "Uptrend 🔺";
-    else if (shortMA < longMA) trends[asset] = "Downtrend 🔻";
-    else trends[asset] = "Sideways ➖";
-  });
-
-  console.table(trends); // Display in console
-  return trends;
-};
-  
+  // Total stats
   const totalProfit = trades.reduce((sum, t) => sum + t.profitLoss, 0);
   const totalTrades = trades.length;
-  const successfulTrades = trades.filter((t) => t.profitLoss > 0).length;
-  const successRate = totalTrades > 0 ? ((successfulTrades / totalTrades) * 100).toFixed(1) : 0;
+  const successRate = totalTrades ? ((trades.filter((t) => t.profitLoss > 0).length / totalTrades) * 100).toFixed(1) : 0;
 
   useEffect(() => {
     if (!userId) return;
     fetchBotStatus();
     const interval = setInterval(async () => {
-      setHeartbeat((prev) => !prev);
       await fetchBotStatus();
       await updatePriceHistory();
       await simulateTrade();
     }, 5000);
     return () => clearInterval(interval);
-  }, [userId]);
+  }, [userId, fetchBotStatus, updatePriceHistory, simulateTrade]);
 
   return (
     <div className="flex min-h-screen bg-[#0a0908] text-[#f5e6ca]">
@@ -422,7 +326,7 @@ const Trading = () => {
             )}
           </div>
 
-          {/* --- Live Stats --- */}
+          {/* Live Stats */}
           <div className="grid grid-cols-3 gap-2 text-yellow-400 mt-4 text-xs">
             <div className="bg-[#14110f] p-1.5 rounded-lg border border-yellow-700/30">
               <p className="font-semibold">Profit</p>
@@ -485,7 +389,7 @@ const Trading = () => {
           </table>
         </div>
 
-        {/* --- Chart Modal --- */}
+        {/* Chart Modal */}
         {showChart && (
           <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
             <div className="bg-[#0d0b08] p-4 rounded-2xl max-w-3xl w-full relative">
@@ -500,9 +404,9 @@ const Trading = () => {
                 <Line
                   data={{
                     labels: Array.from({ length: priceHistory.bitcoin.length }, (_, i) => i + 1),
-                    datasets: Object.entries(priceHistory).map(([asset, prices]) => ({
+                    datasets: ASSETS.map((asset) => ({
                       label: asset.toUpperCase(),
-                      data: prices,
+                      data: priceHistory[asset],
                       borderColor:
                         asset === "bitcoin"
                           ? "rgba(255, 215, 0, 0.8)"
@@ -519,11 +423,16 @@ const Trading = () => {
                     responsive: true,
                     plugins: {
                       legend: { position: "top", labels: { color: "#FFD700" } },
-                      title: { display: false },
-                    },
+                      title: { display: false},
                     scales: {
-                      x: { ticks: { color: "#FFD700" }, grid: { color: "#444" } },
-                      y: { ticks: { color: "#FFD700" }, grid: { color: "#444" } },
+                      x: {
+                        ticks: { color: "#FFD700" },
+                        grid: { color: "rgba(255,215,0,0.1)" },
+                      },
+                      y: {
+                        ticks: { color: "#FFD700" },
+                        grid: { color: "rgba(255,215,0,0.1)" },
+                      },
                     },
                   }}
                 />
@@ -537,4 +446,3 @@ const Trading = () => {
 };
 
 export default Trading;
-        
