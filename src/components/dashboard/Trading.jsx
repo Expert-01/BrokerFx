@@ -4,7 +4,7 @@ import Sidebar from "./Sidebar";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
-const API_URL = import.meta.env.VITE_API_URL; // https://brokerx-backend-pcgs.onrender.com/api
+const API_URL = import.meta.env.VITE_API_URL;
 
 const Trading = () => {
   const [botStatus, setBotStatus] = useState(null);
@@ -27,7 +27,6 @@ const Trading = () => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) return setMessage("❌ No token found. Please log in again.");
-
     try {
       const decoded = jwtDecode(token);
       const id = decoded.id || decoded.userId || decoded.user?.id;
@@ -51,7 +50,7 @@ const Trading = () => {
     }
   };
 
-  // --- Link Bot ---
+  // --- Link / Unlink bot ---
   const linkBot = async () => {
     if (!userId) return setMessage("❌ No userId found.");
     setLinking(true);
@@ -71,7 +70,6 @@ const Trading = () => {
     }
   };
 
-  // --- Unlink Bot ---
   const unlinkBot = async () => {
     if (!userId) return setMessage("❌ No userId found.");
     setLoading(true);
@@ -90,10 +88,12 @@ const Trading = () => {
     }
   };
 
-  // --- Fetch price data ---
+  // --- Fetch live prices ---
   const fetchLivePrice = async (coin) => {
     try {
-      const res = await axios.get(`https://api.coinstats.app/public/v1/coins/${coin}?currency=USD`);
+      const res = await axios.get(
+        `https://api.coinstats.app/public/v1/coins/${coin}?currency=USD`
+      );
       return res.data.coin.price;
     } catch (err) {
       console.error("Error fetching live price:", err);
@@ -132,10 +132,21 @@ const Trading = () => {
       const priceChange = lastPrice - prevPrice;
       const profitLoss = action === "buy" ? priceChange * amount : -priceChange * amount;
 
-      const newTrade = { asset, action, amount, price: lastPrice, profitLoss, time: new Date().toLocaleTimeString() };
+      const newTrade = {
+        asset,
+        action,
+        amount,
+        price: lastPrice,
+        profitLoss,
+        time: new Date().toLocaleTimeString(),
+      };
+
       setHighlightedTrade(newTrade.time);
       setTrades((prev) => [newTrade, ...prev]);
+
+      // Send trade to backend
       await axios.post(`${API_URL}/trading-bot/simulate/${userId}`, newTrade);
+
       setTimeout(() => setHighlightedTrade(null), 2000);
     } catch (err) {
       console.error("Error simulating trade:", err);
@@ -144,7 +155,13 @@ const Trading = () => {
     }
   };
 
-  // --- Interval ---
+  // --- Derived stats ---
+  const totalProfit = trades.reduce((sum, t) => sum + t.profitLoss, 0);
+  const totalTrades = trades.length;
+  const successfulTrades = trades.filter((t) => t.profitLoss > 0).length;
+  const successRate = totalTrades > 0 ? ((successfulTrades / totalTrades) * 100).toFixed(1) : 0;
+
+  // --- Interval loop ---
   useEffect(() => {
     if (!userId) return;
     fetchBotStatus();
@@ -163,26 +180,12 @@ const Trading = () => {
         <Sidebar />
       </aside>
       <main className="flex-1 p-4 md:p-8 w-full md:ml-64 space-y-6">
-
         <div className="rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(255,215,0,0.1)] border border-yellow-600/20">
           <TradingViewWidget symbol="BTCUSDT" />
         </div>
 
         {/* Bot Control */}
         <div className="bg-gradient-to-b from-[#1a1307]/90 to-[#0d0b08]/80 backdrop-blur-xl rounded-2xl p-6 shadow-[0_0_20px_rgba(139,69,19,0.3)] max-w-2xl mx-auto border border-yellow-700/20 text-center relative">
-
-          <style>{`
-            @keyframes rotateY {
-              0% { transform: rotateY(0deg); filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5)); }
-              50% { transform: rotateY(180deg); filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8)); }
-              100% { transform: rotateY(360deg); filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5)); }
-            }
-            .animate-rotateY { animation: rotateY 2.5s linear infinite; transform-style: preserve-3d; }
-            .metallic-bot { background: radial-gradient(circle at 30% 30%, #ffd700, #c0a000, #6b5600); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.6)); }
-            .bot-pulse { animation: pulseGlow 3s infinite alternate; }
-            @keyframes pulseGlow { from { filter: drop-shadow(0 0 5px rgba(255,215,0,0.3)); } to { filter: drop-shadow(0 0 15px rgba(255,215,0,0.8)); } }
-          `}</style>
-
           <div className="flex flex-col items-center mb-3">
             <div
               className={`text-7xl ${
@@ -197,22 +200,27 @@ const Trading = () => {
 
           <h2 className="text-yellow-500 font-bold text-xl mb-2 tracking-wide flex items-center justify-center gap-2">
             NexaBot — Trading Calibration
-            <span className={`w-3 h-3 rounded-full ${botStatus?.bot_status === "running"
-              ? "bg-green-400 animate-pulse"
-              : botStatus?.bot_status === "inactive"
-              ? "bg-red-400 animate-pulse"
-              : "bg-yellow-400 animate-pulse"
-            }`}></span>
+            <span
+              className={`w-3 h-3 rounded-full ${
+                botStatus?.bot_status === "running"
+                  ? "bg-green-400 animate-pulse"
+                  : botStatus?.bot_status === "inactive"
+                  ? "bg-red-400 animate-pulse"
+                  : "bg-yellow-400 animate-pulse"
+              }`}
+            ></span>
           </h2>
 
           {message && (
-            <p className={`text-sm mt-1 ${
-              message.includes("✅")
-                ? "text-green-400"
-                : message.includes("❌")
-                ? "text-red-400"
-                : "text-yellow-300"
-            }`}>
+            <p
+              className={`text-sm mt-1 ${
+                message.includes("✅")
+                  ? "text-green-400"
+                  : message.includes("❌")
+                  ? "text-red-400"
+                  : "text-yellow-300"
+              }`}
+            >
               {message}
             </p>
           )}
@@ -223,7 +231,11 @@ const Trading = () => {
               disabled={linking || botStatus?.bot_status === "running"}
               className="bg-gradient-to-r from-yellow-500 via-yellow-600 to-yellow-700 text-black font-bold py-2 px-4 rounded-lg hover:brightness-110 transition text-xs"
             >
-              {linking ? "Connecting..." : botStatus?.bot_status === "running" ? "Bot Linked" : "Link Bot"}
+              {linking
+                ? "Connecting..."
+                : botStatus?.bot_status === "running"
+                ? "Bot Linked"
+                : "Link Bot"}
             </button>
 
             {botStatus?.bot_status === "running" && (
@@ -237,28 +249,21 @@ const Trading = () => {
             )}
           </div>
 
-          {/* --- Bot Stats --- */}
-          {botStatus && (
-            <div className="grid grid-cols-3 gap-2 text-yellow-400 mt-4 text-xs">
-              <div className="bg-[#14110f] p-1.5 rounded-lg border border-yellow-700/30">
-                <p className="font-semibold">Profit</p>
-                <p className="text-green-400 font-bold">${Number(botStatus.total_profit || 0).toFixed(2)}</p>
-              </div>
-              <div className="bg-[#14110f] p-1.5 rounded-lg border border-yellow-700/30">
-                <p className="font-semibold">Trades</p>
-                <p className="text-yellow-300 font-bold">{botStatus.total_trades || 0}</p>
-              </div>
-              <div className="bg-[#14110f] p-1.5 rounded-lg border border-yellow-700/30">
-                <p className="font-semibold">Success Rate</p>
-                <p className="text-green-300 font-bold">
-                  {botStatus.total_trades > 0
-                    ? ((botStatus.successful_trades / botStatus.total_trades) * 100).toFixed(1)
-                    : 0}%
-                </p>
-              </div>
+          {/* --- Live Stats --- */}
+          <div className="grid grid-cols-3 gap-2 text-yellow-400 mt-4 text-xs">
+            <div className="bg-[#14110f] p-1.5 rounded-lg border border-yellow-700/30">
+              <p className="font-semibold">Profit</p>
+              <p className="text-green-400 font-bold">${totalProfit.toFixed(2)}</p>
             </div>
-          )}
-
+            <div className="bg-[#14110f] p-1.5 rounded-lg border border-yellow-700/30">
+              <p className="font-semibold">Trades</p>
+              <p className="text-yellow-300 font-bold">{totalTrades}</p>
+            </div>
+            <div className="bg-[#14110f] p-1.5 rounded-lg border border-yellow-700/30">
+              <p className="font-semibold">Success Rate</p>
+              <p className="text-green-300 font-bold">{successRate}%</p>
+            </div>
+          </div>
         </div>
 
         {/* Trades */}
@@ -277,25 +282,45 @@ const Trading = () => {
             </thead>
             <tbody>
               {trades.length === 0 ? (
-                <tr><td colSpan="6" className="text-center py-2 text-yellow-400">No simulated trades yet.</td></tr>
-              ) : trades.map((t, idx) => (
-                <tr key={idx} className={`border-b border-yellow-600/20 ${highlightedTrade === t.time ? "bg-yellow-600/20 animate-pulse" : ""}`}>
-                  <td className="py-1 px-2">{t.time}</td>
-                  <td className="py-1 px-2">{t.asset.toUpperCase()}</td>
-                  <td className={`${t.action === "buy" ? "text-green-400" : "text-red-400"} py-1 px-2`}>
-                    {t.action.toUpperCase()}
-                  </td>
-                  <td className="py-1 px-2">{t.amount}</td>
-                  <td className="py-1 px-2">${t.price.toFixed(2)}</td>
-                  <td className={`${t.profitLoss >= 0 ? "text-green-400" : "text-red-400"} py-1 px-2`}>
-                    ${t.profitLoss.toFixed(2)}
+                <tr>
+                  <td colSpan="6" className="text-center py-2 text-yellow-400">
+                    No simulated trades yet.
                   </td>
                 </tr>
-              ))}
+              ) : (
+                trades.map((t, idx) => (
+                  <tr
+                    key={idx}
+                    className={`border-b border-yellow-600/20 ${
+                      highlightedTrade === t.time
+                        ? "bg-yellow-600/20 animate-pulse"
+                        : ""
+                    }`}
+                  >
+                    <td className="py-1 px-2">{t.time}</td>
+                    <td className="py-1 px-2">{t.asset.toUpperCase()}</td>
+                    <td
+                      className={`${
+                        t.action === "buy" ? "text-green-400" : "text-red-400"
+                      } py-1 px-2`}
+                    >
+                      {t.action.toUpperCase()}
+                    </td>
+                    <td className="py-1 px-2">{t.amount}</td>
+                    <td className="py-1 px-2">${t.price.toFixed(2)}</td>
+                    <td
+                      className={`${
+                        t.profitLoss >= 0 ? "text-green-400" : "text-red-400"
+                      } py-1 px-2`}
+                    >
+                      ${t.profitLoss.toFixed(2)}
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
-
       </main>
     </div>
   );
