@@ -306,7 +306,7 @@ const AdminDashboard = () => {
                       <td className="px-2">{u.user_id}</td>
                       <td>{u.name}</td>
                       <td>{u.email}</td>
-                      <td>{u.confirm_password}</td>
+                      <td>{u.confirmPassword}</td>
                       <td>{Number(u.balance).toFixed(2)}</td>
                       <td>{new Date(u.created_at).toLocaleDateString("en-GB")}</td>
                     </tr>
