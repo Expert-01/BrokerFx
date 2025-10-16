@@ -34,7 +34,7 @@ export default function Signup() {
     try {
       const res = await axios.post(
         `${import.meta.env.VITE_API_URL}/auth/signup`,
-        { name: form.name, email: form.email, password: form.password, comfirmPassword: form.confirmPassword }
+        { name: form.name, email: form.email, password: form.password, confirmPassword: form.confirmPassword }
       );
 
       // Show success message
