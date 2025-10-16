@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Gold N logo on black background">
+  <defs>
+    <linearGradient id="goldGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f8d77b"/>
+      <stop offset="45%" stop-color="#d6a43a"/>
+      <stop offset="100%" stop-color="#aa7a2a"/>
+    </linearGradient>
+    <filter id="emboss" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="1" result="blur"/>
+      <feOffset in="blur" dx="0" dy="2" result="off"/>
+      <feComposite in="off" in2="SourceAlpha" operator="arithmetic" k2="-1" k3="1" result="emboss"/>
+      <feMerge>
+        <feMergeNode in="emboss"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="6" result="g"/>
+      <feMerge>
+        <feMergeNode in="g"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Black background -->
+  <rect width="100%" height="100%" fill="#000000"/>
+
+  <!-- Circular subtle vignette -->
+  <radialGradient id="vign" cx="50%" cy="40%" r="60%">
+    <stop offset="0%" stop-color="#000000" stop-opacity="0"/>
+    <stop offset="100%" stop-color="#000000" stop-opacity="0.65"/>
+  </radialGradient>
+  <rect width="100%" height="100%" fill="url(#vign)"/>
+
+  <!-- Gold 'N' shape -->
+  <!-- Path crafted to resemble the stylized Nexa 'N' with inner cut -->
+  <g transform="translate(128,128) scale(0.75)">
+    <!-- Main gold shape -->
+    <path d="M48 0 H208 C232 0 248 16 248 40 V392 L480 120 V40 C480 16 496 0 520 0 H680 V664 C680 708 648 736 608 736 H536 L312 420 L72 736 H48 C22 736 0 714 0 688 V40 C0 16 22 0 48 0 Z" 
+          fill="url(#goldGrad)" filter="url(#emboss)"/>
+    <!-- Inner diagonal cut to make the 'N' negative space -->
+    <path d="M312 420 L480 240 H408 L248 416 L312 420 Z" fill="#000000"/>
+    <!-- Slight highlight overlay for metallic sheen -->
+    <path d="M48 0 H208 C232 0 248 16 248 40 V392 L480 120 V40 C480 16 496 0 520 0 H680 V120 L408 392 L312 420 L72 736 H48 C22 736 0 714 0 688 V40 C0 16 22 0 48 0 Z" 
+          fill="url(#goldGrad)" opacity="0.12" style="mix-blend-mode:screen"/>
+  </g>
+
+  <!-- Very subtle outer glow -->
+  <g filter="url(#softGlow)" opacity="0.18">
+    <circle cx="512" cy="384" r="320" fill="none" stroke="url(#goldGrad)" stroke-width="12"/>
+  </g>
+</svg>
