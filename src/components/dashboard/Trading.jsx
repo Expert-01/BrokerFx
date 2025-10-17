@@ -51,7 +51,7 @@ const Trading = () => {
 
 
     const [balance, setBalance] = useState(null);
-  const [loading, setLoading] = useState(false);
+  //const [loading, setLoading] = useState(false);
   // --- Decode user ---
   useEffect(() => {
     const token = localStorage.getItem("token");
