@@ -25,6 +25,8 @@ ChartJS.register(
   Legend
 );
 
+
+import { fetchUserBalance } from "../../api/user";
 const API_URL = import.meta.env.VITE_API_URL;
 
 const Trading = () => {
@@ -45,7 +47,40 @@ const Trading = () => {
   const [userId, setUserId] = useState(null);
   const [trend, setTrend] = useState(""); 
   const [showChart, setShowChart] = useState(false); // New: chart modal state
+  const [balance, setBalance] = useState(null);
+const [loadingBalance, setLoadingBalance] = useState(false);
+const [userId, setUserId] = useState(null);
 
+useEffect(() => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    const decoded = jwtDecode(token);
+    setUserId(decoded.user_id);
+  }
+}, []);
+
+useEffect(() => {
+  if (!userId) return;
+  setLoadingBalance(true);
+  fetchUserBalance(userId)
+    .then((data) => setBalance(data.balance))
+    .catch((err) => console.error("Error fetching balance:", err))
+    .finally(() => setLoadingBalance(false));
+}, [userId]);
+
+
+
+
+  useEffect(() => {
+  if (!userId) return;
+  const interval = setInterval(() => {
+    fetchUserBalance(userId)
+      .then((data) => setBalance(data.balance))
+      .catch(console.error);
+  }, 60000);
+  return () => clearInterval(interval);
+}, [userId]);
+  
   // --- Decode user ---
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -61,6 +96,16 @@ const Trading = () => {
     }
   }, []);
 
+
+export const fetchUserBalance = async (userId) => {
+  try {
+    const response = await axios.get(`${API_URL}/users/${userId}/balance`);
+    return response.data; // expecting { balance: number }
+  } catch (error) {
+    console.error("Error fetching balance:", error);
+    throw error;
+  }
+};
   // --- Fetch bot status ---
   const fetchBotStatus = async () => {
     if (!userId) return;
@@ -224,16 +269,20 @@ const Trading = () => {
       </aside>
       <main className="flex-1 p-4 md:p-8 w-full md:ml-64 space-y-6">
   {/* --- Glassy Balance Block --- */}
-  <div className="relative flex justify-center items-center mb-4">
-    <div className="bg-gradient-to-br from-[#4a2f18]/70 via-[#3b2714]/60 to-[#2b1a0c]/70 backdrop-blur-lg border border-[#a87932]/30 shadow-[0_0_25px_rgba(168,121,50,0.25)] text-[#f5e6ca] rounded-[1.75rem] px-8 py-4 text-center">
-      <p className="text-xs uppercase tracking-widest text-[#f0d08a]/80 font-semibold mb-1">
-        Account Balance
-      </p>
-      <p className="text-3xl font-bold text-[#FFD700] drop-shadow-[0_0_5px_rgba(255,215,0,0.4)]">
-        ${Math.abs(totalProfit * 120 + 1000).toFixed(2)}
-      </p>
-    </div>
+<div className="relative flex justify-center items-center mb-4">
+  <div className="bg-gradient-to-br from-[#4a2f18]/70 via-[#3b2714]/60 to-[#2b1a0c]/70 backdrop-blur-lg border border-[#a87932]/30 shadow-[0_0_25px_rgba(168,121,50,0.25)] text-[#f5e6ca] rounded-[1.75rem] px-8 py-4 text-center">
+    <p className="text-xs uppercase tracking-widest text-[#f0d08a]/80 font-semibold mb-1">
+      Account Balance
+    </p>
+    <p className="text-3xl font-bold text-[#FFD700] drop-shadow-[0_0_5px_rgba(255,215,0,0.4)]">
+      {loadingBalance
+        ? "Loading..."
+        : balance !== null
+        ? `$${Number(balance).toFixed(2)}`
+        : "Unavailable"}
+    </p>
   </div>
+</div>
 
   {/* --- Trading Chart --- */}
   <div className="rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(255,215,0,0.1)] border border-yellow-600/20">
