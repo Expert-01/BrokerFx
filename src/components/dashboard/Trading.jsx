@@ -25,8 +25,6 @@ ChartJS.register(
   Legend
 );
 
-
-import { fetchUserBalance } from "../../api/user";
 const API_URL = import.meta.env.VITE_API_URL;
 
 const Trading = () => {
@@ -47,10 +45,6 @@ const Trading = () => {
   const [userId, setUserId] = useState(null);
   const [trend, setTrend] = useState(""); 
   const [showChart, setShowChart] = useState(false); // New: chart modal state
-  const [balance, setBalance] = useState(null);
-const [loadingBalance, setLoadingBalance] = useState(false);
-//const [userId, setUserId] = useState(null);
-
 
   // --- Decode user ---
   useEffect(() => {
@@ -67,127 +61,6 @@ const [loadingBalance, setLoadingBalance] = useState(false);
     }
   }, []);
 
-
-
-
-  useEffect(() => {
-  const token = localStorage.getItem("token");
-  if (token) {
-    const decoded = jwtDecode(token);
-    setUserId(decoded.user_id);
-  }
-}, []);
-
-useEffect(() => {
-  if (!userId) return;
-  setLoadingBalance(true);
-  fetchUserBalance(userId)
-    .then((data) => setBalance(data.balance))
-    .catch((err) => console.error("Error fetching balance:", err))
-    .finally(() => setLoadingBalance(false));
-}, [userId]);
-
-
-
-
-  useEffect(() => {
-  if (!userId) return;
-  const interval = setInterval(() => {
-    fetchUserBalance(userId)
-      .then((data) => setBalance(data.balance))
-      .catch(console.error);
-  }, 60000);
-  return () => clearInterval(interval);
-}, [userId]);
-
-
-
-import { fetchUserBalance } from "../../api/user";
-const API_URL = import.meta.env.VITE_API_URL;
-
-const Trading = () => {
-  const [botStatus, setBotStatus] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [linking, setLinking] = useState(false);
-  const [message, setMessage] = useState("");
-  const [trades, setTrades] = useState([]);
-  const [simulateLoading, setSimulateLoading] = useState(false);
-  const [priceHistory, setPriceHistory] = useState({
-    bitcoin: [],
-    ethereum: [],
-    "binance-coin": [],
-    ripple: [],
-  });
-  const [highlightedTrade, setHighlightedTrade] = useState(null);
-  const [heartbeat, setHeartbeat] = useState(false);
-  const [userId, setUserId] = useState(null);
-  const [trend, setTrend] = useState("");
-  const [showChart, setShowChart] = useState(false);
-  const [balance, setBalance] = useState(null);
-  const [loadingBalance, setLoadingBalance] = useState(false);
-
-  // --- Decode user (single effect, normalized keys) ---
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setMessage("❌ No token found. Please log in again.");
-      return;
-    }
-    try {
-      const decoded = jwtDecode(token);
-      // normalize possible id keys
-      const id =
-        decoded?.id ||
-        decoded?.userId ||
-        decoded?.user_id ||
-        decoded?.user?.id ||
-        null;
-      console.log("decoded token:", decoded);
-      console.log("resolved userId:", id);
-      if (!id) {
-        setMessage("❌ Invalid token: no userId found.");
-        return;
-      }
-      setUserId(id);
-    } catch (err) {
-      console.error("JWT decode error:", err);
-      setMessage("❌ Invalid token.");
-    }
-  }, []);
-
-  // --- Fetch balance when userId is available ---
-  useEffect(() => {
-    if (!userId) return;
-    setLoadingBalance(true);
-    // helpful log for debugging network calls
-    console.log("Fetching balance for userId:", userId);
-    fetchUserBalance(userId)
-      .then((data) => {
-        console.log("balance response:", data);
-        // adapt to shape returned by your API
-        const bal = data?.balance ?? data?.data?.balance ?? null;
-        setBalance(bal);
-      })
-      .catch((err) => {
-        console.error("Error fetching balance:", err);
-      })
-      .finally(() => setLoadingBalance(false));
-  }, [userId]);
-
-  // refresh balance every minute
-  useEffect(() => {
-    if (!userId) return;
-    const interval = setInterval(() => {
-      fetchUserBalance(userId)
-        .then((data) => {
-          const bal = data?.balance ?? data?.data?.balance ?? null;
-          setBalance(bal);
-        })
-        .catch((err) => console.error("Error refreshing balance:", err));
-    }, 60000);
-    return () => clearInterval(interval);
-  }, [userId]);
-
   // --- Fetch bot status ---
   const fetchBotStatus = async () => {
     if (!userId) return;
@@ -199,8 +72,6 @@ const Trading = () => {
       console.error("Error fetching bot status:", err);
     }
   };
-
-  // --- Link / Unlink bot ---
 
   // --- Link / Unlink bot ---
   const linkBot = async () => {
@@ -353,20 +224,16 @@ const Trading = () => {
       </aside>
       <main className="flex-1 p-4 md:p-8 w-full md:ml-64 space-y-6">
   {/* --- Glassy Balance Block --- */}
-<div className="relative flex justify-center items-center mb-4">
-  <div className="bg-gradient-to-br from-[#4a2f18]/70 via-[#3b2714]/60 to-[#2b1a0c]/70 backdrop-blur-lg border border-[#a87932]/30 shadow-[0_0_25px_rgba(168,121,50,0.25)] text-[#f5e6ca] rounded-[1.75rem] px-8 py-4 text-center">
-    <p className="text-xs uppercase tracking-widest text-[#f0d08a]/80 font-semibold mb-1">
-      Account Balance
-    </p>
-    <p className="text-3xl font-bold text-[#FFD700] drop-shadow-[0_0_5px_rgba(255,215,0,0.4)]">
-      {loadingBalance
-        ? "Loading..."
-        : balance !== null
-        ? `$${Number(balance).toFixed(2)}`
-        : "Unavailable"}
-    </p>
+  <div className="relative flex justify-center items-center mb-4">
+    <div className="bg-gradient-to-br from-[#4a2f18]/70 via-[#3b2714]/60 to-[#2b1a0c]/70 backdrop-blur-lg border border-[#a87932]/30 shadow-[0_0_25px_rgba(168,121,50,0.25)] text-[#f5e6ca] rounded-[1.75rem] px-8 py-4 text-center">
+      <p className="text-xs uppercase tracking-widest text-[#f0d08a]/80 font-semibold mb-1">
+        Account Balance
+      </p>
+      <p className="text-3xl font-bold text-[#FFD700] drop-shadow-[0_0_5px_rgba(255,215,0,0.4)]">
+        ${Math.abs(totalProfit * 120 + 1000).toFixed(2)}
+      </p>
+    </div>
   </div>
-</div>
 
   {/* --- Trading Chart --- */}
   <div className="rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(255,215,0,0.1)] border border-yellow-600/20">
