@@ -49,9 +49,28 @@ const Trading = () => {
   const [showChart, setShowChart] = useState(false); // New: chart modal state
   const [balance, setBalance] = useState(null);
 const [loadingBalance, setLoadingBalance] = useState(false);
-const [userId, setUserId] = useState(null);
+//const [userId, setUserId] = useState(null);
 
-useEffect(() => {
+
+  // --- Decode user ---
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) return setMessage("❌ No token found. Please log in again.");
+    try {
+      const decoded = jwtDecode(token);
+      const id = decoded.id || decoded.userId || decoded.user?.id;
+      if (!id) return setMessage("❌ Invalid token: no userId found.");
+      setUserId(id);
+    } catch (err) {
+      console.error("JWT decode error:", err);
+      setMessage("❌ Invalid token.");
+    }
+  }, []);
+
+
+
+
+  useEffect(() => {
   const token = localStorage.getItem("token");
   if (token) {
     const decoded = jwtDecode(token);
@@ -80,32 +99,11 @@ useEffect(() => {
   }, 60000);
   return () => clearInterval(interval);
 }, [userId]);
+
+
+
   
-  // --- Decode user ---
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) return setMessage("❌ No token found. Please log in again.");
-    try {
-      const decoded = jwtDecode(token);
-      const id = decoded.id || decoded.userId || decoded.user?.id;
-      if (!id) return setMessage("❌ Invalid token: no userId found.");
-      setUserId(id);
-    } catch (err) {
-      console.error("JWT decode error:", err);
-      setMessage("❌ Invalid token.");
-    }
-  }, []);
 
-
-export const fetchUserBalance = async (userId) => {
-  try {
-    const response = await axios.get(`${API_URL}/users/${userId}/balance`);
-    return response.data; // expecting { balance: number }
-  } catch (error) {
-    console.error("Error fetching balance:", error);
-    throw error;
-  }
-};
   // --- Fetch bot status ---
   const fetchBotStatus = async () => {
     if (!userId) return;
