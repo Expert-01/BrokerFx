@@ -24,6 +24,8 @@ ChartJS.register(
   Tooltip,
   Legend
 );
+import { fetchUserBalance } from "../../api/user";
+
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -46,6 +48,10 @@ const Trading = () => {
   const [trend, setTrend] = useState(""); 
   const [showChart, setShowChart] = useState(false); // New: chart modal state
 
+
+
+    const [balance, setBalance] = useState(null);
+  const [loading, setLoading] = useState(false);
   // --- Decode user ---
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -61,6 +67,16 @@ const Trading = () => {
     }
   }, []);
 
+
+  useEffect(() => {
+    if (!userId) return;
+    setLoading(true);
+    fetchUserBalance(userId)
+      .then((data) => setBalance(data.balance))
+      .catch((err) => console.error("[AccountOverview] Error fetching balance:", err))
+      .finally(() => setLoading(false));
+  }, [userId]);
+  
   // --- Fetch bot status ---
   const fetchBotStatus = async () => {
     if (!userId) return;
@@ -230,8 +246,8 @@ const Trading = () => {
         Account Balance
       </p>
       <p className="text-3xl font-bold text-[#FFD700] drop-shadow-[0_0_5px_rgba(255,215,0,0.4)]">
-        ${Math.abs(totalProfit * 120 + 1000).toFixed(2)}
-      </p>
+        {loading ? "Loading..." : balance !== null ? `$${Number(balance).toFixed(2)}` : "-"}
+                </p>
     </div>
   </div>
 
