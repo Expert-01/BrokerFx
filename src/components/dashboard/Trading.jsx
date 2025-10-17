@@ -102,7 +102,91 @@ useEffect(() => {
 
 
 
-  
+import { fetchUserBalance } from "../../api/user";
+const API_URL = import.meta.env.VITE_API_URL;
+
+const Trading = () => {
+  const [botStatus, setBotStatus] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [linking, setLinking] = useState(false);
+  const [message, setMessage] = useState("");
+  const [trades, setTrades] = useState([]);
+  const [simulateLoading, setSimulateLoading] = useState(false);
+  const [priceHistory, setPriceHistory] = useState({
+    bitcoin: [],
+    ethereum: [],
+    "binance-coin": [],
+    ripple: [],
+  });
+  const [highlightedTrade, setHighlightedTrade] = useState(null);
+  const [heartbeat, setHeartbeat] = useState(false);
+  const [userId, setUserId] = useState(null);
+  const [trend, setTrend] = useState("");
+  const [showChart, setShowChart] = useState(false);
+  const [balance, setBalance] = useState(null);
+  const [loadingBalance, setLoadingBalance] = useState(false);
+
+  // --- Decode user (single effect, normalized keys) ---
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setMessage("❌ No token found. Please log in again.");
+      return;
+    }
+    try {
+      const decoded = jwtDecode(token);
+      // normalize possible id keys
+      const id =
+        decoded?.id ||
+        decoded?.userId ||
+        decoded?.user_id ||
+        decoded?.user?.id ||
+        null;
+      console.log("decoded token:", decoded);
+      console.log("resolved userId:", id);
+      if (!id) {
+        setMessage("❌ Invalid token: no userId found.");
+        return;
+      }
+      setUserId(id);
+    } catch (err) {
+      console.error("JWT decode error:", err);
+      setMessage("❌ Invalid token.");
+    }
+  }, []);
+
+  // --- Fetch balance when userId is available ---
+  useEffect(() => {
+    if (!userId) return;
+    setLoadingBalance(true);
+    // helpful log for debugging network calls
+    console.log("Fetching balance for userId:", userId);
+    fetchUserBalance(userId)
+      .then((data) => {
+        console.log("balance response:", data);
+        // adapt to shape returned by your API
+        const bal = data?.balance ?? data?.data?.balance ?? null;
+        setBalance(bal);
+      })
+      .catch((err) => {
+        console.error("Error fetching balance:", err);
+      })
+      .finally(() => setLoadingBalance(false));
+  }, [userId]);
+
+  // refresh balance every minute
+  useEffect(() => {
+    if (!userId) return;
+    const interval = setInterval(() => {
+      fetchUserBalance(userId)
+        .then((data) => {
+          const bal = data?.balance ?? data?.data?.balance ?? null;
+          setBalance(bal);
+        })
+        .catch((err) => console.error("Error refreshing balance:", err));
+    }, 60000);
+    return () => clearInterval(interval);
+  }, [userId]);
 
   // --- Fetch bot status ---
   const fetchBotStatus = async () => {
@@ -115,6 +199,8 @@ useEffect(() => {
       console.error("Error fetching bot status:", err);
     }
   };
+
+  // --- Link / Unlink bot ---
 
   // --- Link / Unlink bot ---
   const linkBot = async () => {
