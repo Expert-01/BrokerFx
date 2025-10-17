@@ -223,10 +223,22 @@ const Trading = () => {
         <Sidebar />
       </aside>
       <main className="flex-1 p-4 md:p-8 w-full md:ml-64 space-y-6">
-        <div className="rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(255,215,0,0.1)] border border-yellow-600/20">
-          <TradingViewWidget symbol="BTCUSDT" />
-        </div>
+  {/* --- Glassy Balance Block --- */}
+  <div className="relative flex justify-center items-center mb-4">
+    <div className="bg-gradient-to-br from-[#4a2f18]/70 via-[#3b2714]/60 to-[#2b1a0c]/70 backdrop-blur-lg border border-[#a87932]/30 shadow-[0_0_25px_rgba(168,121,50,0.25)] text-[#f5e6ca] rounded-[1.75rem] px-8 py-4 text-center">
+      <p className="text-xs uppercase tracking-widest text-[#f0d08a]/80 font-semibold mb-1">
+        Account Balance
+      </p>
+      <p className="text-3xl font-bold text-[#FFD700] drop-shadow-[0_0_5px_rgba(255,215,0,0.4)]">
+        ${Math.abs(totalProfit * 120 + 1000).toFixed(2)}
+      </p>
+    </div>
+  </div>
 
+  {/* --- Trading Chart --- */}
+  <div className="rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(255,215,0,0.1)] border border-yellow-600/20">
+    <TradingViewWidget symbol="BTCUSDT" />
+  </div>
         {/* Bot Control */}
         <div className="bg-gradient-to-b from-[#1a1307]/90 to-[#0d0b08]/80 backdrop-blur-xl rounded-2xl p-6 shadow-[0_0_20px_rgba(139,69,19,0.3)] max-w-2xl mx-auto border border-yellow-700/20 text-center relative">
           <div className="flex flex-col items-center mb-3">
