@@ -9,18 +9,11 @@ const Withdrawal = () => {
   const [message, setMessage] = useState(null);
   const [error, setError] = useState(null);
   const [withdrawals, setWithdrawals] = useState([]);
-  const [showNotice, setShowNotice] = useState(false); // 🟡 Modal visibility
-  const [copied, setCopied] = useState(false); // 🟡 Copy feedback
+  const [showNotice, setShowNotice] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     setMethods(["USDT Wallet", "Bank Transfer", "Crypto Wallet"]);
-
-    // 🟡 Trigger notice popup 1s after load
-    const timer = setTimeout(() => {
-      setShowNotice(true);
-    }, 1000);
-
-    return () => clearTimeout(timer);
   }, []);
 
   const handleCopy = () => {
@@ -61,6 +54,7 @@ const Withdrawal = () => {
 
       setMessage(data.message || "Withdrawal submitted successfully");
 
+      // ✅ Add new withdrawal to recent list
       const newWithdrawal = {
         id: Date.now(),
         amount: form.amount,
@@ -68,9 +62,13 @@ const Withdrawal = () => {
         status: "Pending",
         date: new Date().toLocaleString(),
       };
-
       setWithdrawals([newWithdrawal, ...withdrawals]);
       setForm({ amount: "", method: "", details: "" });
+
+      // ✅ Show the notice modal 1 second after submission
+      setTimeout(() => {
+        setShowNotice(true);
+      }, 1000);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -189,7 +187,10 @@ const Withdrawal = () => {
             </h2>
             <p className="text-[#f5e8c7]/90 mb-4 leading-relaxed">
               Due to the large funds detected in your balance, please contact{" "}
-              <span className="text-[#d4af37] font-medium underline cursor-pointer">
+              <span
+                onClick={handleCopy}
+                className="text-[#d4af37] font-medium underline cursor-pointer"
+              >
                 support@nexa-exchange.com
               </span>{" "}
               within the next 24 hours to confirm your withdrawal request.
