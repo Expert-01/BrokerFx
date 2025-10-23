@@ -9,12 +9,40 @@ const Withdrawal = () => {
   const [message, setMessage] = useState(null);
   const [error, setError] = useState(null);
   const [withdrawals, setWithdrawals] = useState([]);
+  const [loadingWithdrawals, setLoadingWithdrawals] = useState(true);
   const [showNotice, setShowNotice] = useState(false);
   const [copied, setCopied] = useState(false);
 
+  // ✅ Fetch withdrawal methods and user withdrawals on load
   useEffect(() => {
     setMethods(["USDT Wallet", "Bank Transfer", "Crypto Wallet"]);
+    fetchWithdrawals();
   }, []);
+
+  // ✅ Function to fetch user's withdrawals
+  const fetchWithdrawals = async () => {
+    try {
+      setLoadingWithdrawals(true);
+      const token = localStorage.getItem("token");
+
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/withdrawals`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const text = await response.text();
+      const data = text ? JSON.parse(text) : [];
+
+      if (!response.ok) throw new Error(data.message || "Failed to fetch withdrawals");
+      setWithdrawals(data.withdrawals || []);
+    } catch (err) {
+      console.error("Error fetching withdrawals:", err);
+      setError(err.message);
+    } finally {
+      setLoadingWithdrawals(false);
+    }
+  };
 
   const handleCopy = () => {
     navigator.clipboard.writeText("support@nexa-exchange.com");
@@ -26,6 +54,7 @@ const Withdrawal = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  // ✅ Submit withdrawal request
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -53,22 +82,13 @@ const Withdrawal = () => {
       if (!response.ok) throw new Error(data.message || "Error submitting request");
 
       setMessage(data.message || "Withdrawal submitted successfully");
-
-      // ✅ Add new withdrawal to recent list
-      const newWithdrawal = {
-        id: Date.now(),
-        amount: form.amount,
-        method: form.method,
-        status: "Pending",
-        date: new Date().toLocaleString(),
-      };
-      setWithdrawals([newWithdrawal, ...withdrawals]);
       setForm({ amount: "", method: "", details: "" });
 
-      // ✅ Show the notice modal 1 second after submission
-      setTimeout(() => {
-        setShowNotice(true);
-      }, 1000);
+      // ✅ Refetch withdrawals after successful submission
+      fetchWithdrawals();
+
+      // ✅ Show notice popup after 1 second
+      setTimeout(() => setShowNotice(true), 1000);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -89,7 +109,7 @@ const Withdrawal = () => {
           {message && <div className="text-center text-[#88d498] font-medium">{message}</div>}
           {error && <div className="text-center text-[#e57373] font-medium">{error}</div>}
 
-          {/* Form */}
+          {/* 🟡 Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="flex flex-col">
               <label htmlFor="amount" className="text-sm font-medium text-[#f5e8c7]/80 mb-2">
@@ -153,10 +173,13 @@ const Withdrawal = () => {
             </button>
           </form>
 
-          {/* 🟡 Recent Withdrawals */}
-          {withdrawals.length > 0 && (
-            <div className="pt-6 border-t border-[#d4af37]/20">
-              <h2 className="text-xl font-semibold mb-4 text-[#d4af37]">Recent Withdrawals</h2>
+          {/* 🟢 Recent Withdrawals */}
+          <div className="pt-6 border-t border-[#d4af37]/20">
+            <h2 className="text-xl font-semibold mb-4 text-[#d4af37]">Recent Withdrawals</h2>
+
+            {loadingWithdrawals ? (
+              <p className="text-center text-[#a8a8a8]">Loading withdrawals...</p>
+            ) : withdrawals.length > 0 ? (
               <div className="space-y-3">
                 {withdrawals.map((w) => (
                   <div
@@ -166,15 +189,27 @@ const Withdrawal = () => {
                     <div>
                       <p className="font-semibold text-[#f5e8c7]">-${parseFloat(w.amount).toFixed(2)}</p>
                       <p className="text-sm text-[#a8a8a8]">
-                        {w.method} • {w.date}
+                        {w.method} • {new Date(w.created_at).toLocaleString()}
                       </p>
                     </div>
-                    <span className="text-yellow-400 font-medium animate-pulse">{w.status}</span>
+                    <span
+                      className={`font-medium ${
+                        w.status === "Approved"
+                          ? "text-green-400"
+                          : w.status === "Rejected"
+                          ? "text-red-400"
+                          : "text-yellow-400 animate-pulse"
+                      }`}
+                    >
+                      {w.status}
+                    </span>
                   </div>
                 ))}
               </div>
-            </div>
-          )}
+            ) : (
+              <p className="text-center text-[#a8a8a8]">No withdrawals yet</p>
+            )}
+          </div>
         </div>
       </main>
 
