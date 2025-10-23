@@ -7,6 +7,7 @@ const Withdrawal = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
   const [error, setError] = useState(null);
+  const [withdrawals, setWithdrawals] = useState([]); // 🟡 Store recent withdrawals
 
   useEffect(() => {
     setMethods(["USDT Wallet", "Bank Transfer", "Crypto Wallet"]);
@@ -43,6 +44,18 @@ const Withdrawal = () => {
       if (!response.ok) throw new Error(data.message || "Error submitting request");
 
       setMessage(data.message || "Withdrawal submitted successfully");
+
+      // 🟡 Add new withdrawal to the list
+      const newWithdrawal = {
+        id: Date.now(),
+        amount: form.amount,
+        method: form.method,
+        status: "Pending",
+        date: new Date().toLocaleString(),
+      };
+
+      setWithdrawals([newWithdrawal, ...withdrawals]);
+
       setForm({ amount: "", method: "", details: "" });
     } catch (err) {
       setError(err.message);
@@ -57,18 +70,24 @@ const Withdrawal = () => {
 
       <main className="flex-1 flex flex-col items-center px-4 md:px-10 py-10 md:ml-56 w-full">
         <div className="w-full max-w-3xl p-10 bg-gradient-to-br from-[#0d0d0d]/90 to-[#1a1a1a]/90 backdrop-blur-md rounded-2xl border border-[#d4af37]/30 shadow-[0_0_25px_rgba(212,175,55,0.15)] space-y-8">
-          
           <h1 className="text-3xl font-bold text-center text-[#d4af37]">
             Withdraw Funds
           </h1>
 
-          {message && <div className="text-center text-[#88d498] font-medium">{message}</div>}
-          {error && <div className="text-center text-[#e57373] font-medium">{error}</div>}
+          {message && (
+            <div className="text-center text-[#88d498] font-medium">{message}</div>
+          )}
+          {error && (
+            <div className="text-center text-[#e57373] font-medium">{error}</div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Amount Field */}
             <div className="flex flex-col">
-              <label htmlFor="amount" className="text-sm font-medium text-[#f5e8c7]/80 mb-2">
+              <label
+                htmlFor="amount"
+                className="text-sm font-medium text-[#f5e8c7]/80 mb-2"
+              >
                 Amount
               </label>
               <input
@@ -87,7 +106,10 @@ const Withdrawal = () => {
 
             {/* Method Field */}
             <div className="flex flex-col">
-              <label htmlFor="method" className="text-sm font-medium text-[#f5e8c7]/80 mb-2">
+              <label
+                htmlFor="method"
+                className="text-sm font-medium text-[#f5e8c7]/80 mb-2"
+              >
                 Withdrawal Method
               </label>
               <select
@@ -111,7 +133,10 @@ const Withdrawal = () => {
 
             {/* Withdrawal Details */}
             <div className="flex flex-col">
-              <label htmlFor="details" className="text-sm font-medium text-[#f5e8c7]/80 mb-2">
+              <label
+                htmlFor="details"
+                className="text-sm font-medium text-[#f5e8c7]/80 mb-2"
+              >
                 Withdrawal Details
               </label>
               <textarea
@@ -135,6 +160,35 @@ const Withdrawal = () => {
               {loading ? "Submitting..." : "Submit Withdrawal"}
             </button>
           </form>
+
+          {/* 🟡 Recent Withdrawals Section */}
+          {withdrawals.length > 0 && (
+            <div className="pt-6 border-t border-[#d4af37]/20">
+              <h2 className="text-xl font-semibold mb-4 text-[#d4af37]">
+                Recent Withdrawals
+              </h2>
+              <div className="space-y-3">
+                {withdrawals.map((w) => (
+                  <div
+                    key={w.id}
+                    className="flex justify-between items-center p-3 rounded-lg bg-[#0c0c0c] border border-[#d4af37]/20"
+                  >
+                    <div>
+                      <p className="font-semibold text-[#f5e8c7]">
+                        -${parseFloat(w.amount).toFixed(2)}
+                      </p>
+                      <p className="text-sm text-[#a8a8a8]">
+                        {w.method} • {w.date}
+                      </p>
+                    </div>
+                    <span className="text-yellow-400 font-medium animate-pulse">
+                      {w.status}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </main>
     </div>
