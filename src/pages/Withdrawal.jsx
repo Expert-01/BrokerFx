@@ -9,40 +9,39 @@ const Withdrawal = () => {
   const [message, setMessage] = useState(null);
   const [error, setError] = useState(null);
   const [withdrawals, setWithdrawals] = useState([]);
-  const [loadingWithdrawals, setLoadingWithdrawals] = useState(true);
   const [showNotice, setShowNotice] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  // ✅ Fetch withdrawal methods and user withdrawals on load
+  const API_URL = import.meta.env.VITE_API_URL;
+
   useEffect(() => {
     setMethods(["USDT Wallet", "Bank Transfer", "Crypto Wallet"]);
-    fetchWithdrawals();
   }, []);
 
-  // ✅ Function to fetch user's withdrawals
-  const fetchWithdrawals = async () => {
-    try {
-      setLoadingWithdrawals(true);
-      const token = localStorage.getItem("token");
+  // ✅ Fetch user’s recent withdrawals from DB
+  useEffect(() => {
+    const fetchWithdrawals = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await fetch(`${API_URL}/withdrawals`, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/withdrawals`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+        if (!res.ok) throw new Error("Failed to fetch withdrawals");
 
-      const text = await response.text();
-      const data = text ? JSON.parse(text) : [];
+        const data = await res.json();
+        setWithdrawals(data || []);
+      } catch (err) {
+        console.error("Error fetching withdrawals:", err);
+        setError("Failed to load withdrawals");
+      }
+    };
 
-      if (!response.ok) throw new Error(data.message || "Failed to fetch withdrawals");
-      setWithdrawals(data.withdrawals || []);
-    } catch (err) {
-      console.error("Error fetching withdrawals:", err);
-      setError(err.message);
-    } finally {
-      setLoadingWithdrawals(false);
-    }
-  };
+    fetchWithdrawals();
+  }, [API_URL]);
 
   const handleCopy = () => {
     navigator.clipboard.writeText("support@nexa-exchange.com");
@@ -54,7 +53,6 @@ const Withdrawal = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // ✅ Submit withdrawal request
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -63,7 +61,7 @@ const Withdrawal = () => {
 
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/withdraw`, {
+      const response = await fetch(`${API_URL}/withdraw`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -82,12 +80,16 @@ const Withdrawal = () => {
       if (!response.ok) throw new Error(data.message || "Error submitting request");
 
       setMessage(data.message || "Withdrawal submitted successfully");
+
+      // ✅ Refresh recent withdrawals from DB
+      const refresh = await fetch(`${API_URL}/withdrawals`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const updatedData = await refresh.json();
+      setWithdrawals(updatedData || []);
+
       setForm({ amount: "", method: "", details: "" });
 
-      // ✅ Refetch withdrawals after successful submission
-      fetchWithdrawals();
-
-      // ✅ Show notice popup after 1 second
       setTimeout(() => setShowNotice(true), 1000);
     } catch (err) {
       setError(err.message);
@@ -109,7 +111,7 @@ const Withdrawal = () => {
           {message && <div className="text-center text-[#88d498] font-medium">{message}</div>}
           {error && <div className="text-center text-[#e57373] font-medium">{error}</div>}
 
-          {/* 🟡 Form */}
+          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="flex flex-col">
               <label htmlFor="amount" className="text-sm font-medium text-[#f5e8c7]/80 mb-2">
@@ -173,13 +175,10 @@ const Withdrawal = () => {
             </button>
           </form>
 
-          {/* 🟢 Recent Withdrawals */}
-          <div className="pt-6 border-t border-[#d4af37]/20">
-            <h2 className="text-xl font-semibold mb-4 text-[#d4af37]">Recent Withdrawals</h2>
-
-            {loadingWithdrawals ? (
-              <p className="text-center text-[#a8a8a8]">Loading withdrawals...</p>
-            ) : withdrawals.length > 0 ? (
+          {/* 🟡 Recent Withdrawals */}
+          {withdrawals.length > 0 && (
+            <div className="pt-6 border-t border-[#d4af37]/20">
+              <h2 className="text-xl font-semibold mb-4 text-[#d4af37]">Recent Withdrawals</h2>
               <div className="space-y-3">
                 {withdrawals.map((w) => (
                   <div
@@ -206,10 +205,8 @@ const Withdrawal = () => {
                   </div>
                 ))}
               </div>
-            ) : (
-              <p className="text-center text-[#a8a8a8]">No withdrawals yet</p>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </main>
 
