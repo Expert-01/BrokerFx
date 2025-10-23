@@ -23,7 +23,7 @@ const Withdrawal = () => {
     const fetchWithdrawals = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch(`${API_URL}/withdrawals`, {
+        const res = await fetch(`${API_URL}/withdraw/withdrawals`, {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
