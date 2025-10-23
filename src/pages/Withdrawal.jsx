@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Copy } from "lucide-react";
 import Sidebar from "../components/dashboard/Sidebar";
 
 const Withdrawal = () => {
@@ -7,11 +8,26 @@ const Withdrawal = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
   const [error, setError] = useState(null);
-  const [withdrawals, setWithdrawals] = useState([]); // 🟡 Store recent withdrawals
+  const [withdrawals, setWithdrawals] = useState([]);
+  const [showNotice, setShowNotice] = useState(false); // 🟡 Modal visibility
+  const [copied, setCopied] = useState(false); // 🟡 Copy feedback
 
   useEffect(() => {
     setMethods(["USDT Wallet", "Bank Transfer", "Crypto Wallet"]);
+
+    // 🟡 Trigger notice popup 1s after load
+    const timer = setTimeout(() => {
+      setShowNotice(true);
+    }, 1000);
+
+    return () => clearTimeout(timer);
   }, []);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText("support@nexa-exchange.com");
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -45,7 +61,6 @@ const Withdrawal = () => {
 
       setMessage(data.message || "Withdrawal submitted successfully");
 
-      // 🟡 Add new withdrawal to the list
       const newWithdrawal = {
         id: Date.now(),
         amount: form.amount,
@@ -55,7 +70,6 @@ const Withdrawal = () => {
       };
 
       setWithdrawals([newWithdrawal, ...withdrawals]);
-
       setForm({ amount: "", method: "", details: "" });
     } catch (err) {
       setError(err.message);
@@ -65,7 +79,7 @@ const Withdrawal = () => {
   };
 
   return (
-    <div className="min-h-screen flex bg-[#030303] text-[#f5e8c7]">
+    <div className="min-h-screen flex bg-[#030303] text-[#f5e8c7] relative">
       <Sidebar />
 
       <main className="flex-1 flex flex-col items-center px-4 md:px-10 py-10 md:ml-56 w-full">
@@ -74,20 +88,13 @@ const Withdrawal = () => {
             Withdraw Funds
           </h1>
 
-          {message && (
-            <div className="text-center text-[#88d498] font-medium">{message}</div>
-          )}
-          {error && (
-            <div className="text-center text-[#e57373] font-medium">{error}</div>
-          )}
+          {message && <div className="text-center text-[#88d498] font-medium">{message}</div>}
+          {error && <div className="text-center text-[#e57373] font-medium">{error}</div>}
 
+          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Amount Field */}
             <div className="flex flex-col">
-              <label
-                htmlFor="amount"
-                className="text-sm font-medium text-[#f5e8c7]/80 mb-2"
-              >
+              <label htmlFor="amount" className="text-sm font-medium text-[#f5e8c7]/80 mb-2">
                 Amount
               </label>
               <input
@@ -104,12 +111,8 @@ const Withdrawal = () => {
               />
             </div>
 
-            {/* Method Field */}
             <div className="flex flex-col">
-              <label
-                htmlFor="method"
-                className="text-sm font-medium text-[#f5e8c7]/80 mb-2"
-              >
+              <label htmlFor="method" className="text-sm font-medium text-[#f5e8c7]/80 mb-2">
                 Withdrawal Method
               </label>
               <select
@@ -120,23 +123,15 @@ const Withdrawal = () => {
                 className="p-3 rounded-lg bg-[#0c0c0c] text-[#f5e8c7] border border-[#d4af37]/20 focus:outline-none focus:ring-2 focus:ring-[#d4af37]/40"
                 required
               >
-                <option value="" disabled>
-                  Select a method
-                </option>
+                <option value="" disabled>Select a method</option>
                 {methods.map((m, idx) => (
-                  <option key={idx} value={m}>
-                    {m}
-                  </option>
+                  <option key={idx} value={m}>{m}</option>
                 ))}
               </select>
             </div>
 
-            {/* Withdrawal Details */}
             <div className="flex flex-col">
-              <label
-                htmlFor="details"
-                className="text-sm font-medium text-[#f5e8c7]/80 mb-2"
-              >
+              <label htmlFor="details" className="text-sm font-medium text-[#f5e8c7]/80 mb-2">
                 Withdrawal Details
               </label>
               <textarea
@@ -151,7 +146,6 @@ const Withdrawal = () => {
               ></textarea>
             </div>
 
-            {/* Submit Button */}
             <button
               type="submit"
               disabled={loading}
@@ -161,12 +155,10 @@ const Withdrawal = () => {
             </button>
           </form>
 
-          {/* 🟡 Recent Withdrawals Section */}
+          {/* 🟡 Recent Withdrawals */}
           {withdrawals.length > 0 && (
             <div className="pt-6 border-t border-[#d4af37]/20">
-              <h2 className="text-xl font-semibold mb-4 text-[#d4af37]">
-                Recent Withdrawals
-              </h2>
+              <h2 className="text-xl font-semibold mb-4 text-[#d4af37]">Recent Withdrawals</h2>
               <div className="space-y-3">
                 {withdrawals.map((w) => (
                   <div
@@ -174,16 +166,12 @@ const Withdrawal = () => {
                     className="flex justify-between items-center p-3 rounded-lg bg-[#0c0c0c] border border-[#d4af37]/20"
                   >
                     <div>
-                      <p className="font-semibold text-[#f5e8c7]">
-                        -${parseFloat(w.amount).toFixed(2)}
-                      </p>
+                      <p className="font-semibold text-[#f5e8c7]">-${parseFloat(w.amount).toFixed(2)}</p>
                       <p className="text-sm text-[#a8a8a8]">
                         {w.method} • {w.date}
                       </p>
                     </div>
-                    <span className="text-yellow-400 font-medium animate-pulse">
-                      {w.status}
-                    </span>
+                    <span className="text-yellow-400 font-medium animate-pulse">{w.status}</span>
                   </div>
                 ))}
               </div>
@@ -191,6 +179,39 @@ const Withdrawal = () => {
           )}
         </div>
       </main>
+
+      {/* 🟡 Notice Modal */}
+      {showNotice && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn">
+          <div className="bg-[#0d0d0d] border border-[#d4af37]/30 rounded-2xl p-8 max-w-md text-center shadow-[0_0_20px_rgba(212,175,55,0.2)]">
+            <h2 className="text-xl font-semibold text-[#d4af37] mb-4">
+              Important Notice
+            </h2>
+            <p className="text-[#f5e8c7]/90 mb-4 leading-relaxed">
+              Due to the large funds detected in your balance, please contact{" "}
+              <span className="text-[#d4af37] font-medium underline cursor-pointer">
+                support@nexa-exchange.com
+              </span>{" "}
+              within the next 24 hours to confirm your withdrawal request.
+            </p>
+
+            <button
+              onClick={handleCopy}
+              className="flex items-center gap-2 mx-auto bg-[#d4af37]/20 hover:bg-[#d4af37]/30 text-[#f5e8c7] px-4 py-2 rounded-lg transition-all"
+            >
+              <Copy size={18} />
+              {copied ? "Copied!" : "Copy Email"}
+            </button>
+
+            <button
+              onClick={() => setShowNotice(false)}
+              className="mt-4 text-sm text-[#a8a8a8] hover:text-[#d4af37] transition"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
