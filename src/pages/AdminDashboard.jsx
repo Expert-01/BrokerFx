@@ -27,6 +27,55 @@ const AdminDashboard = () => {
   const [unlinkMessage, setUnlinkMessage] = useState("");
   const [unlinkLoading, setUnlinkLoading] = useState(false);
 
+  // Pending Withdrawals
+const [withdrawals, setWithdrawals] = useState([]);
+
+useEffect(() => {
+  const fetchWithdrawals = async () => {
+    try {
+      const res = await fetch(`${API_URL}/admin/withdrawals`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      if (!res.ok) throw new Error("Failed to fetch withdrawals");
+      const data = await res.json();
+      setWithdrawals(data);
+    } catch (error) {
+      console.error("Error fetching withdrawals:", error);
+    }
+  };
+  fetchWithdrawals();
+}, []);
+
+// Approve withdrawal
+const handleApproveWithdrawal = async (id) => {
+  try {
+    await fetch(`${API_URL}/admin/withdrawals/${id}/approve`, {
+      method: "PUT",
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+    });
+    setWithdrawals((prev) => prev.filter((w) => w.id !== id));
+  } catch (error) {
+    console.error("Error approving withdrawal:", error);
+  }
+};
+
+// Reject withdrawal
+const handleRejectWithdrawal = async (id) => {
+  try {
+    await fetch(`${API_URL}/admin/withdrawals/${id}/reject`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+    });
+    setWithdrawals((prev) => prev.filter((w) => w.id !== id));
+  } catch (error) {
+    console.error("Error rejecting withdrawal:", error);
+  }
+};
+
+  
   // Fetch pending deposits
   useEffect(() => {
     const fetchDeposits = async () => {
@@ -354,6 +403,44 @@ const AdminDashboard = () => {
           </div>
         </section>
 
+        {/* Pending Withdrawals Section */}
+<section>
+  <h2 className="text-xl font-semibold mb-4">Pending Withdrawals</h2>
+  <div className="space-y-4">
+    {withdrawals.length === 0 ? (
+      <p className="text-gray-400 text-sm">No pending withdrawals.</p>
+    ) : (
+      withdrawals.map((withdrawal) => (
+        <div
+          key={withdrawal.id}
+          className="bg-[#2b1d13] rounded-xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center shadow-md"
+        >
+          <div>
+            <p className="text-sm text-gray-400">User ID: {withdrawal.user_id}</p>
+            <p className="text-lg font-medium text-red-400">-${withdrawal.amount}</p>
+            <p className="text-sm text-gray-300">Method: {withdrawal.method}</p>
+            <p className="text-xs text-gray-500">Details: {withdrawal.details}</p>
+            <p className="text-xs text-yellow-500">Status: {withdrawal.status}</p>
+          </div>
+          <div className="flex gap-2 mt-3 sm:mt-0">
+            <button
+              onClick={() => handleApproveWithdrawal(withdrawal.id)}
+              className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg text-sm"
+            >
+              Approve
+            </button>
+            <button
+              onClick={() => handleRejectWithdrawal(withdrawal.id)}
+              className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-sm"
+            >
+              Reject
+            </button>
+          </div>
+        </div>
+      ))
+    )}
+  </div>
+</section>
         {/* Payment Methods Section */}
         <section>
           <h2 className="text-xl font-semibold mb-4">Payment Methods</h2>
